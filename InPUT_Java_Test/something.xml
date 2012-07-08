@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<in:Design xmlns:in="http://TheInPUT.org/Design" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://TheInPUT.org/Design Design.xsd" id="test">
+  <in:NValue id="Seed" value="-4002027572335708160.28304965058633679841904040586086921393871307373046875" />
+  <in:NValue id="PopSize" value="17" />
+  <in:NValue id="InitPosMin" value="-1.4638655743676400877717469484196044504642486572265625" />
+  <in:NValue id="InitPosMax" value="3.4828218386559146590997215753304772078990936279296875" />
+  <in:NValue id="InitVelMin" value="-2.034832074754512720726751240363228134810924530029296875" />
+  <in:NValue id="InitVelMax" value="1.83416112209163995050431594791007228195667266845703125" />
+  <in:NValue id="VelMin" value="-2.10775897236996179184842503673280589282512664794921875" />
+  <in:NValue id="VelMax" value="1.11164942606796757207376913356711156666278839111328125" />
+  <in:SValue id="VelocityType" value="Standard">
+    <in:NValue id="Inertia" value="0.68925996947685863602828248986043035984039306640625" />
+    <in:NValue id="LFactor1" value="1.739070404345183862293566789958276785910129547119140625" />
+    <in:NValue id="LFactor2" value="3.6287617603115019715431799340876750648021697998046875" />
+  </in:SValue>
+  <in:SValue id="StopCriterion" value="Generations">
+    <in:NValue id="Amount" value="95" />
+  </in:SValue>
+</in:Design>
+

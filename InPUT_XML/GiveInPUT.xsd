@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://apachepersonal.miun.se/feldob/GiveInPUT" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:m="http://apachepersonal.miun.se/feldob/InPUT" xmlns:i="http://apachepersonal.miun.se/feldob/GiveInPUT">
+<xsd:import namespace="http://apachepersonal.miun.se/feldob/InPUT"
+schemaLocation="InPUT.xsd"/>
+
+	<!-- ******************************************************* -->
+	<!-- 						ROOT							 -->
+	<!-- ******************************************************* -->
+	
+<xsd:element name="GiveInPUT" type="i:structType"/>
+
+	<!-- ******************************************************* -->
+	<!-- 						END								 -->
+	<!-- ******************************************************* -->	
+
+
+
+	<!-- ******************************************************* -->
+	<!-- ALGORITHM STRUCTURED TYPE		structType				 -->
+	<!-- ******************************************************* -->
+	
+	   <xsd:complexType name="structType">
+    	<xsd:sequence maxOccurs="unbounded" minOccurs="0">
+ 	    <xsd:choice>
+    		<xsd:element name="StructValue" type="i:structType"/>
+    		<xsd:element name="NumericValue" type="i:numericType"/>
+    	</xsd:choice>
+    	</xsd:sequence>
+    	<xsd:attributeGroup ref="m:idAttributes"/>
+		<xsd:attribute name="type" type="xsd:string" use="required"/>	
+		<xsd:attribute name="design" type="xsd:boolean" default="false"/>
+    </xsd:complexType>
+
+	<!-- ******************************************************* -->
+	<!-- 						END								 -->
+	<!-- ******************************************************* -->	
+
+
+
+	<!-- ******************************************************* -->
+	<!-- ALGORITHM NUMERIC TYPE		algorithm					 -->
+	<!-- ******************************************************* -->
+  
+    <xsd:complexType name="numericType">
+			<xsd:attributeGroup ref="m:idAttributes"/>
+			<xsd:attribute name="value" type="xsd:anySimpleType" use="required"/>
+  </xsd:complexType>
+
+  	<!-- ******************************************************* -->
+	<!-- 						END								 -->
+	<!-- ******************************************************* -->	
+
+</xsd:schema>

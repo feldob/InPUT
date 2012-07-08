@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<in:GiveInPUT type="ga" xmlns:in="http://apachepersonal.miun.se/feldob/GiveInPUT" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://apachepersonal.miun.se/feldob/GiveInPUT GiveInPUT.xsd ">
+    <in:NumericValue id="popSize" value="10"/>
+    <in:NumericValue id="mutationRate" value="0.1"/>
+    <in:StructValue id="selection" type="se.miun.itm.feldob.ga.Tournament">
+    	<in:NumericValue id="size" value="20"/>
+    	<in:NumericValue id="winner" value="3"/>	  
+    	<in:StructValue id="c" type="a"/>
+  	</in:StructValue>
+  	<in:StructValue id="selection" type="se.miun.itm.feldob.ga.Tournament">
+    	<in:NumericValue id="size" value="10"/>
+    	<in:NumericValue id="winner" value="1"/>	  
+    	<in:StructValue id="c" type="a"/>
+  	</in:StructValue>
+  	<in:StructValue id="a" type="a"/>
+  	<in:StructValue id="b" type="a"/>
+</in:GiveInPUT>

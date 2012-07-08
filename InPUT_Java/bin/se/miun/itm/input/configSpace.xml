@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:DesignSpace id="config" mapping="configMapping.xml" xmlns:i="http://TheInPUT.org/DesignSpace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://TheInPUT.org/DesignSpace DesignSpace.xsd ">
+  <i:NParam id="threadSafe" type="boolean"/>
+  <i:NParam id="injection" type="boolean"/>
+  <i:NParam id="logging" type="boolean"/>
+  <i:SParam id="evaluator">
+    <i:SChoice id="jeval"/>
+    <i:SChoice id="javascript"/>
+  </i:SParam>
+  <i:SParam id="random">
+  	<i:SChoice id="standard"/>
+  	<i:SChoice id="mersenneTwister"/>
+  </i:SParam>
+  <i:NParam id="runtimeValidation" type="boolean"/>
+</i:DesignSpace>

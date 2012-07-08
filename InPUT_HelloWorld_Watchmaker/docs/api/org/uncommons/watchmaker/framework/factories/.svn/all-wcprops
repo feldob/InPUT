@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/feldob/!svn/ver/1453/workspaces/projects/InPUT/InPUT_Watchmaker_HelloWorld_Abstract/docs/api/org/uncommons/watchmaker/framework/factories
+END
+StringFactory.html
+K 25
+svn:wc:ra_dav:version-url
+V 161
+/svn/feldob/!svn/ver/1453/workspaces/projects/InPUT/InPUT_Watchmaker_HelloWorld_Abstract/docs/api/org/uncommons/watchmaker/framework/factories/StringFactory.html
+END
+AbstractCandidateFactory.html
+K 25
+svn:wc:ra_dav:version-url
+V 172
+/svn/feldob/!svn/ver/1453/workspaces/projects/InPUT/InPUT_Watchmaker_HelloWorld_Abstract/docs/api/org/uncommons/watchmaker/framework/factories/AbstractCandidateFactory.html
+END
+package-frame.html
+K 25
+svn:wc:ra_dav:version-url
+V 161
+/svn/feldob/!svn/ver/1453/workspaces/projects/InPUT/InPUT_Watchmaker_HelloWorld_Abstract/docs/api/org/uncommons/watchmaker/framework/factories/package-frame.html
+END
+package-tree.html
+K 25
+svn:wc:ra_dav:version-url
+V 160
+/svn/feldob/!svn/ver/1453/workspaces/projects/InPUT/InPUT_Watchmaker_HelloWorld_Abstract/docs/api/org/uncommons/watchmaker/framework/factories/package-tree.html
+END
+ListPermutationFactory.html
+K 25
+svn:wc:ra_dav:version-url
+V 170
+/svn/feldob/!svn/ver/1453/workspaces/projects/InPUT/InPUT_Watchmaker_HelloWorld_Abstract/docs/api/org/uncommons/watchmaker/framework/factories/ListPermutationFactory.html
+END
+package-summary.html
+K 25
+svn:wc:ra_dav:version-url
+V 163
+/svn/feldob/!svn/ver/1453/workspaces/projects/InPUT/InPUT_Watchmaker_HelloWorld_Abstract/docs/api/org/uncommons/watchmaker/framework/factories/package-summary.html
+END
+ObjectArrayPermutationFactory.html
+K 25
+svn:wc:ra_dav:version-url
+V 177
+/svn/feldob/!svn/ver/1453/workspaces/projects/InPUT/InPUT_Watchmaker_HelloWorld_Abstract/docs/api/org/uncommons/watchmaker/framework/factories/ObjectArrayPermutationFactory.html
+END
+BitStringFactory.html
+K 25
+svn:wc:ra_dav:version-url
+V 164
+/svn/feldob/!svn/ver/1453/workspaces/projects/InPUT/InPUT_Watchmaker_HelloWorld_Abstract/docs/api/org/uncommons/watchmaker/framework/factories/BitStringFactory.html
+END

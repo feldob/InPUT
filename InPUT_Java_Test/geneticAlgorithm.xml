@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<in:DesignSpace id="ga" mapping="geneticAlgorithmMapping.xml" xmlns:in="http://TheInPUT.org/DesignSpace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://TheInPUT.org/DesignSpace DesignSpace.xsd">
+	<in:SChoiceType id="SomeNoneSenseType">
+ 					<in:NParam type="integer" id="Points" inclMin="1" />
+	</in:SChoiceType>
+	<in:NParam id="popSize" type="decimal" inclMin="-12.23434" inclMax="-12.23433"/>
+	<in:NParam id="featureX" type="boolean" fixed ="false"/>
+	<in:NParam id="mutationRate" type="double[2][2]" exclMin="0.0001" inclMax="0.4"/>
+	<in:SParam id="representation">
+		<in:NParam type="double" id="color"/>
+		<in:SChoice id="bit"/>
+		<in:SChoice id="real"/>
+  	</in:SParam>
+	<in:SParam id="mutation" type="[2]">
+  		<in:NParam id="wrapped" type="double"/>
+  		<in:NParam id="length" type="decimal" inclMin="popSize-20" inclMax="popSize+20"/>
+  		<in:NParam id="positions" type="integer" inclMin="1" inclMax="10"/>
+  		<in:SChoice id="flip"/>
+  		<in:SChoice id="slide"/>
+	</in:SParam>
+  	<in:SParam id="selection">
+  		<in:SChoice id="tournament">
+  			<in:NParam id="size" type="integer" inclMin="5" inclMax="20"/>
+  			<in:NParam id="winner" type="integer" exclMin="0" inclMax="selection.tournament.size-1"/>
+  			<in:SParam id="someDecision">
+  				<in:SChoice id="value1"/>
+  				<in:SChoice id="value2"/>
+  			</in:SParam>
+  		</in:SChoice>
+  		<in:SChoice id="rank"/>
+  		<in:SChoice id="roulette"/>
+	</in:SParam>
+	<in:SParam id="localSearch">
+		<in:SParam id="helper">
+			<in:SChoice id="simpleHelper"/>
+			<in:SChoice id="advancedHelper"/>
+		</in:SParam>
+  		<in:SChoice id="2-opt"/>
+  		<in:SChoice id="3-opt"/>
+  	</in:SParam>
+  	<in:NParam id="dependee" type="decimal" inclMin ="mutation.length-1" inclMax="mutation.length+1"/>
+  	<in:SParam id="theChoice">
+  		<in:SChoice id="first"/>
+  		<in:SChoice id="second"/>
+  		<in:SChoice id="third"/>
+  	</in:SParam>
+	<in:SParam id="network">
+		<in:NParam type="integer" id="something"/>
+		<in:SParam id="instance"/>
+	</in:SParam>
+</in:DesignSpace>

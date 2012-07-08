@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://TheInPUT.org/Design" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:m="http://TheInPUT.org/DesignSpace" xmlns:i="http://TheInPUT.org/Design">
+<xsd:import namespace="http://TheInPUT.org/DesignSpace"
+schemaLocation="DesignSpace.xsd"/>
+
+	<!-- ******************************************************* -->
+	<!-- 						ROOT							 -->
+	<!-- ******************************************************* -->
+	
+<xsd:element name="Design" type="i:designType"/>
+
+	<!-- ******************************************************* -->
+	<!-- 						END								 -->
+	<!-- ******************************************************* -->	
+
+
+
+	<!-- ******************************************************* -->
+	<!-- DESIGN TYPE		designType							 -->
+	<!-- ******************************************************* -->
+	
+	<xsd:complexType name="designType">
+ 	    	<xsd:sequence maxOccurs="unbounded" minOccurs="0">
+ 	    		<xsd:choice>
+    				<xsd:element name="SValue" type="i:structType"/>
+    				<xsd:element name="NValue" type="i:numericType"/>
+    			</xsd:choice>
+    		</xsd:sequence>
+    	<xsd:attributeGroup ref="m:idAttributes"/>
+    	<xsd:attribute name="value" type="xsd:string"/>	
+    	<xsd:attribute name="ref" type="xsd:string"/>
+    </xsd:complexType>
+
+	<!-- ******************************************************* -->
+	<!-- 						END								 -->
+	<!-- ******************************************************* -->
+
+	
+	
+	<!-- ******************************************************* -->
+	<!-- ALGORITHM STRUCTURED TYPE		structType				 -->
+	<!-- ******************************************************* -->
+	
+	<xsd:complexType name="structType">
+    	<xsd:sequence maxOccurs="unbounded" minOccurs="0">
+ 	    <xsd:choice>
+    		<xsd:element name="SValue" type="i:structType"/>
+    		<xsd:element name="NValue" type="i:numericType"/>
+    	</xsd:choice>
+    	</xsd:sequence>
+    	<xsd:attributeGroup ref="m:idAttributes"/>
+		<xsd:attribute name="value" type="xsd:string" use="optional"/>
+    </xsd:complexType>
+
+	<!-- ******************************************************* -->
+	<!-- 						END								 -->
+	<!-- ******************************************************* -->	
+
+
+
+	<!-- ******************************************************* -->
+	<!-- ALGORITHM NUMERIC TYPE		algorithm					 -->
+	<!-- ******************************************************* -->
+  
+    <xsd:complexType name="numericType">
+    	<xsd:sequence maxOccurs="unbounded" minOccurs="0">
+    		<xsd:choice>
+    			<xsd:element name="NValue" type="i:numericType"/>
+   			</xsd:choice>
+    	</xsd:sequence>
+		<xsd:attributeGroup ref="m:idAttributes"/>
+		<xsd:attribute name="value" type="xsd:string"/>
+  </xsd:complexType>
+
+  	<!-- ******************************************************* -->
+	<!-- 						END								 -->
+	<!-- ******************************************************* -->	
+
+</xsd:schema>

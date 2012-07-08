@@ -1,0 +1,77 @@
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/feldob/!svn/ver/1504/workspaces/projects/InPUT/InPUT_Java/src/se/miun/itm/input/aspects
+END
+Fixable.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/feldob/!svn/ver/1504/workspaces/projects/InPUT/InPUT_Java/src/se/miun/itm/input/aspects/Fixable.java
+END
+Importable.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/feldob/!svn/ver/1504/workspaces/projects/InPUT/InPUT_Java/src/se/miun/itm/input/aspects/Importable.java
+END
+Exportable.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/feldob/!svn/ver/1504/workspaces/projects/InPUT/InPUT_Java/src/se/miun/itm/input/aspects/Exportable.java
+END
+Valuable.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/feldob/!svn/ver/1504/workspaces/projects/InPUT/InPUT_Java/src/se/miun/itm/input/aspects/Valuable.java
+END
+ParamSupportable.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/feldob/!svn/ver/1504/workspaces/projects/InPUT/InPUT_Java/src/se/miun/itm/input/aspects/ParamSupportable.java
+END
+Settable.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/feldob/!svn/ver/1504/workspaces/projects/InPUT/InPUT_Java/src/se/miun/itm/input/aspects/Settable.java
+END
+InPUTExportable.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/feldob/!svn/ver/1504/workspaces/projects/InPUT/InPUT_Java/src/se/miun/itm/input/aspects/InPUTExportable.java
+END
+Gettable.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/feldob/!svn/ver/1504/workspaces/projects/InPUT/InPUT_Java/src/se/miun/itm/input/aspects/Gettable.java
+END
+Outable.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/feldob/!svn/ver/1504/workspaces/projects/InPUT/InPUT_Java/src/se/miun/itm/input/aspects/Outable.java
+END
+Identifiable.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/feldob/!svn/ver/1504/workspaces/projects/InPUT/InPUT_Java/src/se/miun/itm/input/aspects/Identifiable.java
+END
+Dependable.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/feldob/!svn/ver/1504/workspaces/projects/InPUT/InPUT_Java/src/se/miun/itm/input/aspects/Dependable.java
+END
+FileNameAssigner.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/feldob/!svn/ver/1504/workspaces/projects/InPUT/InPUT_Java/src/se/miun/itm/input/aspects/FileNameAssigner.java
+END

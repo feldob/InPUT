@@ -1,0 +1,137 @@
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/feldob/!svn/ver/1453/workspaces/projects/InPUT/InPUT_Watchmaker_HelloWorld_Abstract/docs/api/org/uncommons/watchmaker/framework/operators
+END
+ListOrderMutation.html
+K 25
+svn:wc:ra_dav:version-url
+V 165
+/svn/feldob/!svn/ver/1453/workspaces/projects/InPUT/InPUT_Watchmaker_HelloWorld_Abstract/docs/api/org/uncommons/watchmaker/framework/operators/ListOrderMutation.html
+END
+ListCrossover.html
+K 25
+svn:wc:ra_dav:version-url
+V 161
+/svn/feldob/!svn/ver/1453/workspaces/projects/InPUT/InPUT_Watchmaker_HelloWorld_Abstract/docs/api/org/uncommons/watchmaker/framework/operators/ListCrossover.html
+END
+BitStringCrossover.html
+K 25
+svn:wc:ra_dav:version-url
+V 166
+/svn/feldob/!svn/ver/1453/workspaces/projects/InPUT/InPUT_Watchmaker_HelloWorld_Abstract/docs/api/org/uncommons/watchmaker/framework/operators/BitStringCrossover.html
+END
+ListInversion.html
+K 25
+svn:wc:ra_dav:version-url
+V 161
+/svn/feldob/!svn/ver/1453/workspaces/projects/InPUT/InPUT_Watchmaker_HelloWorld_Abstract/docs/api/org/uncommons/watchmaker/framework/operators/ListInversion.html
+END
+Replacement.html
+K 25
+svn:wc:ra_dav:version-url
+V 159
+/svn/feldob/!svn/ver/1453/workspaces/projects/InPUT/InPUT_Watchmaker_HelloWorld_Abstract/docs/api/org/uncommons/watchmaker/framework/operators/Replacement.html
+END
+AbstractCrossover.html
+K 25
+svn:wc:ra_dav:version-url
+V 165
+/svn/feldob/!svn/ver/1453/workspaces/projects/InPUT/InPUT_Watchmaker_HelloWorld_Abstract/docs/api/org/uncommons/watchmaker/framework/operators/AbstractCrossover.html
+END
+CharArrayCrossover.html
+K 25
+svn:wc:ra_dav:version-url
+V 166
+/svn/feldob/!svn/ver/1453/workspaces/projects/InPUT/InPUT_Watchmaker_HelloWorld_Abstract/docs/api/org/uncommons/watchmaker/framework/operators/CharArrayCrossover.html
+END
+DoubleArrayCrossover.html
+K 25
+svn:wc:ra_dav:version-url
+V 168
+/svn/feldob/!svn/ver/1453/workspaces/projects/InPUT/InPUT_Watchmaker_HelloWorld_Abstract/docs/api/org/uncommons/watchmaker/framework/operators/DoubleArrayCrossover.html
+END
+IntArrayCrossover.html
+K 25
+svn:wc:ra_dav:version-url
+V 165
+/svn/feldob/!svn/ver/1453/workspaces/projects/InPUT/InPUT_Watchmaker_HelloWorld_Abstract/docs/api/org/uncommons/watchmaker/framework/operators/IntArrayCrossover.html
+END
+BitStringMutation.html
+K 25
+svn:wc:ra_dav:version-url
+V 165
+/svn/feldob/!svn/ver/1453/workspaces/projects/InPUT/InPUT_Watchmaker_HelloWorld_Abstract/docs/api/org/uncommons/watchmaker/framework/operators/BitStringMutation.html
+END
+package-frame.html
+K 25
+svn:wc:ra_dav:version-url
+V 161
+/svn/feldob/!svn/ver/1453/workspaces/projects/InPUT/InPUT_Watchmaker_HelloWorld_Abstract/docs/api/org/uncommons/watchmaker/framework/operators/package-frame.html
+END
+package-tree.html
+K 25
+svn:wc:ra_dav:version-url
+V 160
+/svn/feldob/!svn/ver/1453/workspaces/projects/InPUT/InPUT_Watchmaker_HelloWorld_Abstract/docs/api/org/uncommons/watchmaker/framework/operators/package-tree.html
+END
+ListOrderCrossover.html
+K 25
+svn:wc:ra_dav:version-url
+V 166
+/svn/feldob/!svn/ver/1453/workspaces/projects/InPUT/InPUT_Watchmaker_HelloWorld_Abstract/docs/api/org/uncommons/watchmaker/framework/operators/ListOrderCrossover.html
+END
+StringCrossover.html
+K 25
+svn:wc:ra_dav:version-url
+V 163
+/svn/feldob/!svn/ver/1453/workspaces/projects/InPUT/InPUT_Watchmaker_HelloWorld_Abstract/docs/api/org/uncommons/watchmaker/framework/operators/StringCrossover.html
+END
+ByteArrayCrossover.html
+K 25
+svn:wc:ra_dav:version-url
+V 166
+/svn/feldob/!svn/ver/1453/workspaces/projects/InPUT/InPUT_Watchmaker_HelloWorld_Abstract/docs/api/org/uncommons/watchmaker/framework/operators/ByteArrayCrossover.html
+END
+ListOperator.html
+K 25
+svn:wc:ra_dav:version-url
+V 160
+/svn/feldob/!svn/ver/1453/workspaces/projects/InPUT/InPUT_Watchmaker_HelloWorld_Abstract/docs/api/org/uncommons/watchmaker/framework/operators/ListOperator.html
+END
+IdentityOperator.html
+K 25
+svn:wc:ra_dav:version-url
+V 164
+/svn/feldob/!svn/ver/1453/workspaces/projects/InPUT/InPUT_Watchmaker_HelloWorld_Abstract/docs/api/org/uncommons/watchmaker/framework/operators/IdentityOperator.html
+END
+SplitEvolution.html
+K 25
+svn:wc:ra_dav:version-url
+V 162
+/svn/feldob/!svn/ver/1453/workspaces/projects/InPUT/InPUT_Watchmaker_HelloWorld_Abstract/docs/api/org/uncommons/watchmaker/framework/operators/SplitEvolution.html
+END
+package-summary.html
+K 25
+svn:wc:ra_dav:version-url
+V 163
+/svn/feldob/!svn/ver/1453/workspaces/projects/InPUT/InPUT_Watchmaker_HelloWorld_Abstract/docs/api/org/uncommons/watchmaker/framework/operators/package-summary.html
+END
+EvolutionPipeline.html
+K 25
+svn:wc:ra_dav:version-url
+V 165
+/svn/feldob/!svn/ver/1453/workspaces/projects/InPUT/InPUT_Watchmaker_HelloWorld_Abstract/docs/api/org/uncommons/watchmaker/framework/operators/EvolutionPipeline.html
+END
+StringMutation.html
+K 25
+svn:wc:ra_dav:version-url
+V 162
+/svn/feldob/!svn/ver/1453/workspaces/projects/InPUT/InPUT_Watchmaker_HelloWorld_Abstract/docs/api/org/uncommons/watchmaker/framework/operators/StringMutation.html
+END
+ObjectArrayCrossover.html
+K 25
+svn:wc:ra_dav:version-url
+V 168
+/svn/feldob/!svn/ver/1453/workspaces/projects/InPUT/InPUT_Watchmaker_HelloWorld_Abstract/docs/api/org/uncommons/watchmaker/framework/operators/ObjectArrayCrossover.html
+END

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<InPUT id="ga" seed="42121212121212121221" type="ga" xmlns="http://apachepersonal.miun.se/feldob/InPUT" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://apachepersonal.miun.se/feldob/InPUT InPUT.xsd">
+	<NumericParam id="popSize" type="integer" inclMin="2" inclMax="100"/>
+	<NumericParam id="mutationRate" type="double" inclMin="0.0001" inclMax="0.4"/>
+	<StructParam id="representation" type="se.miun.itm.feldob.ga.Representation">
+		<StructChoice id="bit" type="se.miun.itm.feldob.ga.BitPresentation"/>
+		<StructChoice id="real" type="se.miun.itm.feldob.ga.RealRepresentation"/>
+  	</StructParam>
+  	<StructParam id="selection" type="se.miun.itm.feldob.ga.Selection">
+  		<StructChoice id="tournament" type="se.miun.itm.feldob.ga.Tournament">
+  			<NumericParam id="size" type="integer" inclMin="3" inclMax="20"/>
+  			<NumericParam id="winner" type="integer" inclMin="5" inclMax="3"/>
+  			<StructParam id="someDecision" type="se.miun.itm.feldob.ga.Dec">
+  				<StructChoice id="value1" type="se.miun.itm.feldob.ga.DecisionValue1"/>
+  				<StructChoice id="value2" type="se.miun.itm.feldob.ga.DecisionValue2"/>
+  			</StructParam>
+  		</StructChoice>
+  		<StructChoice id="rank" type="se.miun.itm.feldob.ga.Rank"/>
+  		<StructChoice id="roulette" type="se.miun.itm.feldob.ga.Roulette"/>
+	</StructParam>
+	<StructParam id="mutation" type="se.miun.itm.feldob.ga.Mutation">
+  		<NumericParam id="length" type="integer" inclMin="1" inclMax="20"/>
+  		<NumericParam id="positions" type="integer" inclMin="1" inclMax="10"/>
+  		<StructChoice id="flip" type="se.miun.itm.feldob.ga.FlipMutation">
+  			<NumericParam id="length" type="integer" inclMin="1" inclMax="20"/>
+  			<!-- <DesignSpace>
+  				<sequence minOccurs="1" maxOccurs="10">
+  					<xsd:element name="StructChoice" ref="mutation"/>
+  					<xsd:element name="StructChoice" ref="selection"/>
+  					<xsd:element name="StructChoice" ref="localSearch"/>
+  				</sequence>
+  				<sequence minOccurs="1" maxOccurs="10">
+  					<xsd:choice>
+  						<xsd:element name="StructChoice" ref="selection"/>
+  						<xsd:element name="StructChoice" ref="localSearch"/>
+	  				</xsd:choice>
+  				</sequence>
+  			</DesignSpace> -->
+  		</StructChoice>
+  		<StructChoice id="slide" type="se.miun.itm.feldob.ga.SlideMutation"/>
+		<StructChoice id="roulette" type="se.miun.itm.feldob.ga.Roulette"/>
+	</StructParam>
+	<StructParam id="localSearch" type="se.miun.itm.feldob.ga.LocalSearch">
+  		<StructChoice id="2-opt" type="se.miun.itm.feldob.ga.2-OPT"/>
+  		<StructChoice id="3-opt" type="se.miun.itm.feldob.ga.3-OPT"/>
+  	</StructParam>
+  	<!-- <DesignSpace>
+  	<sequence minOccurs="1" maxOccurs="10">
+  		<xsd:element name="StructChoice" ref="mutation"/>
+  		<xsd:element name="StructChoice" ref="selection"/>
+  		<xsd:element name="StructChoice" ref="localSearch"/>
+  	</sequence>
+  	<sequence minOccurs="1" maxOccurs="10">
+  			<xsd:choice>
+  				<xsd:element name="StructChoice" ref="selection"/>
+  				<xsd:element name="StructChoice" ref="localSearch"/>
+	  		</xsd:choice>
+  	</sequence> 
+  </DesignSpace> -->
+</InPUT>
