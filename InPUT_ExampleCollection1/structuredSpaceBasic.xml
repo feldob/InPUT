@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:DesignSpace id="structured" mapping="structuredMapping.xml" xmlns:i="http://TheInPUT.org/DesignSpace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://TheInPUT.org/DesignSpace DesignSpace.xsd ">
+  <i:SParam id="Decision">
+    <i:SChoice id="FirstChoice"/>
+   <i:SChoice id="SecondChoice"/>
+   <i:SChoice id="ThirdChoice"/>
+    <i:SChoice id="FourthChoice"/>
+  </i:SParam>
+    <i:SParam id="AnotherDecision">
+    <i:SChoice id="Raw"/>
+   <i:SChoice id="Medium"/>
+   <i:SChoice id="WellDone"/>
+  </i:SParam>
+</i:DesignSpace>

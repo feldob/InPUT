@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://TheInPUT.org/DesignSpace"
+	elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:i="http://TheInPUT.org/DesignSpace">
+	<!-- ******************************************************* -->
+	<!-- ROOT -->
+	<!-- ******************************************************* -->
+
+	<xsd:element name="DesignSpace" type="i:designSpaceType" />
+
+
+	<!-- ******************************************************* -->
+	<!-- END -->
+	<!-- ******************************************************* -->
+
+
+
+	<!-- ******************************************************* -->
+	<!-- DESIGN SPACE TYPE designSpaceType -->
+	<!-- ******************************************************* -->
+	<xsd:complexType name="designSpaceType">
+		<xsd:sequence>
+			<xsd:sequence maxOccurs="unbounded" minOccurs="0">
+				<xsd:element name="SChoiceType" type="i:structChoiceType" />
+			</xsd:sequence>
+			<xsd:sequence maxOccurs="unbounded" minOccurs="0">
+				<xsd:choice>
+					<xsd:element name="SParam" type="i:complexParamType" />
+					<xsd:element name="NParam" type="i:numericType" />
+				</xsd:choice>
+			</xsd:sequence>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="i:idAttributes" />
+		<xsd:attribute name="mapping" type="xsd:string" />
+	</xsd:complexType>
+
+	<!-- ******************************************************* -->
+	<!-- END -->
+	<!-- ******************************************************* -->
+
+
+	<!-- ******************************************************* -->
+	<!-- STRUCTURED PARAM TYPE structParamType -->
+	<!-- ******************************************************* -->
+	<xsd:complexType name="complexParamType">
+		<xsd:sequence maxOccurs="1" minOccurs="1">
+			<xsd:sequence maxOccurs="unbounded" minOccurs="0">
+				<xsd:choice>
+					<xsd:element name="SChoice" type="i:structChoiceType" />
+					<xsd:element name="SParam" type="i:complexParamType" />
+					<xsd:element name="NParam" type="i:numericType" />
+				</xsd:choice>
+			</xsd:sequence>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="i:idAttributes" />
+		<xsd:attribute name="type" type="xsd:string" />
+		<xsd:attribute name="fixed" type="xsd:string" />
+	</xsd:complexType>
+
+	<!-- ******************************************************* -->
+	<!-- END -->
+	<!-- ******************************************************* -->
+
+
+
+	<!-- ******************************************************* -->
+	<!-- STRUCTURED CHOICE TYPE structChoiceType -->
+	<!-- ******************************************************* -->
+	<xsd:complexType name="structChoiceType">
+		<xsd:sequence>
+			<xsd:sequence maxOccurs="unbounded" minOccurs="0">
+				<xsd:choice>
+					<xsd:element name="SParam" type="i:complexParamType" />
+					<xsd:element name="NParam" type="i:numericType" />
+				</xsd:choice>
+			</xsd:sequence>
+		</xsd:sequence>
+		<xsd:attribute name="type" type="xsd:string" />
+		<xsd:attributeGroup ref="i:idAttributes" />
+	</xsd:complexType>
+
+	<!-- ******************************************************* -->
+	<!-- END -->
+	<!-- ******************************************************* -->
+
+
+
+	<!-- ******************************************************* -->
+	<!-- NUMERIC STRUCTURED TYPE numericType -->
+	<!-- ******************************************************* -->
+
+	<xsd:complexType name="numericType">
+		<xsd:attribute name="inclMin" type="xsd:anySimpleType" />
+		<xsd:attribute name="exclMin" type="xsd:anySimpleType" />
+		<xsd:attribute name="inclMax" type="xsd:anySimpleType" />
+		<xsd:attribute name="exclMax" type="xsd:anySimpleType" />
+		<xsd:attribute name="fixed" type="xsd:string" />
+		<xsd:attributeGroup ref="i:idAttributes" />
+		<xsd:attribute name="type" type="xsd:anySimpleType" use="required" />
+	</xsd:complexType>
+
+	<!-- ******************************************************* -->
+	<!-- END -->
+	<!-- ******************************************************* -->
+
+
+
+	<!-- ******************************************************* -->
+	<!-- IDENTIFIER ATTRIBUTE GROUP idAttributes -->
+	<!-- ******************************************************* -->
+
+	<xsd:attributeGroup name="idAttributes">
+		<xsd:attribute name="id" type="xsd:string" use="required" />
+		<xsd:attribute name="name" type="xsd:string" />
+	</xsd:attributeGroup>
+
+	<!-- ******************************************************* -->
+	<!-- END -->
+	<!-- ******************************************************* -->
+
+</xsd:schema>

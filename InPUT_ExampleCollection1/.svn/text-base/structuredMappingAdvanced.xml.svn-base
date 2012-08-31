@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:CodeMappings id="structuredAdv" xmlns:i="http://TheInPUT.org/CodeMappings" xmlns:i1="http://TheInPUT.org/DesignSpace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://TheInPUT.org/CodeMappings CodeMappings.xsd ">
+<i:Mapping id="AnotherDecision" type="se.miun.itm.input.example.structured.model.AnotherDecision"/>
+<i:Mapping id="AnotherDecision.Raw" type="se.miun.itm.input.example.structured.model.Raw"/>
+<i:Mapping id="AnotherDecision.Medium" type="se.miun.itm.input.example.structured.model.Medium"/>
+<i:Mapping id="AnotherDecision.WellDone" type="se.miun.itm.input.example.structured.model.WellDone"/>
+
+<i:Mapping id="AnotherDecision.Medium.Rather" type="se.miun.itm.input.example.structured.model.AnotherDecision"/>
+<i:Mapping id="AnotherDecision.Medium.Rather.Raw" type="se.miun.itm.input.example.structured.model.Raw"/>
+<i:Mapping id="AnotherDecision.Medium.Rather.WellDone" type="se.miun.itm.input.example.structured.model.WellDone"/>
+
+</i:CodeMappings>
