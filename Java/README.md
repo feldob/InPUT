@@ -5,8 +5,8 @@ Make sure to have Java JDK 1.6 (or higher) installed.
 
 ## Download bytecode
 
-If you want to use InPUT4j in your project, download the latest InPUT4j*.jar from the "bin" folder, and add all jars from the "lib" folder to the classpath of your project.
-The respective source jar can also bin found in the "bin" folder. InPUT4j-examples*.jar is a collection of examples. You can run the examples by placing the examples jar alongside InPUT4j*.jar in a folder and run
+If you want to use InPUT4j in your project, download the latest @InPUT4j*.jar@ from the @bin@ folder, and add all jars from the "lib" folder to the classpath of your project.
+The respective source jar can also bin found in the "bin" folder. @InPUT4j-examples*.jar@ is a collection of examples. You can run the examples by placing the examples jar alongside InPUT4j*.jar in a folder and run
 
 java -jar InPUT4j-examples*.jar EXAMPLE_CLASS
 
