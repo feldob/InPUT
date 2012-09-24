@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<in:Design xmlns:in="http://TheInPUT.org/Design" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://TheInPUT.org/Design Design.xsd" id="someId">
-  <in:SValue id="AnotherDecision" value="Raw">
-    <in:NValue id="Temperature" value="33.95285897985681977662153485653107054531574249267578125" />
-    <in:NValue id="ProportionBurned" value="0.4142084794858497" />
-    <in:NValue id="HealthRisk" value="true" />
-  </in:SValue>
-</in:Design>

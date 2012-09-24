@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<in:DesignSpace id="app" xmlns:in="http://TheInPUT.org/DesignSpace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://TheInPUT.org/DesignSpace DesignSpace.xsd">
-	<in:NParam id="a" type="double"/>
-	<in:NParam id="b" type="double" inclMin=".2" inclMax=".8"/>
-</in:DesignSpace>

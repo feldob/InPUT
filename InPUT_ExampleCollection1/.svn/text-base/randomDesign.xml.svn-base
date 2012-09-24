@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<in:Design xmlns:in="http://TheInPUT.org/Design" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://TheInPUT.org/Design Design.xsd" id="someId">
-  <in:NValue id="c" value="1.0" />
-  <in:NValue id="a" value="0.5546806146775081" />
-  <in:NValue id="b" value="0.5353429217878964" />
-</in:Design>
-

@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<i:CodeMappings id="config" xmlns:i="http://TheInPUT.org/CodeMappings" xmlns:i1="http://TheInPUT.org/DesignSpace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://TheInPUT.org/CodeMappings CodeMappings.xsd">
-<i:Mapping id="evaluator" type="se.miun.itm.input.eval.InputEvaluator"/>
-<i:Mapping id="evaluator.jeval" type="se.miun.itm.input.eval.JEvalEvaluator"/>
-<i:Mapping id="evaluator.javascript" type="se.miun.itm.input.eval.JavascriptEvaluator"/>
-<i:Mapping id="random" type="java.util.Random"/>
-<i:Mapping id="random.standard" type="java.util.Random"/>
-<i:Mapping id="random.mersenneTwister" type="org.uncommons.maths.random.MersenneTwisterRNG"/>
-</i:CodeMappings>

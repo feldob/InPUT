@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<i:DesignSpace id="externalizedParameterExample" xmlns:i="http://TheInPUT.org/DesignSpace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://TheInPUT.org/DesignSpace DesignSpace.xsd ">
-<i:NParam id="a" type="double"/>
-<i:NParam id="b" type="double" inclMax="a"/>
-<i:NParam id="c" type="double" fixed="1"/>
-</i:DesignSpace>

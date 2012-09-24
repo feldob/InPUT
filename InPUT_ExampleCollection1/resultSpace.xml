@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<i:DesignSpace id="" xmlns:i="http://TheInPUT.org/DesignSpace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://TheInPUT.org/DesignSpace DesignSpace.xsd ">
-<i:NParam id="y" type="decimal[][]"/>
-</i:DesignSpace>
