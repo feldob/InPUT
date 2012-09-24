@@ -1,7 +1,7 @@
 # What is InPUT?
 
 InPUT offers a descriptive and programming language independent interface for the configuration and design of computer experiments. It allows for the definition of well defined, complex, input and output parameter ranges.
-The code mapping concept allows you to repeat experiments from third parties by importing descriptors into your algorithm implementation of choice. InPUT increases reproducibility and simplifies documentation, as well as the collaboration between researchers, because computer experiments can be exchanged between different parties, letting them run their own implementation of an algorithm, while (re-)using the same descriptors. Descriptors are written in XML. We offer adapters for different programming languages to further simplify the software development aspects of experimental and algorithm design all together.
+The code mapping concept allows you to repeat experiments from third parties by importing descriptors into your algorithm implementation of choice. InPUT increases reproducibility and simplifies documentation, as well as the collaboration between researchers, because computer experiments can be exchanged between different parties, letting them run their own implementation of an algorithm, while \(re-\)using the same descriptors. Descriptors are written in XML. We offer adapters for different programming languages to further simplify the software development aspects of experimental and algorithm design all together.
 
 # How to use InPUT?
 
@@ -11,9 +11,9 @@ Each programming language offers a language specific Readme in the respective fo
 
 When working offline, you have to change the schemaLocation in your XML files to a local version of the respective XSD schema (DesignSpace, Design, or CodeMapping). The files can be downloaded here:
 
-* "design":TheInPUT.org/Design.xsd
-* "designSpace":TheInPUT.org/DesignSpace.xsd
-* "codeMapping":TheInPUT.org/CodeMapping.xsd
+* [design](TheInPUT.org/Design.xsd)
+* [designSpace](TheInPUT.org/DesignSpace.xsd)
+* [codeMapping](TheInPUT.org/CodeMapping.xsd)
 
 e.g change the <notextile>xsi:schemaLocation="http://TheInPUT.org/Design http://TheInPUT.org/Design.xsd" in your root node to xsi:schemaLocation="http://TheInPUT.org/Design PATH/Design.xsd"</notextile>, if the Design.xsd resides on path PATH of your local network.
 
