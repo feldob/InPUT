@@ -7,6 +7,16 @@ The code mapping concept allows you to repeat experiments from third parties by 
 
 Each programming language offers a language specific Readme in the respective folder. Currently, only Java is supported. C++ is coming soon.
 
+# Good to know...
+
+When working offline, you have to change the schemaLocation in your XML files to a local version of the respective XSD schema (DesignSpace, Design, or CodeMapping). The files can be downloaded here:
+
+[design|TheInPUT.org/Design.xsd]
+[designSpace|TheInPUT.org/DesignSpace.xsd]
+[codeMapping|TheInPUT.org/CodeMapping.xsd]
+
+e.g change the <notextile>xsi:schemaLocation="http://TheInPUT.org/Design http://TheInPUT.org/Design.xsd" in your root node to xsi:schemaLocation="http://TheInPUT.org/Design PATH/Design.xsd"</notextile>, if the Design.xsd resides on path PATH on your local network.
+
 #License
 
 Copyright (C) 2012 Felix Dobslaw
