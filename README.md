@@ -15,7 +15,7 @@ When working offline, you have to change the schemaLocation in your XML files to
 * [designSpace](TheInPUT.org/DesignSpace.xsd)
 * [codeMapping](TheInPUT.org/CodeMapping.xsd)
 
-e.g change <code>xsi:schemaLocation="http://TheInPUT.org/Design http://TheInPUT.org/Design.xsd</code> in your root node to <code>xsi:schemaLocation="http://TheInPUT.org/Design PATH/Design.xsd"</code>, if the Design.xsd resides on path PATH of your local network.
+For instance, change <code>xsi:schemaLocation="http://TheInPUT.org/Design http://TheInPUT.org/Design.xsd</code> in the root node to <code>xsi:schemaLocation="http://TheInPUT.org/Design PATH/Design.xsd"</code>, if the Design.xsd resides on path PATH of your local network.
 
 #License
 
