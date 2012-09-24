@@ -8,7 +8,7 @@ Make sure to have Java JDK 1.6 (or higher) installed.
 If you want to use InPUT4j in your project, download the latest InPUT4j\*.jar from the bin folder, and add all jars from the lib folder to the classpath of your project.
 The respective source jar can also bin found in the bin folder. InPUT4j\*-examples.jar is a collection of examples. You can run the examples by placing the examples jar alongside InPUT4j\*.jar in a folder and run
 
-java -jar InPUT4j\*-examples.jar EXAMPLE_CLASS
+@java -jar InPUT4j\*-examples.jar EXAMPLE_CLASS@
 
 in the command line. Look into the manifest of InPUT4j\*-examples.jar to get an overview of the executable classes.
 
