@@ -1,7 +1,11 @@
-See the wiki for documentation.
+# What is InPUT?
 
+InPUT offers a descriptive and programming language independent interface for the configuration and design of computer experiments. It allows for the definition of well defined, complex, input and output parameter ranges.
+The code mapping concept allows you to repeat experiments from third parties by importing descriptors into your algorithm implementation of choice. InPUT increases reproducibility and simplifies documentation, as well as the collaboration between researchers, because computer experiments can be exchanged between different parties, letting them run their own implementation of an algorithm, while (re-)using the same descriptors. Descriptors are written in XML. We offer adapters for different programming languages to further simplify the software development aspects of experimental and algorithm design all together.
 
+# How to use InPUT?
 
+Each programming language offers a language specific Readme in the respective folder. Currently, only Java is supported. C++ is coming soon.
 
 #License
 
