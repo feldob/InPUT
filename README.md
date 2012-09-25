@@ -12,22 +12,28 @@ Property a = new Property(var);
 Option b = new Option(b,20);
 Algorithm c = new Algorithm(c,b);
 c.run();
+... // record some statistics
 </pre>
 
-with InPUT you do
-<code>
+with InPUT you write
+
+<pre>
 DesignSpace space = new DesignSpace("space.xml"); // import the configuration scope
 Design design = space.import("1","design1.xml"); // validate and import a respective configuration
 Algorithm c = design.getValue("Algorithm"); // retrieve the fully initialized object
-c.run();
-</code>
+c.run(); // run the algorithm
+... // record some statistics
+</pre>
+
 with the advantage being that all configuration is externalized, and can entirely be handled descriptively without code changes. You can even write back small changes to the design, run the experiment again, and export the design by
-<code>
-design.setValue("Algorithm.Option.Property.Var", 6);
-c = design.getValue("Algorithm");
-c.run();
-design.export(new XMLFileExporter("design2.xml"));
-</code>
+
+<pre>
+design.setValue("Algorithm.Option.Property.Var", 6); // change parameter by reflection
+c.run(); // run with new setup
+... // record some statistics
+design.export(new XMLFileExporter("design2.xml")); // export the new configuration
+</pre>
+
 # How to use InPUT?
 
 Each programming language offers a language specific Readme in the respective folder. Currently, only Java is supported. C++ is coming soon.
