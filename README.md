@@ -25,14 +25,16 @@ c.run(); // run the algorithm
 ... // record some statistics
 </pre>
 
-with the advantage being that all configuration is externalized, and can entirely be handled descriptively without code changes. You can even write back small changes to the design, run the experiment again, and export the design by
+with the advantage being that all configuration is externalized, and can entirely be handled descriptively without code changes. You can write back small changes to the design, run the experiment again, and document the configuration by exporting
 
 <pre>
-design.setValue("Algorithm.Option.Property.Var", 6); // change parameter by reflection
+design.setValue("Algorithm.Option.Property.Var", 6); // deep parameter change using reflection and inversion of control
 c.run(); // run with new setup
 ... // record some statistics
 design.export(new XMLFileExporter("design2.xml")); // export the new configuration
 </pre>
+
+You can also treat output, and entire experimental investigations. This was just a very basic example. There are plenty of code examples for Java available (see *Java* folder).
 
 # How to use InPUT?
 
