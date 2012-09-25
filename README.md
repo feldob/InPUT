@@ -8,10 +8,11 @@ Instead of
 
 <pre>
 int var = 5;
-Property a = new Property(var);
-Option b = new Option(b,20);
-Algorithm c = new Algorithm(c,b);
-c.run();
+Property foo = new FooProperty(var);
+Option bar = new BarOption(foo,20);
+double d = .33;
+Algorithm a = new SomeAlgorithm(d,bar);
+a.run();
 ... // record some statistics
 </pre>
 
@@ -20,21 +21,36 @@ with InPUT you write
 <pre>
 DesignSpace space = new DesignSpace("space.xml"); // import the configuration scope
 Design design = space.import("1","design1.xml"); // validate and import a respective configuration
-Algorithm c = design.getValue("Algorithm"); // retrieve the fully initialized object
-c.run(); // run the algorithm
+Algorithm a = design.getValue("Algorithm"); // retrieve the fully initialized object
+a.run(); // run the algorithm
 ... // record some statistics
 </pre>
 
 with the advantage being that all configuration is externalized, and can entirely be handled descriptively without code changes. You can write back small changes to the design, run the experiment again, and document the configuration by exporting
 
 <pre>
-design.setValue("Algorithm.Option.Property.Var", 6); // deep parameter change using reflection and inversion of control
-c.run(); // run with new setup
+design.setValue("Algorithm.Option.Property.Var", 6); // deep parameter change (using reflection)
+a.run(); // run with new setup
 ... // record some statistics
 design.export(new XMLFileExporter("design2.xml")); // export the new configuration
 </pre>
 
-You can also treat output, and entire experimental investigations. This was just a very basic example. There are plenty of code examples for Java available (see *Java* folder).
+The content of the resulting, importable, design file could look as follows:
+<pre>
+<Design ...>
+	<SValue id="Algorithm" value="SomeAlgorithm">
+		<NValue id="D" value=".33"/>
+		<SValue id="Option" value="BarOption">
+			<SValue id="Property" value="FooProperty">
+				<NValue id="Var" value="6"/>
+			</SValue>
+			<NValue id="FooBarVar" value="20"/>
+		</SValue>
+	</SValue>
+<Design/>
+</pre>
+
+You can also treat output, and entire experimental investigations, randomly instantiate designs and use cascaded array parameters. This was just a very basic example. There are plenty of code examples for Java available (see *Java* folder).
 
 # How to use InPUT?
 
