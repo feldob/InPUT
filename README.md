@@ -6,21 +6,13 @@ The code mapping concept allows you to repeat experiments from third parties by 
 InPUT induces clean code. Example (Java):
 Instead of 
 
-<code>
+<pre>
 int var = 5;
-</code>
-<code>
 Property a = new Property(var);
-</code>
-<code>
 Option b = new Option(b,20);
-</code>
-<code>
 Algorithm c = new Algorithm(c,b);
-</code>
-<code>
 c.run();
-</code>
+</pre>
 
 with InPUT you do
 <code>
