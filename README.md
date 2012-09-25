@@ -15,7 +15,7 @@ When working offline, you have to change the schemaLocation in your XML files to
 * [designSpace](TheInPUT.org/DesignSpace.xsd)
 * [codeMapping](TheInPUT.org/CodeMapping.xsd)
 
-For instance, change <code>xsi:schemaLocation="http://TheInPUT.org/Design http://TheInPUT.org/Design.xsd</code> in the root node to <code>xsi:schemaLocation="http://TheInPUT.org/Design SCHEMA_PATH/Design.xsd"</code>, if the Design.xsd resides on path SCHEMA_PATH of your computer or local network. You further have to update the *schemaPath* parameter of your InPUT4j\*.jar in file *src/InPUT/config.xml*. Once you have done that, you can work fully offline, which will as a side effect boost performance.
+For instance, change <code>xsi:schemaLocation="http://TheInPUT.org/Design http://TheInPUT.org/Design.xsd</code> in the root node to <code>xsi:schemaLocation="http://TheInPUT.org/Design SCHEMA_PATH/Design.xsd"</code>, if the Design.xsd resides on path SCHEMA_PATH of your computer or local network. You further have to update the *schemaPath* parameter of your InPUT4j\*.jar in file *src/se/miun/itm/input/config.xml*. Once you have done that, you can work fully offline, which will as a side effect boost performance.
 
 #License
 
