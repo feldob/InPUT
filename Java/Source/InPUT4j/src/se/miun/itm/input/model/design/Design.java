@@ -60,7 +60,7 @@ public class Design implements IDesign {
 	protected Design(final String expId, final ParamStore ps) throws InPUTException {
 		hash = expId.hashCode();
 		this.ps = ps;
-		this.design = initEmptyDesign(ps, expId);
+		this.design = initEmptyDesign(expId);
 		InPUTConfig.extendToConfigScope(this);
 	}
 
@@ -84,7 +84,7 @@ public class Design implements IDesign {
 				Q.ID_ATTR);
 		DesignSpace designSpace = DesignSpace.lookup(spaceId);
 		if (designSpace == null) {
-			designSpace = new DesignSpace(space);
+			designSpace = new DesignSpace(space, spaceFile);
 		}
 		hash = design.getRootElement().getAttributeValue(Q.ID_ATTR)
 				.hashCode();
@@ -113,7 +113,7 @@ public class Design implements IDesign {
 				Q.ID_ATTR);
 		DesignSpace designSpace = DesignSpace.lookup(spaceId);
 		if (designSpace == null) {
-			designSpace = new DesignSpace(space);
+			designSpace = new DesignSpace(space, spaceFile);
 		}
 		hash = design.getRootElement().getAttributeValue(Q.ID_ATTR)
 				.hashCode();
@@ -183,7 +183,7 @@ public class Design implements IDesign {
 		return newE;
 	}
 
-	protected Document initEmptyDesign(ParamStore ps2, String expId) throws InPUTException {
+	protected Document initEmptyDesign(String expId) throws InPUTException {
 		hash = expId.hashCode();
 		Document design = new Document(initEmptyRoot(expId));
 		return design;
@@ -196,6 +196,10 @@ public class Design implements IDesign {
 		root.setAttribute(Q.SCHEMA_LOCATION_ATTR, Q.getSchemaLocation(),
 				Q.SCHEMA_INSTANCE_NAMESPACE);
 		root.setAttribute(Q.ID_ATTR, expId);
+		
+		if (ps.getDesignSpace().isFile()) {
+			root.setAttribute(Q.REF_ATTR, ps.getDesignSpace().getFileName());
+		}
 		return root;
 	}
 

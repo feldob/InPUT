@@ -20,6 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package se.miun.itm.input.model.design;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -41,6 +42,7 @@ import se.miun.itm.input.model.element.Value;
 import se.miun.itm.input.model.element.ValueFactory;
 import se.miun.itm.input.model.param.Param;
 import se.miun.itm.input.model.param.ParamStore;
+import se.miun.itm.input.util.ParamUtil;
 import se.miun.itm.input.util.Q;
 import se.miun.itm.input.util.TreeSorter;
 import se.miun.itm.input.util.xml.SAXUtil;
@@ -63,8 +65,13 @@ public class DesignSpace implements IDesignSpace {
 	
 	private final int hash;
 
+	private final boolean isFile;
+
+	private String fileName;
+
 	public DesignSpace(InputStream spaceStream, InputStream mappingStream)
 			throws InPUTException {
+		isFile = false;
 		space = initSpace(spaceStream);
 		id = space.getRootElement().getAttributeValue(Q.ID_ATTR);
 		hash = id.hashCode();
@@ -78,6 +85,8 @@ public class DesignSpace implements IDesignSpace {
 
 	public DesignSpace(String filePath, InputStream mappingStream)
 			throws InPUTException {
+		isFile = true;
+		fileName = new File(filePath).getName();
 		try {
 			space = initSpace(new FileInputStream(filePath));
 		} catch (FileNotFoundException e) {
@@ -93,7 +102,9 @@ public class DesignSpace implements IDesignSpace {
 		this(spaceStream, null);
 	}
 
-	public DesignSpace(Document space) throws InPUTException {
+	public DesignSpace(Document space, String spaceFileName) throws InPUTException {
+		this.isFile = true;
+		this.fileName = spaceFileName;
 		this.space = space;
 		id = space.getRootElement().getAttributeValue(Q.ID_ATTR);
 		hash = id.hashCode();
@@ -324,5 +335,15 @@ public class DesignSpace implements IDesignSpace {
 	@Override
 	public int hashCode() {
 		return hash;
+	}
+
+	@Override
+	public boolean isFile() {
+		return isFile;
+	}
+
+	@Override
+	public String getFileName() {
+		return fileName;
 	}
 }

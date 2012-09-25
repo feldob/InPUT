@@ -238,4 +238,8 @@ public interface IDesignSpace extends Identifiable, Exportable,
 	<T> T next(String paramId, Integer[] sizeArray, Map<String, Object> vars,
 			Object[] objects) throws InPUTException;
 
+	boolean isFile();
+
+	String getFileName();
+
 }
