@@ -6,6 +6,8 @@ The *core module*, providing the API. Classes of main interest are : (I)DesignSp
 
 The *examples module* contains a couple of minimal examples, presenting some of the features that InPUT offers. Some examples are also expressed in plain Java to reveal the differences to the user. It depends on the *core module*. To run the examples, execute the respective main methods.
 
+Another example of using InPUT4j can be found in the core module, under src/se/miun/itm/input/ . InPUT4j uses itself for configuration. It defines it's configurational space in *configSpace.xml*, and it's current configuration in *config.xml*. *configMapping.xml* defines how the general concepts are mapped to the InPUT4j implementation.
+
 # InPUT4j_Injection
 
 The *injection module* is an extension of the core API. It allows the definition of InPUT inputs and outputs via annotations. It uses AspectJ, and requires projects that use its features to add it to the AspectJ Path.
