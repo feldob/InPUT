@@ -5,18 +5,24 @@ The code mapping concept allows you to repeat experiments from third parties by 
 
 InPUT induces clean code. Example (Java):
 Instead of 
+
 <code>
 int var = 5;
-
+</code>
+<code>
 Property a = new Property(var);
-
+</code>
+<code>
 Option b = new Option(b,20);
-
+</code>
+<code>
 Algorithm c = new Algorithm(c,b);
-
+</code>
+<code>
 c.run();
 </code>
-wiht InPUT you do
+
+with InPUT you do
 <code>
 DesignSpace space = new DesignSpace("space.xml"); // import the configuration scope
 Design design = space.import("1","design1.xml"); // validate and import a respective configuration
