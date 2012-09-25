@@ -37,19 +37,19 @@ design.export(new XMLFileExporter("design2.xml")); // export the new configurati
 
 The content of the resulting, importable, design file could look as follows:
 
-<notextile>
-<Design ...>
-	<SValue id="Algorithm" value="SomeAlgorithm">
-		<NValue id="D" value=".33"/>
-		<SValue id="Option" value="BarOption">
-			<SValue id="Property" value="FooProperty">
-				<NValue id="Var" value="6"/>
-			</SValue>
-			<NValue id="FooBarVar" value="20"/>
-		</SValue>
-	</SValue>
-<Design/>
-</notextile>
+<pre>
+&lt;Design ...&gt;
+	&lt;SValue id="Algorithm" value="SomeAlgorithm"&gt;
+		&lt;NValue id="D" value=".33"/&gt;
+		&lt;SValue id="Option" value="BarOption"&gt;
+			&lt;SValue id="Property" value="FooProperty"&gt;
+				&lt;NValue id="Var" value="6"/&gt;
+			&lt;/SValue&gt;
+			&lt;NValue id="FooBarVar" value="20"/&gt;
+		&lt;/SValue&gt;
+	&lt;/SValue&gt;
+&lt;Design/&gt;
+</pre>
 
 You can also treat output, and entire experimental investigations, randomly instantiate designs and use cascaded array parameters. This was just a very basic example. There are plenty of code examples for Java available (see *Java* folder).
 
