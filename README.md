@@ -26,7 +26,7 @@ a.run(); // run the algorithm
 ... // record some statistics
 </pre>
 
-with the advantage being that all configuration is externalized, and can entirely be handled descriptively without code changes. You can write back small changes to the design, run the experiment again, and document the configuration by exporting
+, with the advantage being that all configuration is externalized, and can entirely be handled descriptively without code changes. You could write changes back to the design, run the experiment again, and export the configuration:
 
 <pre>
 design.setValue("Algorithm.Option.Property.Var", 6); // deep parameter change (using reflection)
