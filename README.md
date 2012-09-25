@@ -51,6 +51,8 @@ The content of the resulting, importable, design file could look as follows:
 &lt;Design/&gt;
 </pre>
 
+This configuration is programming language independent and a so called *code mapping* realizes the translation to the used Java implementation. Once it is finalized, this code snippet can be imported to C++ using InPUT4cpp.
+
 You can also treat output, and entire experimental investigations, randomly instantiate designs and use cascaded array parameters. This was just a very basic example. There are plenty of code examples for Java available (see *Java* folder).
 
 # How to use InPUT?
