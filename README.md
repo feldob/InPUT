@@ -7,9 +7,13 @@ InPUT induces clean code. Example (Java):
 Instead of 
 <code>
 int var = 5;
+
 Property a = new Property(var);
+
 Option b = new Option(b,20);
+
 Algorithm c = new Algorithm(c,b);
+
 c.run();
 </code>
 wiht InPUT you do
