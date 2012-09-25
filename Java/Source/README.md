@@ -9,11 +9,11 @@ The *examples module* contains a couple of minimal examples, presenting some of 
 # InPUT4j_Injection
 
 The *injection module* is an extension of the core API. It allows the definition of InPUT inputs and outputs via annotations. It uses AspectJ, and requires projects that use its features to add it to the AspectJ Path.
-The module is set-up with Eclipse and [AJDT: The AspectJ Development Tools](http://www.eclipse.org/aspectj/). The *injection module* depends on the *core module*.
+The module is set-up with Eclipse and [AJDT: The AspectJ Development Tools](http://www.eclipse.org/aaspectj/). The *injection module* depends on the *core module*.
 
 # InPUT4j_Injection_Examples
 
-A collection of examples illustrating the use of the simplified annotation-based API. The module depends on both, the core and the injection modules. To run the examples, execute the respective main methods. The performance analysis example supports the develper in choosing an appropriate amount of processor cores for the thread pool on the local machine, when a certain job has to be executed multiple times. Without touching the code, the amount of tasks, repetitions, and even the task itself can be altered via a descriptor. It consist of two steps, 1) execute the PerformanceTester to retrieve empirical data, and 2) execute the PerformanceAnalyzer, to receive a comparison of mean-runtime. 
+A collection of examples illustrating the use of the simplified annotation-based API. The module depends on both, the core and the injection modules. To run the examples, execute the respective main methods. The performance analysis example supports the develper in choosing an appropriate thread pool size on the local machine, when a certain job has to be executed multiple times. Without touching the code, the amount of tasks, repetitions, and even the task itself can be altered via a descriptor. It consist of two steps, 1) execute the PerformanceTester to retrieve empirical data, and 2) execute the PerformanceAnalyzer, to receive a comparison of mean-runtime. 
 
 # WatchmakerHelloWorldExample
 
