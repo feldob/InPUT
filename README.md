@@ -9,13 +9,13 @@ Each programming language offers a language specific Readme in the respective fo
 
 # Good to know...
 
-When working offline, you have to change the schemaLocation in your XML files to a local version of the respective XSD schema (DesignSpace, Design, or CodeMapping). The files can be downloaded here:
+When working offline, the *schemaLocation* attribute for each InPUT XML descriptor file has to be set to a local version of the respective XSD schema (DesignSpace, Design, or CodeMappings). The schemata for the latest version can always be downloaded from here:
 
 * [design](http://TheInPUT.org/Design.xsd)
 * [designSpace](http://TheInPUT.org/DesignSpace.xsd)
-* [codeMapping](http://TheInPUT.org/CodeMappings.xsd)
+* [codeMappings](http://TheInPUT.org/CodeMappings.xsd)
 
-For instance, change <code>xsi:schemaLocation="http://TheInPUT.org/Design http://TheInPUT.org/Design.xsd</code> in the root node to <code>xsi:schemaLocation="http://TheInPUT.org/Design SCHEMA_PATH/Design.xsd"</code>, if the Design.xsd resides on path SCHEMA_PATH of your computer or local network. You further have to update the *schemaPath* parameter of your InPUT4j\*.jar in file *src/se/miun/itm/input/config.xml*. Once you have done that, you can work fully offline, which will have the side effect to boost performance.
+For instance, change <code>xsi:schemaLocation="http://TheInPUT.org/Design http://TheInPUT.org/Design.xsd</code> in the root node to <code>xsi:schemaLocation="http://TheInPUT.org/Design SCHEMA_PATH/Design.xsd"</code>, if the Design.xsd resides on path SCHEMA_PATH of your computer or local network for those descriptors already existing. The *schemaPath* parameter of the InPUT4j\*.jar in file *src/se/miun/itm/input/config.xml* should then be set to SCHEMA_PATH too. Oncethat is done, you can work fully offline, which will have the side effect to boost performance.
 
 #License
 
