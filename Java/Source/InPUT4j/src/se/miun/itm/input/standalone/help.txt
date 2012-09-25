@@ -1,0 +1,15 @@
+InPUT(1)                                                                                   InPUT(1)
+
+
+
+NAME
+       InPUT - create, archive and share computer experiments.
+
+SYNOPSIS
+       java -jar InPUT [COMMAND]
+
+TODO
+
+
+
+                                                                                            InPUT(1)
