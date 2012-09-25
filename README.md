@@ -1,8 +1,31 @@
 # What is InPUT?
 
 InPUT offers a descriptive and programming language independent interface for the configuration and design of computer experiments. It allows for the definition of well defined, complex, input and output parameter ranges.
-The code mapping concept allows you to repeat experiments from third parties by importing descriptors into your algorithm implementation of choice. InPUT increases reproducibility and simplifies documentation, as well as the collaboration between researchers, because computer experiments can be exchanged between different parties, letting them run their own implementation of an algorithm, while \(re-\)using the same descriptors. Descriptors are written in XML. We offer adapters for different programming languages to further simplify the software development aspects of experimental and algorithm design all together.
+The code mapping concept allows you to repeat experiments from third parties by importing descriptors into your algorithm implementation of choice. InPUT increases reproducibility and simplifies documentation, as well as the collaboration between researchers, because computer experiments can be exchanged between different parties, letting them run their own implementation of an algorithm, while \(re-\)using the same descriptors. Descriptors are written in XML. We offer adapters for different programming languages to further simplify the software development aspects of experimental and algorithm design all together. In that sense, InPUT realizes the distinction between the specification (*design spaces*, *design*), implementation (*code mappings*), and use (InPUT API) of experimental or software configurations, similar to how the [web service architecture](http://en.wikipedia.org/wiki/Web_service) differentiates between specification (WSDL), implementation (programming language of choice), and consumption (REST, SOAP) of services.
 
+InPUT induces clean code. Example (Java):
+Instead of 
+<code>
+int var = 5;
+Property a = new Property(var);
+Option b = new Option(b,20);
+Algorithm c = new Algorithm(c,b);
+c.run();
+</code>
+wiht InPUT you do
+<code>
+DesignSpace space = new DesignSpace("space.xml"); // import the configuration scope
+Design design = space.import("1","design1.xml"); // validate and import a respective configuration
+Algorithm c = design.getValue("Algorithm"); // retrieve the fully initialized object
+c.run();
+</code>
+with the advantage being that all configuration is externalized, and can entirely be handled descriptively without code changes. You can even write back small changes to the design, run the experiment again, and export the design by
+<code>
+design.setValue("Algorithm.Option.Property.Var", 6);
+c = design.getValue("Algorithm");
+c.run();
+design.export(new XMLFileExporter("design2.xml"));
+</code>
 # How to use InPUT?
 
 Each programming language offers a language specific Readme in the respective folder. Currently, only Java is supported. C++ is coming soon.
