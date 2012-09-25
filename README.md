@@ -3,8 +3,8 @@
 InPUT offers a descriptive and programming language independent interface for the configuration and design of computer experiments. It allows for the definition of well defined, complex, input and output parameter ranges.
 The code mapping concept allows you to repeat experiments from third parties by importing descriptors into your algorithm implementation of choice, thus increases reproducibility and simplifies documentation, as well as the collaboration between researchers, because of descriptor reuse. Descriptors are written in XML. We offer adapters for different programming languages to further simplify the software development aspects of experimental and algorithm design all together. In that sense, InPUT realizes the distinction between the specification (*design spaces*, *design*), implementation (*code mappings*), and use (InPUT API) of experimental or software configurations, similar to how the [web service architecture](http://en.wikipedia.org/wiki/Web_service) differentiates between specification (WSDL), implementation (programming language of choice), and consumption (REST, SOAP) of services.
 
-InPUT induces clean code. Example (Java):
-Instead of 
+# Example (Java):
+InPUT induces clean code. Lets assume you want to run an algorithm and collect some data about its performance. Instead of 
 
 <pre>
 int var = 5;
