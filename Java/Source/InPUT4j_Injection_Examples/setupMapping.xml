@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:CodeMappings id="setupSpace" xmlns:i="http://TheInPUT.org/CodeMappings" xmlns:i1="http://TheInPUT.org/DesignSpace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://TheInPUT.org/CodeMappings http://TheInPUT.org/CodeMappings.xsd ">
+<i:Mapping id="task" type="java.lang.Runnable"/>
+<i:Mapping id="task.standard" type="se.miun.itm.input.example.concurrent.model.AnotherJob"/>
+</i:CodeMappings>
