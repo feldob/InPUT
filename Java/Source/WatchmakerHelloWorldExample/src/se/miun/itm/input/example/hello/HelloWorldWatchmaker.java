@@ -23,8 +23,8 @@ import org.uncommons.watchmaker.framework.selection.RouletteWheelSelection;
 import org.uncommons.watchmaker.framework.termination.TargetFitness;
 
 /**
- * This code has been copied from XXX, the Watchmaker framework, as an example for an initial
- * example of using it to solve optimization problems. It is originally been written by XXX.
+ * This code has been copied from Daniel W. Dyer, the Watchmaker framework, as an example for an initial
+ * example of using it to solve optimization problems. It is originally been written by Daniel W. Dyer.
  * It is used here as a reference to show the power of InPUT with respect to algorithm/problem
  * configurability.
  */
