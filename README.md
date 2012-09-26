@@ -19,8 +19,7 @@ a.run();
 with InPUT you write
 
 <pre>
-DesignSpace space = new DesignSpace("space.xml"); // import the configuration scope
-Design design = space.import("1","design1.xml"); // validate and import a respective configuration
+IDesign design = new Design("1","design1.xml"); // validate and import a configuration
 Algorithm a = design.getValue("Algorithm"); // retrieve the fully initialized object
 a.run(); // run the algorithm
 ... // record some statistics
