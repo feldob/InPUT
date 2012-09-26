@@ -19,7 +19,7 @@ a.run();
 with InPUT you write
 
 <pre>
-IDesign design = new Design("1","design1.xml"); // validate and import a configuration
+IDesign design = new Design("design1.xml"); // validate and import a configuration
 Algorithm a = design.getValue("Algorithm"); // retrieve the fully initialized object
 a.run(); // run the algorithm
 ... // record some statistics
