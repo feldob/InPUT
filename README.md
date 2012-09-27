@@ -48,7 +48,7 @@ The content of the resulting, importable, design file could look as follows:
 			&lt;NValue id="FooBarVar" value="20"/&gt;
 		&lt;/SValue&gt;
 	&lt;/SValue&gt;
-&lt;Design/&gt;
+&lt;/Design&gt;
 </pre>
 
 This configuration is programming language independent and a so called *code mapping* realizes the translation to the used Java implementation. Once it is finalized, this code snippet can be imported to C++ using InPUT4cpp.
