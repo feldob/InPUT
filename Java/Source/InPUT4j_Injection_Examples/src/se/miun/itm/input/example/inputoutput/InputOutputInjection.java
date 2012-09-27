@@ -19,9 +19,9 @@ import se.miun.itm.input.annotation.Set;
 public class InputOutputInjection {
 
 	@Get(value = "paramId", from = "inputId")
-	private Object[] input;
+	private int[] input;
 
-	private Object[] output = new Object[input.length];
+	private int[] output = new int[input.length];
 
 	@Input(id = "inputId", file = "input.xml")
 	@Output(id = "outputId", file = "output.xml", spaceFile = "someSpace.xml")
