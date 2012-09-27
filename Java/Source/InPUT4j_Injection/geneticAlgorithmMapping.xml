@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<in:CodeMappings id="ga" xmlns:in="http://TheInPUT.org/CodeMappings"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xsi:schemaLocation="http://TheInPUT.org/CodeMappings CodeMappings.xsd">
+		<in:MappingType id="SomeWrapper" get="getTheValue">
+		<in:Wrapper type="se.miun.itm.ga.Wrapper" get="getWrapper" set="setWrapper"/>
+	</in:MappingType>
+	<in:Mapping id="representation" type="se.miun.itm.ga.Representation" />
+	<in:Mapping id="representation.color" set="false" get="false"/>
+	<in:Mapping id="representation.bit" type="se.miun.itm.ga.BitPresentation" constructor="featureX"/>
+	<in:Mapping id="representation.real" type="se.miun.itm.ga.RealRepresentation" />
+	<in:Mapping id="selection" type="se.miun.itm.ga.Selection" />
+	<in:Mapping id="selection.tournament" type="se.miun.itm.ga.Tournament" constructor="someDecision" />
+	<in:Mapping id="selection.tournament.someDecision" type="se.miun.itm.ga.Dec"/>
+	<in:Mapping id="selection.tournament.someDecision.value1"
+		type="se.miun.itm.ga.DecisionValue1" />
+	<in:Mapping id="selection.tournament.someDecision.value2"
+		type="se.miun.itm.ga.DecisionValue2" />
+	<in:Mapping id="selection.rank" type="se.miun.itm.ga.Rank" />
+	<in:Mapping id="selection.roulette" type="se.miun.itm.ga.Roulette" />
+	<in:Mapping id="mutation" type="se.miun.itm.ga.Mutation" constructor="length representation"/>
+	<in:Mapping id="mutation.length" get="getLength"/>
+	<in:Mapping id="mutation.flip" type="se.miun.itm.ga.FlipMutation"/>
+	<in:Mapping id="mutation.slide" type="se.miun.itm.ga.SlideMutation" />
+	<in:Mapping id="localSearch" type="se.miun.itm.ga.LocalSearch"
+		constructor="java.lang.Object integer java.sql.Time" />
+	<in:Mapping id="localSearch.2-opt" type="se.miun.itm.ga.OPT2" />
+	<in:Mapping id="localSearch.3-opt" type="se.miun.itm.ga.OPT3" />
+	<in:Mapping id="localSearch.helper" type="se.miun.itm.ga.Helper" />
+	<in:Mapping id="localSearch.helper.simpleHelper" type="se.miun.itm.ga.SimpleHelper" />
+	<in:Mapping id="localSearch.helper.advancedHelper" type="se.miun.itm.ga.AdvancedHelper" />
+	<in:Mapping id="theChoice" type="se.miun.itm.ga.TheChoice" />
+	<in:Mapping id="theChoice.first" type="first" />
+	<in:Mapping id="theChoice.second" type="second" />
+	<in:Mapping id="theChoice.third" type="third" />
+	<in:Mapping id="mutation.wrapped" type="SomeWrapper"/>
+	<in:Mapping id="network" type="se.miun.itm.ga.WSN" constructor="instance"/>
+	<in:Mapping id="network.instance" type="java.lang.String" constructor="java.lang.String"/>
+</in:CodeMappings>

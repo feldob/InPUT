@@ -21,6 +21,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package se.miun.itm.input.model.design;
 
 import java.io.File;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -42,7 +43,6 @@ import se.miun.itm.input.model.element.Value;
 import se.miun.itm.input.model.element.ValueFactory;
 import se.miun.itm.input.model.param.Param;
 import se.miun.itm.input.model.param.ParamStore;
-import se.miun.itm.input.util.ParamUtil;
 import se.miun.itm.input.util.Q;
 import se.miun.itm.input.util.TreeSorter;
 import se.miun.itm.input.util.xml.SAXUtil;
@@ -190,7 +190,6 @@ public class DesignSpace implements IDesignSpace {
 		return new Design(designId, ps);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public IDesign nextDesign(String expId) throws InPUTException {
 

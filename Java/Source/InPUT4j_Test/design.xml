@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Design id="ga" xmlns="http://TheInPUT.org/Design" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://TheInPUT.org/Design http://TheInPUT.org/Design.xsd">
+	<NValue id="popSize" value="10" />
+	<NValue id="featureX" value="true" />
+	<SValue id="localSearch" value="2-opt">
+		<SValue id="helper" value="simpleHelper" />
+	</SValue>
+	<NValue id="dependee" value="5.5" />
+	<SValue id="theChoice" value="second" />
+	<NValue id="mutationRate">
+		<NValue id="1">
+			<NValue id="1" value="0.09" />
+			<NValue id="2" value="0.11" />
+		</NValue>
+		<NValue id="2">
+			<NValue id="1" value="0.08" />
+			<NValue id="2" value="0.12" />
+		</NValue>
+	</NValue>
+	<SValue id="representation" value="bit">
+		<NValue id="color" value="1" />
+	</SValue>
+	<SValue id="selection" value="tournament">
+		<NValue id="size" value="4" />
+		<NValue id="winner" value="2" />
+		<SValue id="someDecision" value="value1" />
+	</SValue>
+	<SValue id="mutation">
+		<SValue id="1" value="slide">
+			<NValue id="length" value="4" />
+			<NValue id="wrapped" value="10" />
+			<NValue id="positions" value="3" />
+		</SValue>
+		<SValue id="2" value="flip">
+			<NValue id="length" value="6" />
+			<NValue id="wrapped" value="10" />
+			<NValue id="positions" value="3" />
+		</SValue>
+	</SValue>
+	<SValue id="network">
+	<NValue id="something" value ="3"/>
+		<SValue id="instance" value="test.txt"/>
+	</SValue>
+</Design>

@@ -15,7 +15,11 @@ The module is set-up with Eclipse and [AJDT: The AspectJ Development Tools](http
 
 # InPUT4j_Injection_Examples
 
-A collection of examples illustrating the use of the simplified annotation-based API. The module depends on both, the core and the injection modules. To run the examples, execute the respective main methods. The performance analysis example supports the develper in choosing an appropriate thread pool size on the local machine, when a certain job has to be executed multiple times. Without touching the code, the amount of tasks, repetitions, and even the task itself can be altered via a descriptor. It consist of two steps, 1) execute the PerformanceTester to retrieve empirical data, and 2) execute the PerformanceAnalyzer, to receive a comparison of mean-runtime. 
+Examples, illustrating the use of the simplified annotation-based API. The module depends on both, the core and the injection modules. To run the examples, execute the respective main methods.
+
+# PerformanceAnalyzerExample
+
+The performance analysis example module identifies an appropriate thread pool size for a given repetitive job. Without touching the code, the amount of tasks, repetitions, and even the task itself can be altered via a descriptor. The project contains different implementations, illustrating the differences between using InPUT, InPUT injection, plain Java, and java properties files. The module depends on the core and inject projects.
 
 # WatchmakerHelloWorldExample
 

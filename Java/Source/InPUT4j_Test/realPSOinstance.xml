@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:Design id="theId" xmlns:i="http://TheInPUT.org/Design" xmlns:i1="http://TheInPUT.org/DesignSpace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://TheInPUT.org/Design 
+http://TheInPUT.org/Design.xsd ">
+  <i:NValue id="Seed" value="524521106532245"/>
+  <i:NValue id="PopSize" value="39"/>
+	<i:NValue id="VelMin" value="-0.2307"/>
+	<i:NValue id="VelMax" value="1.1992"/>
+	<i:NValue id="InitPosMin" value="-2.6058"/>
+	<i:NValue id="InitPosMax" value="3.854"/>
+	<i:NValue id="InitVelMin" value="-2.438"/>
+	<i:NValue id="InitVelMax" value="0.7912"/>
+  <i:SValue id="VelocityType" value="Constricted">
+  	<i:SValue id="Topology" value="Linear">
+  		<i:NValue id="Neighborhood" value="5"/>
+  	</i:SValue>
+  	<i:NValue id="Inertia" value="1.4249"/>
+  	<i:NValue id="LFactor1" value="0.8832"/>
+  	<i:NValue id="LFactor2" value="4.0326"/>
+  </i:SValue>
+  <i:SValue id="StopCriterion" value="Time">
+  	<i:NValue id="Ms" value="24355"/>
+  </i:SValue>
+</i:Design>

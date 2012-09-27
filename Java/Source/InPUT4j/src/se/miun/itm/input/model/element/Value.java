@@ -20,6 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package se.miun.itm.input.model.element;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -172,16 +173,23 @@ public abstract class Value<AParam extends Param> extends InPUTElement {
 	private void initArray(Object[] actualParams) throws InPUTException {
 		// make the return value an array of appropriate size
 		Integer[] dim = getCurrentDimensions();
-		Object[] value = new Object[dim[0]];
+
+		initArrayValue(dim);
 		// container for the lower dimensional value entries
 		Value<?> subE;
 		// for all children run the casting again.
 		for (int i = 0; i < getChildren().size(); i++) {
 			subE = (Value<?>) getChildren().get(i);
 			// get object for numeric element and set as child
-			value[i] = subE.getInputValue(actualParams);
+			Array.set(value, i, subE.getInputValue(actualParams));
 		}
-		this.value = value;
+	}
+
+	private void initArrayValue(Integer[] dim) {
+		if (dim.length == 1) {
+			value = Array.newInstance(param.getInPUTClass(), dim[0]);
+		}else
+			value = new Object[dim[0]];
 	}
 
 	private boolean isArrayType(Integer[] dimensions) {
@@ -199,8 +207,8 @@ public abstract class Value<AParam extends Param> extends InPUTElement {
 	}
 
 	protected void init(Object[] actualParams) throws InPUTException {
-		// retrieve the value String of the element
 
+		// retrieve the value String of the element
 		if (getAttributeValue(Q.VALUE_ATTR) != null)
 			initValue(actualParams);
 		else if (param.isComplex())
@@ -212,7 +220,6 @@ public abstract class Value<AParam extends Param> extends InPUTElement {
 			initValue(actualParams);
 	}
 
-	@SuppressWarnings("unchecked")
 	private void initComplex(Object[] actualParams) throws InPUTException {
 		Complex complex = param.getComplex();
 		Object complexValue = complex.newInstance();

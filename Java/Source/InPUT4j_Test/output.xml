@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:Design id="1" xmlns:i="http://TheInPUT.org/Design" xmlns:i1="http://TheInPUT.org/DesignSpace"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://TheInPUT.org/Design http://TheInPUT.org/Design.xsd" ref="outputSpace.xml">
+	<i:NValue id="output">
+		<i:NValue id="1" value="12"/>
+		<i:NValue id="2" value="121"/>
+		<i:NValue id="3" value="121"/>
+		<i:NValue id="4" value="121"/>
+		<i:NValue id="5" value="121"/>
+		<i:NValue id="6" value="121"/>
+		<i:NValue id="7" value="121"/>
+		<i:NValue id="8" value="121"/>
+		<i:NValue id="9" value="121"/>
+		<i:NValue id="10" value="121"/>
+	</i:NValue>
+	<!-- System: Language="java" version="1.6.0_20-b20" architecture="amd64" processors="2" os="Linux" memory(bytes)="183339892736"-->
+</i:Design>

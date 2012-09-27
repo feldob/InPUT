@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:CodeMappings id="poolInvestigation" xmlns:i="http://TheInPUT.org/CodeMappings"
+	xmlns:i1="http://TheInPUT.org/DesignSpace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://TheInPUT.org/CodeMappings http://theinput.org/CodeMappings.xsd">
+	<i:Mapping id="task" type="java.lang.Runnable" />
+	<i:Mapping id="task.someJob"
+		type="miun.se.itm.input.example.performance.model.SomeJob" />
+</i:CodeMappings>
