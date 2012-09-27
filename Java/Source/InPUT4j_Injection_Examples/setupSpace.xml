@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<i:DesignSpace id="setupSpace" mapping="setupMapping.xml" xmlns:i="http://TheInPUT.org/DesignSpace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://TheInPUT.org/DesignSpace.xsd ">
-<i:NParam type="integer[]" id="amountThreads"/>
-<i:NParam type="integer" id="jobs"/>
-<i:NParam type="integer" id="tests"/>
-<i:SParam id="task">
-	<i:SChoice id="standard"/>
-</i:SParam>
-</i:DesignSpace>
