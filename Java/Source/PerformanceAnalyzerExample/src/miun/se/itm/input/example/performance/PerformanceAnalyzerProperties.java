@@ -43,6 +43,11 @@ public class PerformanceAnalyzerProperties extends PerformanceAnalyzer {
 		poolSize = initPoolSize(poolString);
 	}
 
+	public static void main(String[] args) throws InterruptedException,
+			ExecutionException, InPUTException {
+		new PerformanceAnalyzerPlain().analyze();
+	}
+
 	private int[] initPoolSize(String[] poolString) {
 		int[] poolSize = new int[poolString.length];
 		for (int i = 0; i < poolString.length; i++) {
@@ -57,11 +62,6 @@ public class PerformanceAnalyzerProperties extends PerformanceAnalyzer {
 		}
 		throw new IllegalArgumentException(
 				"The defined task type is not known by the source code :(");
-	}
-
-	public static void main(String[] args) throws InterruptedException,
-			ExecutionException, InPUTException {
-		new PerformanceAnalyzerPlain().analyze();
 	}
 
 }

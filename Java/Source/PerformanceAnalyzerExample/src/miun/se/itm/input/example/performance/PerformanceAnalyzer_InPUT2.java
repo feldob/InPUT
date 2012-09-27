@@ -20,6 +20,7 @@ public class PerformanceAnalyzer_InPUT2 extends PerformanceAnalyzer_InPUT1 {
 
 	public PerformanceAnalyzer_InPUT2() throws InPUTException,
 			ExecutionException, InterruptedException {
+		super();
 	}
 
 	public static void main(String[] args) throws InPUTException,
