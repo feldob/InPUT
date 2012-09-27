@@ -67,7 +67,7 @@ When working offline, the *schemaLocation* attribute for each InPUT XML descript
 * [designSpace](http://TheInPUT.org/DesignSpace.xsd)
 * [codeMappings](http://TheInPUT.org/CodeMappings.xsd)
 
-For instance, change <code>xsi:schemaLocation="http://TheInPUT.org/Design http://TheInPUT.org/Design.xsd</code> in the root node to <code>xsi:schemaLocation="http://TheInPUT.org/Design SCHEMA_PATH/Design.xsd"</code>, if the Design.xsd resides on path SCHEMA_PATH of your computer or local network for those descriptors already existing. The *schemaPath* parameter of the InPUT4j\*.jar in file *src/se/miun/itm/input/config.xml* should then be set to SCHEMA_PATH too. Oncethat is done, you can work fully offline, which will have the side effect to boost performance.
+For instance, for those descriptors already existing, change <code>xsi:schemaLocation="http://TheInPUT.org/Design http://TheInPUT.org/Design.xsd</code> in the root node to <code>xsi:schemaLocation="http://TheInPUT.org/Design SCHEMA_PATH/Design.xsd"</code>, if the Design.xsd resides on path SCHEMA_PATH of your computer or local network. The *schemaPath* parameter of the InPUT4j\*.jar in file *src/se/miun/itm/input/config.xml* should then be set to SCHEMA_PATH too. Oncethat is done, you can work fully offline, which will have the side effect to boost performance.
 
 #License
 
