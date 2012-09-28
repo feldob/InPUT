@@ -3,6 +3,7 @@ package miun.se.itm.input.example.performance;
 import java.util.concurrent.ExecutionException;
 
 import miun.se.itm.input.example.performance.model.SomeJob;
+import miun.se.itm.input.example.performance.model.SomeOption;
 import se.miun.itm.input.model.InPUTException;
 
 /**
@@ -16,7 +17,7 @@ public class PerformanceAnalyzerPlain extends PerformanceAnalyzer {
 			ExecutionException {
 
 		amountTasks = 10;
-		task = new SomeJob();
+		task = new SomeJob(100000000, 4000000, new SomeOption());
 		executions = 3;
 		int[] poolSize = {1,2,8,9,10};
 		this.poolSize = poolSize;

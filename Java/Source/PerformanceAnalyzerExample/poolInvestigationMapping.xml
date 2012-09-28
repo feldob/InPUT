@@ -4,5 +4,7 @@
 	xsi:schemaLocation="http://TheInPUT.org/CodeMappings http://theinput.org/CodeMappings.xsd">
 	<i:Mapping id="task" type="java.lang.Runnable" />
 	<i:Mapping id="task.someJob"
-		type="miun.se.itm.input.example.performance.model.SomeJob" />
+		type="miun.se.itm.input.example.performance.model.SomeJob" constructor="firstValue secondValue option" />
+	<i:Mapping id="task.someJob.option" type="miun.se.itm.input.example.performance.model.Option" />
+	<i:Mapping id="task.someJob.option.some" type="miun.se.itm.input.example.performance.model.SomeOption" />
 </i:CodeMappings>
