@@ -19,7 +19,7 @@ Examples, illustrating the use of the simplified annotation-based API. The modul
 
 # InPUT4j_Test
 
-JUnit Tests for the InPUT4j core module. Depends on the InPUT4j module.
+JUnit tests for the InPUT4j core module. Depends on the InPUT4j module.
 
 # PerformanceAnalyzerExample
 
