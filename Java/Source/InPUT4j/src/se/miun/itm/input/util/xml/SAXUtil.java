@@ -118,6 +118,9 @@ public class SAXUtil {
 			String designSpaceFileName, boolean verifying)
 			throws InPUTException {
 
+		if (designSpaceFileName == null) {
+			throw new InPUTException("The design space reference (ref attribute in root of the design) has to be set appropriately.");
+		}
 		SAXBuilder builder = takeBuilder(verifying);
 		Document document;
 		try {

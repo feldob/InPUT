@@ -230,11 +230,10 @@ public class SValue extends Value<SParam> {
 		}
 	}
 
-	// TODO have to consider dimensions!
 	@Override
 	protected void initRandom(Map<String, Object> vars, Object[] actualParams,
 			boolean lazy) throws InPUTException {
-		// the result is either structChoice or an array of structchoice!
+		// the result is either structChoice or an array of struct-choice!
 		Object value = random(dimensions, vars);
 
 		if (value.getClass().isArray()) {

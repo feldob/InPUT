@@ -14,12 +14,12 @@ public class Test {
 		IDesign design = space.nextDesign("test");
 
 		design.export(fileExp);
-		
-		
+
 		design = new Design("output.xml");
-//		design.export(new XMLFileExporter("output2.xml"));
-		
+		// design.export(new XMLFileExporter("output2.xml"));
+
 	}
+
 	public static void main(String[] args) throws Exception {
 		new Test();
 	}

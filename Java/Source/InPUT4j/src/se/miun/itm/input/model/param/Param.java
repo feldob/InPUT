@@ -309,7 +309,7 @@ public abstract class Param extends InPUTElement implements Fixable {
 
 	public static boolean isArrayType(Integer[] dimensions) {
 		return dimensions != null && dimensions.length > 0
-				&& (dimensions[0] == 0 || dimensions[0] > 1);
+				&& (dimensions[0] > 0);
 	}
 
 	public boolean isArrayType() {

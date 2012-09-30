@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.internal.runners.statements.Fail;
 
 import se.miun.itm.ga.BitPresentation;
 import se.miun.itm.ga.LocalSearch;
@@ -62,9 +63,9 @@ public class DesignSpaceTest {
 		int size, winner;
 		Map<String, Object> vars = new HashMap<String, Object>();
 		for (int i = 0; i < 10; i++) {
-			size = (Integer) designSpace.next("selection.tournament.size");
+			size = designSpace.next("selection.tournament.size");
 			vars.put("selection.tournament.size", size);
-			winner = (Integer) designSpace.next("selection.tournament.winner", vars);
+			winner = designSpace.next("selection.tournament.winner", vars);
 			if (winner > 0 && winner < size)
 				assertTrue(true);
 			else
@@ -72,13 +73,12 @@ public class DesignSpaceTest {
 		}
 
 		// test double
-		Object[] mr, mr2 = null;
+		double[][] mr;
 		for (int i = 0; i < 10; i++) {
-			mr = (Object[]) designSpace.next("mutationRate");
+			mr = designSpace.next("mutationRate");
 			for (int j = 0; j < mr.length; j++) {
-				mr2 = (Object[]) mr[j];
-				for (int j2 = 0; j2 < mr2.length; j2++){
-					if (((Double) mr2[j2] > 0.0001) && ((Double) mr2[j2] <= 0.4)) {
+				for (int k = 0; k < mr[j].length; k++) {
+					if ((mr[j][k] > 0.0001) && mr[j][k] <= 0.4) {
 						assertTrue(true);
 					} else {
 						assertTrue(false);
@@ -90,13 +90,14 @@ public class DesignSpaceTest {
 		Representation bitRep = new BitPresentation(true);
 		// testWrapper
 		vars.put("popSize", 10);
-		Mutation mutation = (Mutation)((Object[])designSpace.next("mutation", vars, new Object[]{null,bitRep}))[0];
+		Mutation[] mutations = designSpace.next("mutation", vars, new Object[]{null,bitRep});
+		Mutation mutation = mutations[0];
 		mutation.getWrapper().getTheValue();
 		
 		// test complex
 		Selection sel;
 		for (int i = 0; i < 10; i++) {
-			sel = (Selection) designSpace.next("selection");
+			sel = designSpace.next("selection");
 			if (sel == null) {
 				assertTrue(false);
 			} else {
@@ -105,20 +106,18 @@ public class DesignSpaceTest {
 		}
 
 		Integer[] sizeArray = { 3, 2, 4 };
-		objects = (Object[]) designSpace.next("selection", sizeArray);
-		assertTrue(objects.length == 3);
-		for (int i = 0; i < objects.length; i++) {
-			Object[] objectsSecond = (Object[]) objects[i];
-			assertTrue(objectsSecond.length == 2);
-			for (int j = 0; j < objectsSecond.length; j++) {
-				Object[] objectsThird = (Object[]) objectsSecond[j];
-				assertTrue(objectsThird.length == 4);
-				if (objectsThird[j] instanceof Selection) {
-					assertTrue(true);
-				} else {
-					assertTrue(false);
-				}
+		Selection[][][] selections = designSpace.next("selection", sizeArray);
+		
+		boolean flag = false;
+		if (selections.length == sizeArray[0]) {
+			if (selections[0].length == sizeArray[1]) {
+				if (selections[0][0].length == sizeArray[2]) {
+					flag = true;
+				}	
 			}
+		}
+		if (!flag) {
+			assertTrue(false);
 		}
 	}
 }

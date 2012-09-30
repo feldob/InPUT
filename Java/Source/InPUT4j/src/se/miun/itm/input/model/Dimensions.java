@@ -33,7 +33,7 @@ import se.miun.itm.input.util.Q;
  */
 public class Dimensions {
 
-	public static final Integer[] DEFAULT_DIM = { 1 };
+	public static final Integer[] DEFAULT_DIM = { 0 };
 
 	public static Integer[] derive(final Element param) {
 		Integer[] dimensions;
@@ -82,7 +82,7 @@ public class Dimensions {
 			String valueString = value.substring(0, value.length() - 1);
 			return Integer.parseInt(valueString);
 		} else
-			return 0;
+			return -1;
 	}
 
 }

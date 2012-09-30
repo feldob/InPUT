@@ -116,23 +116,6 @@ public abstract class Value<AParam extends Param> extends InPUTElement {
 			return Dimensions.DEFAULT_DIM;
 	}
 
-	protected String deriveValueFromArrayType() {
-		String type = param.getAttributeValue(Q.TYPE_ATTR);
-		if (type == null)
-			return null;
-
-		// retrieve amount of entries to delete
-		StringBuilder b = new StringBuilder(
-				type.split(Q.ESCAPED_ARRAY_START)[0]);
-		for (int i = 1; i < dimensions.length; i++) {
-			b.append("[");
-			if (dimensions[i] > 0)
-				b.append(dimensions[i]);
-			b.append("]");
-		}
-		return b.toString();
-	}
-
 	/**
 	 * uses lazy loading.
 	 * 
@@ -144,13 +127,6 @@ public abstract class Value<AParam extends Param> extends InPUTElement {
 		if (value == null)
 			init(actualParams);
 		return value;
-	}
-
-	public Integer[] getCurrentDimensions() {
-		Integer[] dims = this.dimensions.clone();
-		if (dims[0] == 0)
-			dims[0] = getChildren().size();
-		return dims;
 	}
 
 	public boolean isArrayType() {
@@ -172,9 +148,7 @@ public abstract class Value<AParam extends Param> extends InPUTElement {
 
 	private void initArray(Object[] actualParams) throws InPUTException {
 		// make the return value an array of appropriate size
-		Integer[] dim = getCurrentDimensions();
-
-		value = new Object[dim[0]];
+		value = new Object[getChildren().size()];
 		// container for the lower dimensional value entries
 		Value<?> subE;
 		// for all children run the casting again.
@@ -244,20 +218,22 @@ public abstract class Value<AParam extends Param> extends InPUTElement {
 
 	}
 
-	private Object random(Integer size, Map<String, Object> vars)
+	private Object random(Integer type, Map<String, Object> vars)
 			throws InPUTException {
-		return randomValue(size, vars);
+		return randomValue(type, vars);
 	}
 
-	private Object randomValue(Integer size, Map<String, Object> vars)
+	private Object randomValue(Integer type, Map<String, Object> vars)
 			throws InPUTException {
 		Object value;
 		// either only a single value of the type
-		if (size == 1) {
+		if (type == 0) {
 			value = randomValue(vars);
 		} else {
 			// or an array of that type
-			Object[] values = new Object[size];
+			if (type < 0)
+				type = 1;
+			Object[] values = new Object[type];
 			for (int i = 0; i < values.length; i++) {
 				values[i] = random(vars);
 			}

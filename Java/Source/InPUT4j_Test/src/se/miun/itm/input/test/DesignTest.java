@@ -1,7 +1,6 @@
 package se.miun.itm.input.test;
 
 import static org.junit.Assert.assertEquals;
-
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -187,7 +186,7 @@ public class DesignTest {
 			assertTrue(false);
 		}
 
-		t = (Tournament) inst.getValue("selection");
+		t = inst.getValue("selection");
 		value = t.getsize();
 		if (value instanceof Integer) {
 			assertTrue(true);
@@ -251,7 +250,7 @@ public class DesignTest {
 			assertTrue(false);
 		}
 
-		t = (Tournament) inst.getValue("selection");
+		t = inst.getValue("selection");
 		value = t.getsize();
 		if (value instanceof Integer) {
 			assertTrue(true);
@@ -270,14 +269,11 @@ public class DesignTest {
 			assertTrue(false);
 
 		{
-			Object[] m = inst.getValue("mutation");
-			if (m instanceof Object[]) {
+			Mutation[] m = inst.getValue("mutation");
 				assertTrue(true);
-				Object[] ms = (Object[]) m;
 
-				Mutation first, second;
-				first = (Mutation) ms[0];
-				second = (Mutation) ms[1];
+				Mutation first = m[0];
+				Mutation second = m[1];
 
 				assertEquals(first.getWrapper().getTheValue(), 10d, 0.001);
 
@@ -292,8 +288,6 @@ public class DesignTest {
 					assertTrue(true);
 				else
 					assertTrue(false);
-			} else {
-				assertTrue(false);
 			}
 
 			// wrapper test case
@@ -308,7 +302,6 @@ public class DesignTest {
 				assertTrue(false);
 			}
 			assertTrue(true);
-		}
 	}
 
 	@Test
@@ -350,7 +343,6 @@ public class DesignTest {
 				if ((Boolean)design.getValue("featureX"))
 					fail();
 
-				//TODO somehow this calculation is wrong now!! what can that be related to!???
 				length = design.getValue("mutation.1.length");
 				popSize = design.getValue("popSize");
 
