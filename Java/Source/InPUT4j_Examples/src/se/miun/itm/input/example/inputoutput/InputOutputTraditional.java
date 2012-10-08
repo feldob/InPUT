@@ -30,13 +30,13 @@ public class InputOutputTraditional {
 
 	private void doSomething(IDesignSpace space, IDesign inputDesign)
 			throws InPUTException {
-		Object[] input = inputDesign.getValue("paramId");
+		Integer[] input = inputDesign.getValue("paramId");
 
-		Object[] output = new Object[input.length];
+		Integer[] output = new Integer[input.length];
 
 		for (int i = 0; i < input.length; i++) {
 			System.out.println(input[i]);
-			output[i] = input[i];
+			output[i] = (Integer)input[i];
 		}
 
 		IDesign outputDesign = space.nextEmptyDesign("outputId");
