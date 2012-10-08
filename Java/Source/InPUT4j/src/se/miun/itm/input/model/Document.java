@@ -24,8 +24,8 @@ import org.jdom2.DocType;
 import org.jdom2.Element;
 
 /**
- * A wrapper class that wrapps third party library classes, in order to not make
- * users directly depend on them, and due to the restructions of third party
+ * A wrapper class that wraps third party library classes, in order to not make
+ * users directly depend on them, and due to the restrictions of third party
  * class exposure to service consumers.
  * 
  * @author felix

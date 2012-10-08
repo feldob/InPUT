@@ -166,7 +166,7 @@ public class SValue extends Value<SParam> {
 			Element originalChoice) throws InPUTException {
 		// get the param for sub value. A sub value can be of two types
 		String choiceLocalId = originalChoice.getAttributeValue(Q.VALUE_ATTR);
-		if (!param.isImplicit() && choiceLocalId == null)
+		if (!param.isImplicit() && choiceLocalId == null || param.isImplicit() && param.isArrayType())
 			// this is a subentry of an array type, get back to the parent type.
 			return null;
 		else {
