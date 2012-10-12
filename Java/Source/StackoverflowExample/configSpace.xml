@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:DesignSpace id="configSpace" mapping="configSpaceMapping.xml" xmlns:i="http://TheInPUT.org/DesignSpace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://TheInPUT.org/DesignSpace.xsd ">
+<i:SParam id="ListCreator" type="[]">
+	<i:NParam id="SortDescending" type="boolean" />
+	<i:SParam id="TableWriter">
+		<i:SChoice id="Xls"/>
+		<i:SChoice id="Pdf"/>
+	</i:SParam>
+</i:SParam>
+</i:DesignSpace>

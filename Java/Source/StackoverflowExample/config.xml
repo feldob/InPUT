@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:Design id="someConfig" ref="configSpace.xml" xmlns:i="http://TheInPUT.org/Design" xmlns:i1="http://TheInPUT.org/DesignSpace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://TheInPUT.org/Design http://TheInPUT.org/Design.xsd ">
+<i:SValue id="ListCreator">
+	<i:SValue id="1">
+		<i:NValue id="SortDescending" value="true"/>
+		<i:SValue id="TableWriter" value="Pdf"/>
+	</i:SValue>
+	<i:SValue id="2">
+		<i:NValue id="SortDescending" value="false"/>
+		<i:SValue id="TableWriter" value="Xls"/>
+	</i:SValue>
+</i:SValue>
+</i:Design>
