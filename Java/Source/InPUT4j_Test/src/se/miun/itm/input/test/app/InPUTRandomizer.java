@@ -1,14 +1,5 @@
 package se.miun.itm.input.test.app;
 
-/**
- * This example shows an easy way to randomly select a random number.
- * The random number is selected according to how long it takes to select the product of 
- * the two randomly selected factors a and b. There is no directy correlance between the size of 
- * the intervall (the values in the xml-file) and the randomly selected number. 
- * 
- */
-
-
 import java.io.FileNotFoundException;
 import java.util.Calendar;
 

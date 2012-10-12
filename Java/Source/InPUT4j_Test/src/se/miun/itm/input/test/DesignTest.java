@@ -204,25 +204,36 @@ public class DesignTest {
 		else
 			assertTrue(false);
 		
-		value = inst.getValue("mutationRate");
-			double[][] theValue = (double[][]) value;
+		double[][] theValue = inst.getValue("mutationRate");
+			
 
-			if (theValue[0][0] == 0.09)
+			if (theValue[0][0] == 0.09 && theValue[0][0] == (Double)inst.getValue("mutationRate.1.1"))
 				assertTrue(true);
 			else
 				assertTrue(false);
 
-			if (theValue[0][1] == 0.11)
+			if (theValue[0][1] == 0.11 && theValue[0][1] == (Double)inst.getValue("mutationRate.1.2"))
 				assertTrue(true);
 			else
 				assertTrue(false);
 
-			if (theValue[1][0] == 0.08)
+			if (theValue[1][0] == 0.08 && theValue[1][0] == (Double)inst.getValue("mutationRate.2.1"))
 				assertTrue(true);
 			else
 				assertTrue(false);
 
-			if (theValue[1][1] == 0.12)
+			if (theValue[1][1] == 0.12  && theValue[1][1] == (Double)inst.getValue("mutationRate.2.2"))
+				assertTrue(true);
+			else
+				assertTrue(false);
+			
+			double[] theValueArray = inst.getValue("mutationRate.2");
+			if (theValueArray[0] == 0.08)
+				assertTrue(true);
+			else
+				assertTrue(false);
+			
+			if (theValueArray[1] == 0.12)
 				assertTrue(true);
 			else
 				assertTrue(false);
