@@ -19,28 +19,28 @@ import se.miun.itm.input.model.design.IDesignSpace;
 public class ResultExample {
 
 	public static void main(String[] args) throws InPUTException {
-		IDesignSpace ds = new DesignSpace("relativeSpace.xml");
+		IDesignSpace ds = new DesignSpace("relativeSpace.xml"); //Reading in the first DesignSpace
 
 		Object[][] results = new Object[10][100];
 
 		IDesign design;
 		for (int i = 0; i < results.length; i++) {
 			for (int j = 0; j < results[i].length; j++) {
-				design = ds.nextDesign("someId");
+				design = ds.nextDesign("someId"); 	//Generating random values according to the DesignSpace
 
 				double a = design.getValue("a");
 				double b = design.getValue("b");
 
-				results[i][j] = (a / b) - 1;
+				results[i][j] = (a / b) - 1; 		//Calculation
 				System.out.println(results[i][j]);
 			}
 		}
 
-		IDesignSpace resultSpace = new DesignSpace("resultSpace.xml");
-		IDesign resultDesign = resultSpace.nextEmptyDesign("someResult");
-		resultDesign.setValue("y", results);
+		IDesignSpace resultSpace = new DesignSpace("resultSpace.xml"); 		//Creating a new DesignSpace according to the array of results
+		IDesign resultDesign = resultSpace.nextEmptyDesign("someResult"); 	//Creating a Design from the DesignSpace
+		resultDesign.setValue("y", results);								//and fill with the results from the calculations
 
 		// export the output design to an xml
-		resultDesign.export(new XMLFileExporter("randomDesignResults.xml"));
+		resultDesign.export(new XMLFileExporter("randomDesignResults.xml"));//Exporting results to a XML-file
 	}
 }
