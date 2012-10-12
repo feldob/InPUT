@@ -261,6 +261,7 @@ public class Design implements IDesign {
 		parent.removeContent(elementCache.get(paramId));
 		// add new element
 		parent.addContent(valueE);
+		valueE.renewId();
 		// update index
 		updateElementCache(valueE);
 	}
@@ -306,12 +307,11 @@ public class Design implements IDesign {
 		String[] idPath = paramId.split(Pattern.quote("."));
 		Element parent;
 
-		if (!ps.containsParam(paramId)) {
+		if (!ps.containsParam(paramId))
 			throw new InPUTException(
 					"A parameter with id '"
 							+ paramId
 							+ "' is not specified in the InPUT file of this document type.");
-		}
 
 		if (idPath.length > 2) {
 			String choiceId = idPath[idPath.length - 2];

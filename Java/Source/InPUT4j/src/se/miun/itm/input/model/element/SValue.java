@@ -34,6 +34,7 @@ import se.miun.itm.input.model.param.AStruct;
 import se.miun.itm.input.model.param.Param;
 import se.miun.itm.input.model.param.SChoice;
 import se.miun.itm.input.model.param.SParam;
+import se.miun.itm.input.util.ParamUtil;
 import se.miun.itm.input.util.Q;
 
 /**
@@ -48,6 +49,8 @@ import se.miun.itm.input.util.Q;
 public class SValue extends Value<SParam> {
 
 	private static final long serialVersionUID = -3106504874487719602L;
+	
+	private final SChoice fixedChoice;
 
 	public SValue(Object value, SParam param, Integer[] sizeArray,
 			ElementCache elementCache) throws InPUTException {
@@ -57,12 +60,22 @@ public class SValue extends Value<SParam> {
 
 	SValue(SParam param, Integer[] sizeArray, ElementCache elementCache)
 			throws InPUTException {
+		this(param, sizeArray, elementCache, null);
+	}
+
+	private SValue(SParam param, Integer[] sizeArray, ElementCache elementCache, SChoice fixedChoice) throws InPUTException {
 		super(Q.SVALUE, param, sizeArray, elementCache);
+		this.fixedChoice = fixedChoice;
+	}
+
+	public SValue(SChoice choice, Integer[] dimensions, ElementCache elementCache) throws InPUTException {
+		this(choice.getParam(), dimensions, elementCache, choice);
 	}
 
 	public SValue(Element originalChoice, SParam param, Integer[] sizeArray,
 			ElementCache elementCache) throws InPUTException {
 		super(Q.SVALUE, param, originalChoice, sizeArray, elementCache);
+		fixedChoice = null;
 		setInputElement(originalChoice);
 	};
 
@@ -166,11 +179,11 @@ public class SValue extends Value<SParam> {
 			Element originalChoice) throws InPUTException {
 		// get the param for sub value. A sub value can be of two types
 		String choiceLocalId = originalChoice.getAttributeValue(Q.VALUE_ATTR);
-		if (!param.isImplicit() && choiceLocalId == null || param.isImplicit() && param.isArrayType())
-			// this is a subentry of an array type, get back to the parent type.
+		String subParamId = originalChild.getAttributeValue(Q.ID_ATTR);
+		// this is a subentry of an array type, get back to the parent type.
+		if (choiceLocalId == null && ParamUtil.isIntegerString(subParamId))
 			return null;
 		else {
-			String subParamId = originalChild.getAttributeValue(Q.ID_ATTR);
 			// either its child of the choice or the param.
 			Param subParam = param.getChildParamElement(subParamId);
 			if (subParam == null) {
@@ -180,10 +193,10 @@ public class SValue extends Value<SParam> {
 				if (subParam == null) {
 					AStruct choice = param.getChoiceById(choiceLocalId);
 					if (choice == null) {
-						throw new InPUTException(getId()
-								+ ": There is no choice element '" + subParamId
-								+ "' for parameter '" + param.getId()
-								+ "' which you entered into the design.");
+						throw new InPUTException("Configuration error for parameter \""+getId()+"\". Potential sources: " 
+								+ "1) You set a sub-parameter \"" +subParamId +"\" to the configuration, which does not exist. 2) "
+								+ "you misspelled the choice entry in your design: \"" + choiceLocalId
+								+ "\". In any case, make sure that the identfiers in design (value), design space and mapping (choice or parameter) match.");
 					}
 					subParam = choice.getChildParamElement(subParamId);
 				}
@@ -223,8 +236,7 @@ public class SValue extends Value<SParam> {
 
 		Value<?> subValueE;
 		for (Param subParamElement : childrenToInit) {
-			subValueE = ValueFactory.constructValueElement(subParamElement,
-					null, elementCache);
+			subValueE = ValueFactory.constructValueElement(subParamElement, elementCache);
 			subValueE.initRandom(vars, null, true);
 			addContent(subValueE);
 		}
@@ -235,6 +247,9 @@ public class SValue extends Value<SParam> {
 			boolean lazy) throws InPUTException {
 		// the result is either structChoice or an array of struct-choice!
 		Object value = random(dimensions, vars);
+			if (fixedChoice != null) {
+			value = initFixedChoice(value);
+		}
 
 		if (value.getClass().isArray()) {
 			// in that case, extract and add the whole array/matrix...
@@ -249,6 +264,17 @@ public class SValue extends Value<SParam> {
 
 		if (!lazy)
 			init(actualParams);
+	}
+
+	private Object initFixedChoice(Object value) {
+		if (!value.getClass().isArray())
+			return fixedChoice;
+		
+		Object[] current = (Object[])value;
+		for (int i = 0; i < current.length; i++) {
+			initFixedChoice(current[i]);
+		}
+		return current;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -292,11 +318,12 @@ public class SValue extends Value<SParam> {
 		}
 
 		// making available possible customizable input
-		if (param.isImplicit() && localChoiceId != null)
+		if (param.isImplicit() && localChoiceId != null && !localChoiceId.equals(param.getLocalId()))
 			actualParams = extendActualParams(actualParams, localChoiceId);
 
 		actualParams = choice.enhanceActualParams(actualParams,
 				subParamValueElements, elementCache);
+		//TODO process actualParams arrays so that it ain't remains an object array
 		reflectObject(actualParams, choice);
 
 		for (Value<? extends Param> subValueE : subParamValueElements)

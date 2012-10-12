@@ -5,6 +5,6 @@
   <i:NValue id="threadSafe" value="false"/>
   <i:NValue id="logging" value="true"/>
   <i:NValue id="injection" value="true"/>
-  <i:NValue id="runtimeValidation" value="false"/>
+  <i:NValue id="runtimeValidation" value="true"/>
   <i:SValue id="schemaPath" value="http://TheInPUT.org/"/>
 </i:Design>

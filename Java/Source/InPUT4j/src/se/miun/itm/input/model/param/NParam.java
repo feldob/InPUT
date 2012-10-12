@@ -35,9 +35,10 @@ import se.miun.itm.input.model.Ranges;
 import se.miun.itm.input.util.Q;
 
 /**
- * A concrete implementation of a parameter, which represents numerical values, given their definition ranges and their evaluation engine. 
+ * A concrete implementation of a parameter, which represents numerical values, given their definition ranges and their evaluation engine.
+ * 
  * @author Felix Dobslaw
- *
+ * 
  */
 public class NParam extends Param {
 
@@ -51,11 +52,9 @@ public class NParam extends Param {
 	// @LazyLoading
 	private InputEvaluator eval;
 
-	public NParam(Element original, String designId, ParamStore ps)
-			throws InPUTException {
+	public NParam(Element original, String designId, ParamStore ps) throws InPUTException {
 		super(original, designId, ps);
-		type = Numeric.valueOf(getAttributeValue(Q.TYPE_ATTR).split(
-				Q.ESCAPED_ARRAY_START)[0].toUpperCase());
+		type = Numeric.valueOf(getAttributeValue(Q.TYPE_ATTR).split(Q.ESCAPED_ARRAY_START)[0].toUpperCase());
 	}
 
 	// has to be done after the order is defined, otherwise not semantically
@@ -70,29 +69,21 @@ public class NParam extends Param {
 		Method handle;
 		if (mapping.hasWrapper())
 			try {
-				handle = mapping.getWrapperClass().getMethod(getter,
-						AStruct.EMPTY_CLASS_ARRAY);
+				handle = mapping.getWrapperClass().getMethod(getter, AStruct.EMPTY_CLASS_ARRAY);
 			} catch (NoSuchMethodException e) {
-				throw new InPUTException(getId()
-						+ ": There is no getter method by name '" + getter
-						+ "'.", e);
+				throw new InPUTException(getId() + ": There is no getter method by name '" + getter + "'.", e);
 			} catch (SecurityException e) {
-				throw new InPUTException(getId() + ": access to the method '"
-						+ getter
-						+ " ' is not allowed due to security restrictions.", e);
+				throw new InPUTException(getId() + ": access to the method '" + getter + " ' is not allowed due to security restrictions.",
+						e);
 			}
 		else
 			try {
-				handle = parentValue.getClass().getMethod(getter,
-						AStruct.EMPTY_CLASS_ARRAY);
+				handle = parentValue.getClass().getMethod(getter, AStruct.EMPTY_CLASS_ARRAY);
 			} catch (NoSuchMethodException e) {
-				throw new InPUTException(getId()
-						+ ": There is no getter method by name '" + getter
-						+ "'.", e);
+				throw new InPUTException(getId() + ": There is no getter method by name '" + getter + "'.", e);
 			} catch (SecurityException e) {
-				throw new InPUTException(getId() + ": access to the method '"
-						+ getter
-						+ " ' is not allowed due to security restrictions.", e);
+				throw new InPUTException(getId() + ": access to the method '" + getter + " ' is not allowed due to security restrictions.",
+						e);
 			}
 		return handle;
 	}
@@ -112,23 +103,18 @@ public class NParam extends Param {
 		return initMethodHandle(parentValue, setter, cLass);
 	}
 
-	private Method initMethodHandle(Object parentValue, String setter,
-			Class<?> cLass) throws InPUTException {
+	private Method initMethodHandle(Object parentValue, String setter, Class<?> cLass) throws InPUTException {
 		Method m;
 		try {
 			m = parentValue.getClass().getMethod(setter, cLass);
 		} catch (Exception e) {
 			try {
-				m = parentValue.getClass().getMethod(setter,
-						getNumericType().getPrimitiveClass());
+				m = parentValue.getClass().getMethod(setter, getNumericType().getPrimitiveClass());
 			} catch (NoSuchMethodException e2) {
-				throw new InPUTException(getId()
-						+ ": There is no setter method by name '" + setter
-						+ "'.", e2);
+				throw new InPUTException(getId() + ": There is no setter method by name '" + setter + "'.", e2);
 			} catch (SecurityException e2) {
-				throw new InPUTException(getId() + ": access to the method '"
-						+ setter
-						+ " ' is not allowed due to security restrictions.", e2);
+				throw new InPUTException(getId() + ": access to the method '" + setter + " ' is not allowed due to security restrictions.",
+						e2);
 			}
 		}
 		return m;
@@ -159,8 +145,7 @@ public class NParam extends Param {
 		return mapping.getWrapperConstructor(type);
 	}
 
-	public Ranges getEvaluatedRanges(Map<String, Object> vars)
-			throws InPUTException {
+	public Ranges getEvaluatedRanges(Map<String, Object> vars) throws InPUTException {
 		Ranges ranges;
 		if (isIndependant())
 			ranges = this.ranges;
@@ -193,9 +178,15 @@ public class NParam extends Param {
 			return getWrapperClass();
 		return getNumericType().getPrimitiveClass();
 	}
-	
+
 	@Override
 	public boolean isComplex() {
 		return false;
+	}
+
+	public void isValid(Object value) throws InPUTException {
+		if (hasWrapper())
+			value = invokeGetter(value);
+		ranges.checkValidity((Comparable<Comparable<?>>) value);
 	}
 }

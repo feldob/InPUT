@@ -27,6 +27,7 @@ import org.jdom2.Element;
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.param.NParam;
 import se.miun.itm.input.model.param.Param;
+import se.miun.itm.input.model.param.SChoice;
 import se.miun.itm.input.model.param.SParam;
 
 /**
@@ -68,9 +69,11 @@ public class ValueFactory {
 			randomE = new SValue((SParam) param, sizeArray, elementCache);
 		else if (param instanceof NParam)
 			randomE = new NValue((NParam) param, sizeArray, elementCache);
+		else if (param instanceof SChoice)
+			randomE = new SValue((SChoice) param, sizeArray, elementCache);
 		else
 			throw new InPUTException(
-					"There is no such parameter type in InPUT as the one given: "
+					"InPUT cannot recognize the given parameter id to be part of the design space: "
 							+ param);
 
 		randomE.initRandom(vars, actualParams, true);
@@ -78,12 +81,11 @@ public class ValueFactory {
 	}
 
 	public static Value<? extends Param> constructValueElement(
-			final Param param, final Integer[] sizeArray,
-			final ElementCache elementCache) throws InPUTException {
+			final Param param, final ElementCache elementCache) throws InPUTException {
 		if (param instanceof SParam)
-			return new SValue((SParam) param, sizeArray, elementCache);
+			return new SValue((SParam) param, param.getDimensions(), elementCache);
 		else if (param instanceof NParam)
-			return new NValue((NParam) param, sizeArray, elementCache);
+			return new NValue((NParam) param, param.getDimensions(), elementCache);
 		else
 			throw new InPUTException(
 					"The dom element is not of a valid InPUT parameter type.");

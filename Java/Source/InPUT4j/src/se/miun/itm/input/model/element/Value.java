@@ -32,22 +32,18 @@ import se.miun.itm.input.model.Dimensions;
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.mapping.Complex;
 import se.miun.itm.input.model.param.Param;
+import se.miun.itm.input.util.ParamUtil;
 import se.miun.itm.input.util.Q;
 
 /**
- * Values are generic containers for parameter values, that are abstractly
- * defined by a private "value" fields of type object. Each value is defined
- * with respect to one specific parameter. That parameter restricts the range of
- * the value.
+ * Values are generic containers for parameter values, that are abstractly defined by a private "value" fields of type object. Each value is
+ * defined with respect to one specific parameter. That parameter restricts the range of the value.
  * 
- * A value element is responsible to collect the necessary context, based on
- * parameter, element cache etc. in order to instantiate semantically correct
- * instances of the parameter type, considering all user defined meta
- * information. This is done using reflection.
+ * A value element is responsible to collect the necessary context, based on parameter, element cache etc. in order to instantiate
+ * semantically correct instances of the parameter type, considering all user defined meta information. This is done using reflection.
  * 
- * A value can not only be of simple value type, but as well of array or
- * customizable collection type, which makes it very flexible for use. Both,
- * structural and numerical values can be of arbitrary array sizes.
+ * A value can not only be of simple value type, but as well of array or customizable collection type, which makes it very flexible for use.
+ * Both, structural and numerical values can be of arbitrary array sizes.
  * 
  * The type can be specified using the xml structures.
  * 
@@ -68,44 +64,47 @@ public abstract class Value<AParam extends Param> extends InPUTElement {
 
 	protected final ElementCache elementCache;
 
-	public Value(String name, AParam param, Element original,
-			Integer[] sizeArray, ElementCache elementCache)
-			throws InPUTException {
+	public Value(String name, AParam param, Element original, Integer[] sizeArray, ElementCache elementCache) throws InPUTException {
 		super(name, Q.DESIGN_NAMESPACE, param, original);
-		dimensions = initDimensions(sizeArray);
-		this.param = param;
 
-		String localParamId = param.getAttributeValue(Q.ID_ATTR);
-		setAttribute(Q.ID_ATTR, localParamId);
+		this.param = param;
+		dimensions = initDimensions(sizeArray);
+		initLocalId(original);
+
 		this.elementCache = elementCache;
 	}
 
-	public Value(String name, AParam param, Integer[] sizeArray,
-			ElementCache elementCache) throws InPUTException {
+	private void initLocalId(Element original) {
+		String localId;
+		if (original != null && ParamUtil.isIntegerString(original.getAttributeValue(Q.ID_ATTR))) {
+			localId = original.getAttributeValue(Q.ID_ATTR);
+		} else {
+			localId = param.getAttributeValue(Q.ID_ATTR);
+		}
+		setAttribute(Q.ID_ATTR, localId);
+	}
+
+	public Value(String name, AParam param, Integer[] sizeArray, ElementCache elementCache) throws InPUTException {
 		this(name, param, null, sizeArray, elementCache);
 	}
 
 	@Override
-	public Element addContent(Content subValueE) {
-		renewLocalId(subValueE);
-		return super.addContent(subValueE);
+	public Element addContent(Content childValueElement) {
+		renewLocalId(childValueElement);
+		return super.addContent(childValueElement);
 	}
 
-	@SuppressWarnings("unchecked")
-	private void renewLocalId(Content subValueE) {
-		if (subValueE instanceof Value<?>) {
-			String newFullId;
-			Value<? extends Param> sub = (Value<? extends Param>) subValueE;
-			String subLocalId = sub.getAttributeValue(Q.ID_ATTR);
-			Element subParamParent = sub.getParam().getParentElement();
-			if (subParamParent instanceof Param
-					&& param.getId().equals(getId())
-					&& !subParamParent.equals(param)) {
-				newFullId = getId() + "." + getAttributeValue(Q.VALUE_ATTR)
-						+ "." + subLocalId;
+	private void renewLocalId(Content childContent) {
+		if (childContent instanceof Value<?>) {
+			Value<?> childValueElement = (Value<?>) childContent;
+			String newFullChildId;
+			String childLocalId = childValueElement.getAttributeValue(Q.ID_ATTR);
+			Element childParameterParent = childValueElement.getParam().getParentElement();
+			if (childParameterParent instanceof Param && !childParameterParent.equals(param) && getAttributeValue(Q.VALUE_ATTR) != null) {
+				newFullChildId = getId() + "." + getAttributeValue(Q.VALUE_ATTR) + "." + childLocalId;
 			} else
-				newFullId = getId() + "." + subLocalId;
-			sub.setFullId(newFullId);
+				newFullChildId = getId() + "." + childLocalId;
+			childValueElement.setFullId(newFullChildId);
 		}
 	}
 
@@ -171,33 +170,31 @@ public abstract class Value<AParam extends Param> extends InPUTElement {
 	protected void init(Object[] actualParams) throws InPUTException {
 
 		// retrieve the value String of the element
-		if (getAttributeValue(Q.VALUE_ATTR) != null)
+		String valueString = getAttributeValue(Q.VALUE_ATTR);
+
+		if (valueString != null || (param.isImplicit() && !param.isArrayType())
+				|| (param.isImplicit() && param.isArrayType() && !getId().equals(param.getId())))
 			initValue(actualParams);
 		else if (param.isComplex())
 			initComplex(actualParams);
-		else if (!param.isImplicit())
+		else if (param.isArrayType())
 			initArray(actualParams);
-		// customizable input has to be triggered last
-		else if (getAttribute(Q.VALUE_ATTR) == null)
-			initValue(actualParams);
 	}
 
 	@SuppressWarnings("unchecked")
 	private void initComplex(Object[] actualParams) throws InPUTException {
 		Complex complex = param.getComplex();
 		Object complexValue = complex.newInstance();
-		List<SValue> children = (List<SValue>)(List<?>)getChildren();
+		List<SValue> children = (List<SValue>) (List<?>) getChildren();
 		for (SValue sValue : children) {
 			complex.invokeAdd(complexValue, sValue.getInputValue(actualParams));
 		}
 		value = complexValue;
 	}
 
-	protected abstract void initRandom(Map<String, Object> vars,
-			Object[] actualParams, boolean lazy) throws InPUTException;
+	protected abstract void initRandom(Map<String, Object> vars, Object[] actualParams, boolean lazy) throws InPUTException;
 
-	protected abstract void initValue(Object[] actualParams)
-			throws InPUTException;
+	protected abstract void initValue(Object[] actualParams) throws InPUTException;
 
 	public String getLocalId() {
 		return getAttributeValue(Q.ID_ATTR);
@@ -207,8 +204,7 @@ public abstract class Value<AParam extends Param> extends InPUTElement {
 		return value;
 	}
 
-	public Object random(Integer[] dimensions, Map<String, Object> vars)
-			throws InPUTException {
+	public Object random(Integer[] dimensions, Map<String, Object> vars) throws InPUTException {
 		Object value;
 		if (dimensions.length > 1)
 			value = randomArray(dimensions, vars);
@@ -218,13 +214,11 @@ public abstract class Value<AParam extends Param> extends InPUTElement {
 
 	}
 
-	private Object random(Integer type, Map<String, Object> vars)
-			throws InPUTException {
+	private Object random(Integer type, Map<String, Object> vars) throws InPUTException {
 		return randomValue(type, vars);
 	}
 
-	private Object randomValue(Integer type, Map<String, Object> vars)
-			throws InPUTException {
+	private Object randomValue(Integer type, Map<String, Object> vars) throws InPUTException {
 		Object value;
 		// either only a single value of the type
 		if (type == 0) {
@@ -250,8 +244,7 @@ public abstract class Value<AParam extends Param> extends InPUTElement {
 			return random(vars);
 	}
 
-	private Object randomArray(Integer[] dimensions, Map<String, Object> vars)
-			throws InPUTException {
+	private Object randomArray(Integer[] dimensions, Map<String, Object> vars) throws InPUTException {
 		Object[] valueArray;
 		if (dimensions[0] > 0)
 			// create a container for the array of the first dimension
@@ -263,16 +256,21 @@ public abstract class Value<AParam extends Param> extends InPUTElement {
 		// for all dimensions
 		for (int i = 0; i < valueArray.length; i++) {
 			// call the method again without the first dimension.
-			valueArray[i] = random(
-					Arrays.copyOfRange(dimensions, 1, dimensions.length), vars);
+			valueArray[i] = random(Arrays.copyOfRange(dimensions, 1, dimensions.length), vars);
 		}
 		return valueArray;
 	}
-	
+
 	public Integer getDimensions() {
 		return dimensions.length;
 	}
 
-	protected abstract Object random(Map<String, Object> vars)
-			throws InPUTException;
+	protected abstract Object random(Map<String, Object> vars) throws InPUTException;
+
+	public void renewId() {
+		if (param.isArrayType())
+			setFullId(ParamUtil.deriveInputId(this));
+		for (Element child : getChildren())
+			((Value<?>) child).renewId();
+	}
 }

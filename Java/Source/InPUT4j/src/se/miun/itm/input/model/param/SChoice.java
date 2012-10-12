@@ -47,14 +47,13 @@ public class SChoice extends AStruct {
 
 	private final Enum<?> enumValue;
 
-	final String paramId;
+	final SParam param;
 
 	public SChoice(Element original, String designId, ParamStore ps)
 			throws InPUTException {
 		super(original, designId, ps);
-		SParam param = ((SParam) getParentElement());
+		param = ((SParam) getParentElement());
 		param.addChoice(this);
-		paramId = param.getId();
 		structChildren = initStructChildren();
 		enumValue = initEnum();
 		initInPUTConstructor();
@@ -100,7 +99,11 @@ public class SChoice extends AStruct {
 
 	@Override
 	public String getParamId() {
-		return paramId;
+		return param.getId();
+	}
+	
+	public SParam getParam() {
+		return param;
 	}
 
 	@Override

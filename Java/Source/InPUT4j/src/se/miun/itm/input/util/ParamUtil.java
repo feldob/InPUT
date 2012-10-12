@@ -40,8 +40,8 @@ import se.miun.itm.input.model.param.Param;
 import se.miun.itm.input.model.param.ParamStore;
 
 /**
- * A class upplying basic features to support the extraction of information from
- * param elements or parsing and processing of id related services.
+ * A class upplying basic features to support the extraction of information from param elements or parsing and processing of id related
+ * services.
  * 
  * @author Felix Dobslaw
  * 
@@ -49,8 +49,7 @@ import se.miun.itm.input.model.param.ParamStore;
 public class ParamUtil {
 
 	/**
-	 * Returns yes if the identifier of a constructor parameter, passed in the
-	 * code mapping file, is of method type.
+	 * Returns yes if the identifier of a constructor parameter, passed in the code mapping file, is of method type.
 	 * 
 	 * @param identifier
 	 * @return
@@ -60,8 +59,7 @@ public class ParamUtil {
 	}
 
 	/**
-	 * Retrieves the return type class for a given a method identifier and a
-	 * param element.
+	 * Retrieves the return type class for a given a method identifier and a param element.
 	 * 
 	 * @param identifier
 	 * @param parentParam
@@ -69,21 +67,18 @@ public class ParamUtil {
 	 * @return
 	 * @throws InPUTException
 	 */
-	public static Class<?> getClassFromMethodReturnType(String identifier,
-			Param parentParam, ParamStore ps) throws InPUTException {
+	public static Class<?> getClassFromMethodReturnType(String identifier, Param parentParam, ParamStore ps) throws InPUTException {
 		String[] chops = identifier.split(Pattern.quote("."));
 		String methodId = chops[chops.length - 1];
 
-		String paramId = identifier.substring(0, identifier.length()
-				- (methodId.length() + 1));
+		String paramId = identifier.substring(0, identifier.length() - (methodId.length() + 1));
 
 		Param param = getParamForId(paramId, parentParam, ps);
 
 		Class<?> cLass = param.getInPUTClass();
 
 		try {
-			return cLass.getMethod(methodId, AStruct.EMPTY_CLASS_ARRAY)
-					.getReturnType();
+			return cLass.getMethod(methodId, AStruct.EMPTY_CLASS_ARRAY).getReturnType();
 		} catch (Exception e) {
 			throw new InPUTException(e.getMessage(), e);
 		}
@@ -97,8 +92,7 @@ public class ParamUtil {
 	 * @param ps
 	 * @return
 	 */
-	public static Param getParamForId(String paramId, Param parentParam,
-			ParamStore ps) {
+	public static Param getParamForId(String paramId, Param parentParam, ParamStore ps) {
 		Param param = ps.getParam(paramId);
 		if (param == null)
 			param = getParamForLocalId(paramId, parentParam, ps);
@@ -113,18 +107,15 @@ public class ParamUtil {
 	 * @param ps
 	 * @return
 	 */
-	public static Param getParamForLocalId(String paramId, Param parentParam,
-			ParamStore ps) {
-		Param localParam = ps
-				.getParam(parentParam.getParamId() + "." + paramId);
+	public static Param getParamForLocalId(String paramId, Param parentParam, ParamStore ps) {
+		Param localParam = ps.getParam(parentParam.getParamId() + "." + paramId);
 		if (localParam == null)
 			localParam = ps.getParam(parentParam.getId() + "." + paramId);
 		return localParam;
 	}
 
 	/**
-	 * invokes the method with identifier identifier for parameter param, given
-	 * the context that the cache provides.
+	 * invokes the method with identifier identifier for parameter param, given the context that the cache provides.
 	 * 
 	 * @param identifier
 	 * @param paramElementId
@@ -134,25 +125,21 @@ public class ParamUtil {
 	 * @return
 	 * @throws InPUTException
 	 */
-	public static Object getMethodContextValue(String identifier,
-			String paramElementId, String paramId, ParamStore ps,
-			ElementCache cache) throws InPUTException {
+	public static Object getMethodContextValue(String identifier, String paramElementId, String paramId, ParamStore ps, ElementCache cache)
+			throws InPUTException {
 
 		String[] chops = identifier.split(Pattern.quote("."));
 		String methodId = chops[chops.length - 1];
 		methodId = methodId.substring(0, methodId.length() - 2);
 
-		String valueParamId = identifier.substring(0, identifier.length()
-				- (methodId.length() + 3));
+		String valueParamId = identifier.substring(0, identifier.length() - (methodId.length() + 3));
 
-		Value<?> value = getValueForId(valueParamId, paramElementId, paramId,
-				ps, cache);
+		Value<?> value = getValueForId(valueParamId, paramElementId, paramId, ps, cache);
 
 		Object parentValue = value.getInputValue(null);
 
 		try {
-			Method method = parentValue.getClass().getMethod(methodId,
-					AStruct.EMPTY_CLASS_ARRAY);
+			Method method = parentValue.getClass().getMethod(methodId, AStruct.EMPTY_CLASS_ARRAY);
 			return method.invoke(parentValue, AStruct.EMPTY_OBJECT_ARRAY);
 		} catch (Exception e) {
 			throw new InPUTException(e.getMessage(), e);
@@ -160,8 +147,7 @@ public class ParamUtil {
 	}
 
 	/**
-	 * returns the InPUT value element for a given param id, and its parent id,
-	 * given the element cache as a context.
+	 * returns the InPUT value element for a given param id, and its parent id, given the element cache as a context.
 	 * 
 	 * @param valueParamId
 	 * @param paramElementId
@@ -170,9 +156,7 @@ public class ParamUtil {
 	 * @param cache
 	 * @return
 	 */
-	private static Value<?> getValueForId(String valueParamId,
-			String paramElementId, String paramId, ParamStore ps,
-			ElementCache cache) {
+	private static Value<?> getValueForId(String valueParamId, String paramElementId, String paramId, ParamStore ps, ElementCache cache) {
 		// first lookup for local param.
 		Param parentParam = ps.getParam(paramId);
 		Param param = getParamForLocalId(valueParamId, parentParam, ps);
@@ -198,19 +182,16 @@ public class ParamUtil {
 	}
 
 	/**
-	 * extracts the descriptor id for a given descriptor file without using an
-	 * xml parser.
+	 * extracts the descriptor id for a given descriptor file without using an xml parser.
 	 * 
 	 * @param descriptorFile
 	 * @return
 	 * @throws InPUTException
 	 */
-	public static String extractDescriptorId(String descriptorFile)
-			throws InPUTException {
+	public static String extractDescriptorId(String descriptorFile) throws InPUTException {
 		try {
 			String temp;
-			BufferedReader r = new BufferedReader(
-					new FileReader(descriptorFile));
+			BufferedReader r = new BufferedReader(new FileReader(descriptorFile));
 			while (r.ready()) {
 				temp = r.readLine();
 				if (temp.contains("id=\""))
@@ -218,14 +199,9 @@ public class ParamUtil {
 			}
 
 		} catch (FileNotFoundException e) {
-			throw new InPUTException(
-					"The descriptor id could not be extracted from '"
-							+ descriptorFile + "'. Is the attribute missing?",
-					e);
+			throw new InPUTException("The descriptor id could not be extracted from '" + descriptorFile + "'. Is the attribute missing?", e);
 		} catch (IOException e) {
-			throw new InPUTException(
-					"The descriptor id could not be extracted from '"
-							+ descriptorFile + "'. Is it missing?", e);
+			throw new InPUTException("The descriptor id could not be extracted from '" + descriptorFile + "'. Is it missing?", e);
 		}
 		return null;
 	}
@@ -245,22 +221,18 @@ public class ParamUtil {
 	}
 
 	/**
-	 * for a given original xml element and an InPUT parameter element, retrieve
-	 * the suitable id for the parameter depending on the value type (array,
-	 * simple, collection).
+	 * for a given original xml element and an InPUT parameter element, retrieve the suitable id for the parameter depending on the value
+	 * type (array, simple, collection).
 	 * 
 	 * @param original
 	 * @param param
 	 * @return
 	 */
-	public static String deriveValueReferenceId(final Element original,
-			final Param param) {
+	public static String deriveValueReferenceId(final Element original, final Param param) {
 		// if original contains an integer as id : its a reference to a matrix
 		// parameter and the id should be given containing the int entries.
 
-		if (original == null
-				|| param.getLocalId().equals(
-						original.getAttributeValue(Q.ID_ATTR)))
+		if (original == null || param.getLocalId().equals(original.getAttributeValue(Q.ID_ATTR)))
 			return deriveParamId(param);
 		else
 			return deriveParamId(original);
@@ -278,15 +250,13 @@ public class ParamUtil {
 	}
 
 	/**
-	 * returns the smallest id start that both ids have in common, potentially
-	 * "".
+	 * returns the smallest id start that both ids have in common, potentially "".
 	 * 
 	 * @param dependantId
 	 * @param dependeeId
 	 * @return
 	 */
-	public static String deriveLowestNonSharedId(String dependantId,
-			String dependeeId) {
+	public static String deriveLowestNonSharedId(String dependantId, String dependeeId) {
 		String[] chops1 = dependantId.split(Pattern.quote("."));
 		String[] chops2 = dependeeId.split(Pattern.quote("."));
 		StringBuilder b = new StringBuilder();
@@ -325,12 +295,10 @@ public class ParamUtil {
 	 */
 	private static String deriveParamId(final Element element, String name) {
 		// 1) not null, 2) is Element, 3) not root -> next!
-		if (element.getParent() != null
-				&& element.getParent() instanceof Element) {
+		if (element.getParent() != null && element.getParent() instanceof Element) {
 			Element parent = (Element) element.getParent();
 			if (!parent.isRootElement())
-				name = deriveParamId(parent,
-						parent.getAttributeValue(Q.ID_ATTR) + "." + name);
+				name = deriveParamId(parent, parent.getAttributeValue(Q.ID_ATTR) + "." + name);
 		}
 
 		return name;
@@ -343,12 +311,10 @@ public class ParamUtil {
 	 * @return
 	 * @throws InPUTException
 	 */
-	public static String extractDescriptorId(InputStream codeMappingStream)
-			throws InPUTException {
+	public static String extractDescriptorId(InputStream codeMappingStream) throws InPUTException {
 		try {
 			String temp;
-			BufferedReader r = new BufferedReader(new InputStreamReader(
-					codeMappingStream));
+			BufferedReader r = new BufferedReader(new InputStreamReader(codeMappingStream));
 			while (r.ready()) {
 				temp = r.readLine();
 				if (temp.contains("id=\""))
@@ -356,13 +322,9 @@ public class ParamUtil {
 			}
 
 		} catch (FileNotFoundException e) {
-			throw new InPUTException(
-					"The descriptor id could not be extracted. Is the attribute missing?",
-					e);
+			throw new InPUTException("The descriptor id could not be extracted. Is the attribute missing?", e);
 		} catch (IOException e) {
-			throw new InPUTException(
-					"The descriptor id could not be extracted. Is it missing?",
-					e);
+			throw new InPUTException("The descriptor id could not be extracted. Is it missing?", e);
 		}
 		return null;
 	}
@@ -383,21 +345,18 @@ public class ParamUtil {
 		return value;
 	}
 
-	public static Object packArrayForExport(Class<?> cLass, Object value,
-			int dimensions) {
+	public static Object packArrayForExport(Class<?> cLass, Object value, int dimensions) {
 		if (value.getClass().isArray() && dimensions > 0) {
 			Object subExport;
 			Object export = null;
 			for (int i = 0; i < Array.getLength(value); i++) {
-				subExport = packArrayForExport(cLass, Array.get(value, i),
-						dimensions - 1);
+				subExport = packArrayForExport(cLass, Array.get(value, i), dimensions - 1);
 				if (i == 0) {
 					Class<?> choice = subExport.getClass();
 					if (dimensions == 1) {
 						choice = cLass;
 					}
-					export = Array.newInstance(choice,
-							Array.getLength(value));
+					export = Array.newInstance(choice, Array.getLength(value));
 				}
 				Array.set(export, i, subExport);
 			}
@@ -405,5 +364,24 @@ public class ParamUtil {
 		}
 
 		return value;
+	}
+
+	public static String deriveInputId(Value<?> element) {
+		return deriveInputId(element.getParentElement(), element.getLocalId());
+	}
+
+	private static String deriveInputId(Element parent, String id) {
+		if (parent.isRootElement())
+			return id;
+		return deriveInputId(parent.getParentElement(), parent.getAttributeValue(Q.ID_ATTR) + "." + id);
+	}
+
+	public static boolean isIntegerString(String stringValue) {
+		try {
+			Integer.parseInt(stringValue);
+		} catch (Exception e) {
+			return false;
+		}
+		return true;
 	}
 }

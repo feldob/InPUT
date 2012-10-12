@@ -34,7 +34,7 @@ import se.miun.itm.input.util.Q;
  * An engine that allows the processing of xpath expressions, in an easy to use
  * fassion.
  * 
- * @author Felix
+ * @author Felix Dobslaw
  * 
  */
 public class XPathProcessor {

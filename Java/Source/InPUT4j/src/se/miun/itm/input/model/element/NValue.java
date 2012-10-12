@@ -28,6 +28,7 @@ import java.util.Map;
 
 import org.jdom2.Element;
 
+import se.miun.itm.input.InPUTConfig;
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.Numeric;
 import se.miun.itm.input.model.Ranges;
@@ -70,9 +71,11 @@ public class NValue extends Value<NParam> {
 		if (value.getClass().isArray()) {
 			// in that case, extract and add the whole array/matrix...
 			setInputArray(value);
-		} else
+		} else if (InPUTConfig.getValue(Q.RUNTIME_VALIDATION)){
+			param.isValid(value);			
 			// ...otherwise, set its value as element attribute.
 			initValueAttribute(value);
+		}
 		// Finally, store the object.
 		super.setInputValue(value);
 	}

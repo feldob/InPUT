@@ -29,6 +29,7 @@ import se.miun.itm.input.util.Q;
  * 
  * @author Felix Dobslaw
  * 
+ * TODO for performance reasons, make ranges less generic (no casting!)!
  */
 public class Ranges {
 
@@ -277,5 +278,18 @@ public class Ranges {
 
 	public NParam getParam() {
 		return param;
+	}
+	
+	public void checkValidity(Comparable<Comparable<?>> value) {
+		switch (type) {
+		case BOOLEAN:
+			break;
+		default:
+			if (!param.isMinDependent() && minExpr != null && ((minIncl && value.compareTo(min) < 0) || (!minIncl && value.compareTo(min) <= 0)))
+				throw new IllegalArgumentException(param.getDesignSpaceId() + ": The entered value \"" + value + "\" for the parameter with id \""+ param.getId()+"\" is out of range (below minimum threshold \"" + min + "\")." );
+			else if (!param.isMaxDependent() && maxExpr != null && ((maxIncl && value.compareTo(max) > 0) || (!maxIncl && value.compareTo(max) >= 0)))
+			throw new IllegalArgumentException(param.getDesignSpaceId() + ": The entered value \"" + value + "\" for the parameter with id \""+ param.getId()+"\" is out of range (above maximum threshold \"" + max + "\")." );
+			break;
+		}
 	}
 }

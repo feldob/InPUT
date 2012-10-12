@@ -343,7 +343,7 @@ public class InPUTConstructor {
 		if (className == null)
 			throw new InPUTException(
 					param.getId()
-							+ ": No entry for this choice element could be found in the code mappings file.");
+							+ ": No entry for this choice element could be found in the code mappings file. Make sure that the mapping reference in your space descriptor points to the correct mapping file.");
 
 		Class<?> cLass;
 		try {

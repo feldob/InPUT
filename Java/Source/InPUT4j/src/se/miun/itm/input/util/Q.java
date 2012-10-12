@@ -213,6 +213,8 @@ public class Q {
 
 	private static final String SCHEMA_PATH = "schemaPath";
 
+	public static final String RUNTIME_VALIDATION = "runtimeValidation";
+
 	public static String getSchemaLocation() throws InPUTException {
 		String result = DESIGN_NAMESPACE_ID + " " + InPUTConfig.getValue(SCHEMA_PATH) + DESIGN_ROOT
 				+ ".xsd";

@@ -210,7 +210,7 @@ public abstract class AStruct extends Param {
 							+ paramId
 							+ "' is missing for the initialization of the object of type '"
 							+ mapping.getComponentId()
-							+ "'. Please ensure that your InPUT mapping file, your constructor signature, and your user input are compatible.",
+							+ "'. Please ensure that your InPUT mapping file, your constructor signature, and your user input are compatible. Another alternative is, if it is a complex mapping parameter, with subentries that have a wrong mapping setup.",
 					e);
 		}
 		return enhancedParam;
@@ -237,8 +237,15 @@ public abstract class AStruct extends Param {
 			List<Value<? extends Param>> subParamValueElements, String paramId,
 			ElementCache elementCache) throws InPUTException {
 		Value<? extends Param> valueE = elementCache.get(paramId);
-		if (valueE != null)
-			return valueE.getInputValue(null);
+		if (valueE != null) {
+			Object value = valueE.getInputValue(null);
+			Param param = valueE.getParam();
+			if (param.isArrayType()) {
+				value = ParamUtil.packArrayForExport(param.getInPUTClass(),
+						value, param.getDimensions().length);
+			}
+			return value;
+		}
 		throw new InPUTException("The formal parameter '" + getParamId()
 				+ "' that has been defined for choice '" + getLocalId()
 				+ "' of parameter '" + getParamId()
@@ -248,9 +255,19 @@ public abstract class AStruct extends Param {
 	private Object getValueForLocalId(
 			List<Value<? extends Param>> potentialActualParamsE, String localId)
 			throws InPUTException {
-		for (Value<? extends Param> valueE : potentialActualParamsE)
-			if (valueE.getParam().getLocalId().equals(localId))
-				return valueE.getInputValue(null);
+		Param param;
+		for (Value<? extends Param> valueE : potentialActualParamsE) {
+			param = valueE.getParam();
+			if (param.getLocalId().equals(localId)) {
+				Object result = valueE.getInputValue(null);
+				if (param.isArrayType()) {
+					result = ParamUtil.packArrayForExport(
+							param.getInPUTClass(), result,
+							param.getDimensions().length);
+				}
+				return result;
+			}
+		}
 		throw new InPUTException(
 				"The formal parameter '"
 						+ localId
