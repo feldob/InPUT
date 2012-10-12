@@ -23,7 +23,7 @@ JUnit tests for the InPUT4j core module. Depends on the InPUT4j module.
 
 ### StackoverflowExample
 
-The source code that gives a possible solution to the question posted [here](http://stackoverflow.com/questions/6863317/java-configuration-and-dependency-injection-akin-to-springs-ioc-vs-weld-guic) using InPUT.
+The [source code](https://github.com/feldob/InPUT/tree/master/Java/Source/StackoverflowExample) that gives a possible solution to the question posted [here](http://stackoverflow.com/questions/6863317/java-configuration-and-dependency-injection-akin-to-springs-ioc-vs-weld-guic) using InPUT.
 
 ### PerformanceAnalyzerExample
 
