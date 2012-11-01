@@ -30,19 +30,20 @@ public class InputOutputTraditional {
 
 	private void doSomething(IDesignSpace space, IDesign inputDesign)
 			throws InPUTException {
-		Integer[] input = inputDesign.getValue("paramId");
+		
+		Integer[] input = inputDesign.getValue("paramId"); //Import values from design file
 
-		Integer[] output = new Integer[input.length];
+		Integer[] output = new Integer[input.length]; // Create output array with size of values
 
 		for (int i = 0; i < input.length; i++) {
 			System.out.println(input[i]);
-			output[i] = (Integer)input[i];
+			output[i] = (Integer)input[i]; // type cast input values to integer and assign to output array
 		}
 
-		IDesign outputDesign = space.nextEmptyDesign("outputId");
+		IDesign outputDesign = space.nextEmptyDesign("outputId"); // Find empty design
 		outputDesign.setValue("paramId", output);
-		outputDesign.attachEnvironmentInfo();
+		outputDesign.attachEnvironmentInfo(); // attach system information, e.g architecture and number of cores
 
-		outputDesign.export(new XMLFileExporter("output.xml"));
+		outputDesign.export(new XMLFileExporter("output.xml")); // Exporting output for display
 	}
 }
