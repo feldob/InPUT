@@ -56,7 +56,7 @@ You can also treat output, and entire experimental investigations, randomly inst
 
 # How to use InPUT?
 
-Each programming language offers a language specific Readme in the respective folder. Currently, only Java is supported. C++ is coming soon.
+Each programming language offers a language specific Readme in the respective folder. Currently, only Java is supported. C++ is coming soon. A first tutorial on how to use InPUT4j can be viewed [here](http://mutubehd.miun.se/video/742/InPUT+Tutorial+%28Step+1%29).
 
 # Good to know...
 
@@ -66,7 +66,7 @@ When working offline, the *schemaLocation* attribute for each InPUT XML descript
 * [designSpace](https://github.com/feldob/InPUT/blob/master/DesignSpace.xsd)
 * [codeMappings](https://github.com/feldob/InPUT/blob/master/CodeMappings.xsd)
 
-For instance, for those descriptors you want to use offline, change <code>schemaLocation="http://TheInPUT.org/Design http://TheInPUT.org/Design.xsd</code> in the root node to <code>schemaLocation="http://TheInPUT.org/Design SCHEMA_PATH/Design.xsd"</code>, if Design.xsd resides in SCHEMA_PATH of your computer or local network. The *schemaPath* parameter of the InPUT4j\*.jar in file *src/se/miun/itm/input/config.xml* should then be set to SCHEMA_PATH too, so that all descriptors comply by default. Now, you can fully work offline, which further should boost the InPUT parsing performance.
+For instance, for those descriptors you want to use offline, change <code>schemaLocation="http://theInput.org/Design http://theInput.org/Design.xsd</code> in the root node to <code>schemaLocation="http://theInput.org/Design SCHEMA_PATH/Design.xsd"</code>, if Design.xsd resides in SCHEMA_PATH of your computer or local network. The *schemaPath* parameter of the InPUT4j\*.jar in file *src/se/miun/itm/input/config.xml* should then be set to SCHEMA_PATH too, so that all descriptors comply by default. Now, you can fully work offline, which further should boost the InPUT parsing performance.
 
 #License
 
