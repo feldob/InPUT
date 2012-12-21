@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:Design id="spotConfig" ref="spotSpace.xml" xmlns:i="http://TheInPUT.org/Design" xmlns:i1="http://TheInPUT.org/DesignSpace"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://TheInPUT.org/Design http://TheInput.org/Design.xsd ">
+	<i:NValue id="spot.seed" value="125" />
+	<i:NValue id="alg.seed" value="4321" />
+	<i:SValue id="init.design.func" value="spotCreateDesignLhd" />
+	<i:NValue id="init.design.size" value="4"/>
+	<i:NValue id="init.design.retries" value="5"/>
+	<i:NValue id="init.design.repeats" value="3"/>
+	<i:NValue id="seq.design.size" value="200"/>
+	<i:NValue id="seq.design.retries" value="10"/>
+	<i:NValue id="seq.design.oldBest.size" value="1"/>
+	<i:NValue id="seq.design.new.size" value="5"/>
+	<i:NValue id="seq.design.maxRepeats" value="10"/>
+	<i:SValue id="seq.design.increase.func" value="spotSeqDesignIncreasePlusOne"/>
+	<i:SValue id="seq.design.func" value="spotCreateDesignLhd"/>
+	<i:SValue id="seq.predictionModel.func" value="spotPredictForrester"/>
+	<i:SValue id="seq.merge.func" value="mean"/>
+	<i:SValue id="seq.transformation.func" value="inverse"/>
+	<i:NValue id="seq.useAdaptiveRoi" value="false" />
+	<i:NValue id="spot.ocba" value="true" />
+<!-- 	<i:SValue id="report.func" value="spotReportDefault"/> -->
+	<i:NValue id="report.io.pdf" value="true" />
+	<i:NValue id="spot.fileMode" value="true"/>
+	<!-- <i:SValue id="seq.predictionOpt.func" value="?"> -->
+		<!-- Extra setup for input -->
+	<i:SValue id="spot.folder" value="experiment"/>
+	<i:SValue id="alg.id" value="input"/>
+</i:Design>
