@@ -29,12 +29,14 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import se.miun.itm.input.model.param.NParam;
-
 /**
  * The standard evaluator, using the integrated javascript engine.
+ * 
  * @author Felix Dobslaw
+ * 
  * TODO the javascript commands are not mapped for full compliance. (e.g. "Math.max" to "max")
+ * 
+ * @NotThredSafe
  **/
 public class JavascriptEvaluator extends AbstractEvaluator {
 
@@ -44,7 +46,7 @@ public class JavascriptEvaluator extends AbstractEvaluator {
 
 	private static final ScriptEngineManager manager = new ScriptEngineManager();
 
-	private ScriptEngine engine;
+	private final ScriptEngine engine;
 
 	private final Map<String, String> vars = new HashMap<String, String>();
 
@@ -69,11 +71,10 @@ public class JavascriptEvaluator extends AbstractEvaluator {
 	}
 
 	@Override
-	public String evaluate(NParam param, Set<String> vars,
+	public String evaluate(Set<String> vars,
 			String expression) throws ScriptException {
-		String result = engine.eval(replaceVars(expression, vars))
+		return engine.eval(replaceVars(expression, vars))
 				.toString();
-		return ensureType(param.getNumericType(), result);
 	}
 
 	private String replaceVars(String expression, Set<String> vars) {

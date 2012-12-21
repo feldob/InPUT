@@ -20,6 +20,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package se.miun.itm.input.aspects;
 
+import java.io.File;
+
 /**
  * An abstract help class that allows the setting of a file name for import/export jobs.
  * 
@@ -35,7 +37,7 @@ public abstract class FileNameAssigner {
 	 * @param inputFilePath
 	 */
 	public FileNameAssigner(String inputFilePath) {
-		this.fileName = inputFilePath;
+		this.fileName = new File(inputFilePath).getAbsolutePath();
 	}
 
 	/**
@@ -43,7 +45,7 @@ public abstract class FileNameAssigner {
 	 * @param inputPath
 	 */
 	public void resetFileName(String inputPath) {
-			this.fileName = inputPath;
+			this.fileName = new File(inputPath).getAbsolutePath();
 	}
 	
 	/**
@@ -52,5 +54,13 @@ public abstract class FileNameAssigner {
 	 */
 	public String getInfo() {
 		return fileName;
+	}
+
+	protected void initPotentialParentFolders(String fileName) {
+		if (fileName.contains(File.separator)) {
+			String parentFolders = fileName.substring(0,fileName.lastIndexOf(File.separatorChar));
+			new File(parentFolders).mkdirs();
+		}
+		
 	}
 }

@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,23 +32,23 @@ import java.util.Set;
 import org.jdom2.Element;
 
 import se.miun.itm.input.eval.ParamEvaluationOrderComparator;
-import se.miun.itm.input.export.InPUTExporter;
+import se.miun.itm.input.export.ExportHelper;
+import se.miun.itm.input.export.Exporter;
 import se.miun.itm.input.impOrt.InPUTImporter;
-import se.miun.itm.input.model.Dimensions;
 import se.miun.itm.input.model.Document;
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.element.Value;
-import se.miun.itm.input.model.element.ValueFactory;
 import se.miun.itm.input.model.param.Param;
 import se.miun.itm.input.model.param.ParamStore;
-import se.miun.itm.input.util.ParamUtil;
 import se.miun.itm.input.util.Q;
 import se.miun.itm.input.util.TreeSorter;
 import se.miun.itm.input.util.xml.SAXUtil;
 
 /**
  * 
- * @author Felix Dobslaw
+ * {@inheritDoc}
+ * 
+ * @NotThreadSafe
  */
 public class DesignSpace implements IDesignSpace {
 
@@ -83,7 +82,7 @@ public class DesignSpace implements IDesignSpace {
 		this(filePath, null);
 	}
 
-	public DesignSpace(String filePath, InputStream mappingStream)
+	private DesignSpace(String filePath, InputStream mappingStream)
 			throws InPUTException {
 		isFile = true;
 		fileName = new File(filePath).getName();
@@ -102,8 +101,11 @@ public class DesignSpace implements IDesignSpace {
 		this(spaceStream, null);
 	}
 
-	public DesignSpace(Document space, String spaceFileName)
-			throws InPUTException {
+	DesignSpace(Document space) throws InPUTException {
+		this(space, null);
+	}
+	
+	DesignSpace(Document space, String spaceFileName) throws InPUTException {
 		this.isFile = true;
 		this.fileName = spaceFileName;
 		this.space = space;
@@ -111,7 +113,6 @@ public class DesignSpace implements IDesignSpace {
 		hash = id.hashCode();
 		String mappingPath = space.getRootElement().getAttributeValue(
 				Q.MAPPING_ATTR);
-		// TODO does not need mapping, then it should not be needed here!
 		if (mappingPath != null) {
 			try {
 				ps = initParamStore(new FileInputStream(mappingPath));
@@ -171,21 +172,18 @@ public class DesignSpace implements IDesignSpace {
 
 		Design design = new Design(expId, ps);
 
-		List<Param> children = (List<Param>) (List<?>) space.getRootElement()
+		List<Param<?>> children = (List<Param<?>>) (List<?>) space.getRootElement()
 				.getChildren();
 
 		Map<String, Object> vars = new HashMap<String, Object>();
-		for (Param param : children)
-			setRandom(design, vars, param);
+		Value<? extends Param<?>> value;
+		for (Param<?> param : children) {
+			value = param.nextElement(param.getId(), param.getDimensions(),
+					vars, null);
+			design.addElement(param.getId(), value);
+		}
 
 		return design;
-	}
-
-	private void setRandom(Design design, Map<String, Object> vars, Param param)
-			throws InPUTException {
-		Value<? extends Param> random = nextElement(param.getId(),
-				param.getDimensions(), vars, null);
-		design.setElement(param.getId(), random);
 	}
 
 	@Override
@@ -197,44 +195,42 @@ public class DesignSpace implements IDesignSpace {
 		return nextDesign;
 	}
 
-	private Value<? extends Param> nextElement(String paramId,
-			Integer[] sizeArray, Map<String, Object> vars,
-			Object[] actualParents) throws InPUTException {
-		return ValueFactory.constructRandomElement(ps.getParam(paramId),
-				sizeArray, vars, actualParents, null);
-	}
-
 	@Override
-	public <T> T next(String paramId, Integer[] sizeArray)
-			throws InPUTException {
+	public <T> T next(String paramId, int[] sizeArray) throws InPUTException {
 		return next(paramId, sizeArray, new HashMap<String, Object>());
 	}
 
 	@Override
 	public <T> T next(String paramId) throws InPUTException {
-		return next(paramId, ps.getParam(paramId).getDimensions(),
-				new HashMap<String, Object>(), null);
+		return next(paramId, new HashMap<String, Object>(), null);
 	}
 
 	@Override
 	public <T> T next(String paramId, Object[] actualParams)
 			throws InPUTException {
-		return next(paramId, ps.getParam(paramId).getDimensions(), actualParams);
+		Param<?> param = ps.getParam(paramId);
+		if (param == null)
+			return null;
+		return next(paramId, param.getDimensions(), actualParams);
 	}
 
 	@Override
 	public <T> T next(String paramId, Map<String, Object> vars)
 			throws InPUTException {
-		return next(paramId, ps.getParam(paramId).getDimensions(), vars);
+		Param<?> param = ps.getParam(paramId);
+		if (param == null)
+			return null;
+		return next(paramId, param.getDimensions(), vars);
 	}
 
-	public <T> T next(String paramId, Integer[] sizeArray,
-			Map<String, Object> vars) throws InPUTException {
+	@Override
+	public <T> T next(String paramId, int[] sizeArray, Map<String, Object> vars)
+			throws InPUTException {
 		return next(paramId, sizeArray, vars, null);
 	}
 
 	@Override
-	public <T> T next(String paramId, Integer[] sizeArray, Object[] actualParams)
+	public <T> T next(String paramId, int[] sizeArray, Object[] actualParams)
 			throws InPUTException {
 		return next(paramId, sizeArray, new HashMap<String, Object>(),
 				actualParams);
@@ -243,57 +239,36 @@ public class DesignSpace implements IDesignSpace {
 	@Override
 	public <T> T next(String paramId, Map<String, Object> vars,
 			Object[] actualParams) throws InPUTException {
-		return next(paramId, ps.getParam(paramId).getDimensions(), vars,
-				actualParams);
+		Param<?> param = ps.getParam(paramId);
+		if (param == null)
+			return null;
+		return next(paramId, param.getDimensions(), vars, actualParams);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T next(String paramId, Integer[] sizeArray,
+	public <T> T next(String paramId, int[] dimensions,
 			Map<String, Object> vars, Object[] actualParams)
 			throws InPUTException {
-		Param p = ps.getParam(paramId);
-		Object value = nextObject(paramId, sizeArray, vars, actualParams);
-		return (T) ParamUtil.packArrayForExport(p.getInPUTClass(), value,
-				sizeArray.length);
-	}
-
-	private Object nextObject(String paramId, Integer[] sizeArray,
-			Map<String, Object> vars, Object[] actualParams)
-			throws InPUTException {
-		Object value;
-		if (sizeArray.length == 0 || (sizeArray.length == 1 && sizeArray[0] == 0)) {
-			value = nextElement(paramId, Dimensions.DEFAULT_DIM,
-					vars, actualParams)
-					.getInputValue(actualParams);
-		} else {
-			if (sizeArray[0] < 0)
-				sizeArray[0] = 1;
-
-			Object[] entries = new Object[sizeArray[0]];
-			
-			for (int i = 0; i < entries.length; i++)
-					entries[i] = nextObject(paramId,
-							Arrays.copyOfRange(sizeArray, 1, sizeArray.length),
-							vars, actualParams);
-			value = entries;
-		}
-		return value;
+		Param<?> param = ps.getParam(paramId);
+		if (param != null)
+			return (T) param.next(dimensions, vars, actualParams);
+		return null;
 	}
 
 	@Override
-	public <O> O export(InPUTExporter<O> exporter) throws InPUTException {
+	public <O> O export(Exporter<O> exporter) throws InPUTException {
 		return exporter.export(space);
 	}
 
 	@Override
 	public String toString() {
-		return space.toString();
+		return ExportHelper.exportableToString(this);
 	}
 
 	@Override
 	public Set<String> getSupportedParamIds() {
-		return ps.getParamIds();
+		return ps.getAllParameterIds();
 	}
 
 	static void register(String id, DesignSpace designSpace) {

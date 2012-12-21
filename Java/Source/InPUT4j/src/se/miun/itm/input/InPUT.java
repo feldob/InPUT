@@ -23,20 +23,28 @@ package se.miun.itm.input;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
 
-import se.miun.itm.input.export.InPUTExporter;
+import se.miun.itm.input.export.ExportHelper;
+import se.miun.itm.input.export.Exporter;
 import se.miun.itm.input.impOrt.InPUTImporter;
 import se.miun.itm.input.model.Document;
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.design.DesignSpace;
+import se.miun.itm.input.model.design.IDesign;
 import se.miun.itm.input.model.design.IDesignSpace;
 
 /**
  * The default implementation of the IInPUT interface for InPUT4j.
+ * 
  * @author Felix Dobslaw
+ * 
+ * @NotThreadSafe
  */
 public class InPUT implements IInPUT {
+
+	private static final Map<String, IInPUT> inputs = new HashMap<String, IInPUT>();
 
 	private final IDesignSpace propertySpace;
 
@@ -73,6 +81,7 @@ public class InPUT implements IInPUT {
 		propertySpace = initDesignSpace(propertySpaceStream);
 		algorithmSpace = initDesignSpace(algorithmDesignSpaceStream);
 		outputSpace = initDesignSpace(outputSpaceStream);
+		inputs.put(id, this);
 	}
 
 	public InPUT(String id, IDesignSpace algorithmSpace,
@@ -84,6 +93,7 @@ public class InPUT implements IInPUT {
 		this.propertySpace = propertySpace;
 		this.problemFeatureSpace = problemSpace;
 		this.outputSpace = outputSpace;
+		inputs.put(id, this);
 	}
 
 	private IDesignSpace initDesignSpace(InputStream spaceStream)
@@ -114,7 +124,7 @@ public class InPUT implements IInPUT {
 	}
 
 	@Override
-	public <T> T export(InPUTExporter<T> exporter) throws InPUTException {
+	public <T> T export(Exporter<T> exporter) throws InPUTException {
 		return exporter.export(this);
 	}
 
@@ -140,5 +150,33 @@ public class InPUT implements IInPUT {
 		Experiment experiment = new Experiment(id, this);
 		experiment.impOrt(importer);
 		return experiment;
+	}
+
+	public static IInPUT lookup(String id) {
+		return inputs.get(id);
+	}
+	
+	@Override
+	public String toString() {
+		return ExportHelper.exportableToString(this);
+	}
+	
+	@Override
+	public IExperiment nextExperiment(String expId, IDesign problemFeatures) throws InPUTException {
+		if (problemFeatureSpace != null && (problemFeatures == null || !problemFeatures.getSpace().getId().equals(problemFeatureSpace.getId())))
+			throw new InPUTException("You have to supply a problem design of type \"" + problemFeatureSpace.getId() + "\".");
+		
+		IExperiment exp = new Experiment(id, this);
+		
+		//set problem
+		exp.setProblemFeatures(problemFeatures);
+		//set random algorithm
+		exp.setAlgorithmDesign(algorithmSpace.nextDesign(expId));
+
+		// set preferences
+		if (propertySpace != null)
+			exp.setPreferences(propertySpace.nextDesign(expId));
+		
+		return exp;
 	}
 }

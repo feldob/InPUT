@@ -42,17 +42,9 @@ import se.miun.itm.input.model.mapping.IMappings;
  * 
  * @author Felix Dobslaw
  * 
+ * @ThreadSafe
  */
 public class ParamInitializer {
-
-	private static Integer getRootDist(Element elem) {
-		int counter = 0;
-		while (!elem.isRootElement()) {
-			elem = elem.getParentElement();
-			counter++;
-		}
-		return counter;
-	}
 
 	/**
 	 * receive the ordered parameter list for a given parameter tree, under the
@@ -74,6 +66,15 @@ public class ParamInitializer {
 		}
 
 		return params;
+	}
+
+	private static Integer getRootDist(Element elem) {
+		int counter = 0;
+		while (!elem.isRootElement()) {
+			elem = elem.getParentElement();
+			counter++;
+		}
+		return counter;
 	}
 
 	/**

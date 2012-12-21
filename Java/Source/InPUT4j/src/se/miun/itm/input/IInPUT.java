@@ -24,10 +24,10 @@ import java.util.Map;
 
 import se.miun.itm.input.aspects.Exportable;
 import se.miun.itm.input.aspects.Identifiable;
-import se.miun.itm.input.aspects.InPUTExportable;
 import se.miun.itm.input.impOrt.InPUTImporter;
 import se.miun.itm.input.model.Document;
 import se.miun.itm.input.model.InPUTException;
+import se.miun.itm.input.model.design.IDesign;
 import se.miun.itm.input.model.design.IDesignSpace;
 
 /**
@@ -46,38 +46,48 @@ import se.miun.itm.input.model.design.IDesignSpace;
  * @author Felix Dobslaw
  * 
  */
-public interface IInPUT extends Identifiable, Exportable, InPUTExportable {
+public interface IInPUT extends Identifiable, Exportable {
 
 	/**
 	 * returns the problem feature space.
+	 * 
 	 * @return
 	 */
 	IDesignSpace getProblemFeatureSpace();
+
 	/**
 	 * returns the algorithm design space.
+	 * 
 	 * @return
 	 */
 	IDesignSpace getAlgorithmDesignSpace();
 
 	/**
 	 * returns the property space.
+	 * 
 	 * @return
 	 */
 	IDesignSpace getPropertySpace();
 
 	/**
 	 * returns the output space for the InPUT instance.
+	 * 
 	 * @return
 	 */
 	IDesignSpace getOutputSpace();
 
 	/**
-	 * imports an experiment from an external source, which is an instance of this InPUT meta space.
+	 * imports an experiment from an external source, which is an instance of
+	 * this InPUT meta space.
+	 * 
 	 * @param id
 	 * @param importer
 	 * @return
 	 * @throws InPUTException
 	 */
 	IExperiment impOrt(String id, InPUTImporter<Map<String, Document>> importer)
+			throws InPUTException;
+
+	IExperiment nextExperiment(String expId, IDesign problemFeatures)
 			throws InPUTException;
 }

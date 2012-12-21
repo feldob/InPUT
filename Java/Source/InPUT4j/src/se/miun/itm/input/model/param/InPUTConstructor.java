@@ -32,16 +32,17 @@ import java.util.regex.Pattern;
 
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.Numeric;
-import se.miun.itm.input.model.mapping.IMapping;
+import se.miun.itm.input.model.param.generator.ValueGenerator;
 import se.miun.itm.input.util.ParamUtil;
 
 /**
- * An internal representation of a constructor, which is a wrapper of the
- * reflect.constructor class, including the information from the InPUT mapping
- * descriptors. It keeps track of its dependencies, and how to get hold of the
- * values that it requires for correct instantiation.
+ * An internal representation of a constructor, which is a wrapper of the reflect.constructor class, including the information from the
+ * InPUT mapping descriptors. It keeps track of its dependencies, and how to get hold of the values that it requires for correct
+ * instantiation.
  * 
  * @author Felix Dobslaw
+ * 
+ * @NotThreadSafe
  */
 public class InPUTConstructor {
 
@@ -63,23 +64,25 @@ public class InPUTConstructor {
 
 	private boolean init = false;
 
-	private final IMapping mapping;
+	private String componentType;
 
-	public InPUTConstructor(String constrString, AStruct param, ParamStore ps,
-			IMapping mapping) throws InPUTException {
-		this.ps = ps;
+	public InPUTConstructor(AStruct param, String componentType, String constructorString) throws InPUTException {
 		this.param = param;
-		this.mapping = mapping;
-		this.formalParamIds = initParams(constrString);
+		this.ps = param.getParamStore();
+		this.componentType = componentType;
+		this.formalParamIds = initParams(constructorString);
 	}
 
 	private String[] initParams(String constrString) throws InPUTException {
 		String[] formalParamIds;
 		if (constrString != null) {
-			formalParamIds = constrString.split(Pattern.quote(" "));
+			if (constrString.equals(""))
+				formalParamIds = EMPTY_STRING_ARRAY;
+			else
+				formalParamIds = constrString.split(Pattern.quote(" "));
 		} else {
 			if (param instanceof SChoice) {
-				formalParamIds = initParamsByParent();
+				formalParamIds = initParamsWithParentFormalParameters();
 			} else {
 				formalParamIds = EMPTY_STRING_ARRAY;
 			}
@@ -87,8 +90,7 @@ public class InPUTConstructor {
 		return formalParamIds;
 	}
 
-	private Class<?>[] initConstructorFormalParamClasses()
-			throws InPUTException {
+	private Class<?>[] initConstructorFormalParamClasses() throws InPUTException {
 		initContext();
 		Class<?>[] formalParams = constructorGuessing();
 
@@ -99,33 +101,28 @@ public class InPUTConstructor {
 	}
 
 	private void initContext() {
-		for (String paramId : formalParamIds)
-			if (ps.containsParam(paramId))
-				globalReferences.add(paramId);
+		for (String paramId : formalParamIds) {
+			Param<?> localParam = ParamUtil.getParamForLocalId(paramId, param, ps);
+			if (localParam != null)
+				localReferences.add(paramId);
+		}
 
 		for (String paramId : formalParamIds) {
-			if (!globalReferences.contains(paramId)) {
-				Param localParam = ParamUtil.getParamForLocalId(paramId, param,
-						ps);
-				if (localParam != null)
-					localReferences.add(paramId);
+			if (ps.containsParam(paramId) && !localReferences.contains(paramId)) {
+				globalReferences.add(paramId);
 			}
 		}
+
 	}
 
 	private Class<?>[] constructorGuessing() throws InPUTException {
 		Class<?>[] formalParams = null;
 		Constructor<?>[] constructors;
-		String component = null;
 		try {
-			component = mapping.getComponentId();
-			constructors = Class.forName(component).getConstructors();
+			constructors = Class.forName(componentType).getConstructors();
 		} catch (Exception e) {
-			throw new InPUTException(
-					"A class by name "
-							+ component
-							+ "does not exist in your classpath, but it has been defined as a mapping of parameter "
-							+ mapping.getId(), e);
+			throw new InPUTException("A class by name " + componentType
+					+ " does not exist in your classpath, but it has been defined as a mapping of parameter " + param.getId(), e);
 		}
 
 		// first guess: only one constructor?
@@ -133,7 +130,7 @@ public class InPUTConstructor {
 			constructor = constructors[0];
 		else
 			// otherwise, single constructor with as many arguments as
-			// formalaramids?
+			// formalparamids?
 			constructor = getSingleConstructorByContext(constructors);
 
 		if (constructor != null) {
@@ -144,8 +141,7 @@ public class InPUTConstructor {
 		return formalParams;
 	}
 
-	private Constructor<?> getSingleConstructorByContext(
-			Constructor<?>[] constructors) throws InPUTException {
+	private Constructor<?> getSingleConstructorByContext(Constructor<?>[] constructors) throws InPUTException {
 		Constructor<?> constructor;
 		Constructor<?>[] numberConstructors = getCostructorsByNumber(constructors);
 		if (numberConstructors.length == 1) {
@@ -156,14 +152,12 @@ public class InPUTConstructor {
 		return constructor;
 	}
 
-	private Constructor<?> getSingleCostructorByIoC(
-			Constructor<?>[] constructors) throws InPUTException {
+	private Constructor<?> getSingleCostructorByIoC(Constructor<?>[] constructors) throws InPUTException {
 		Class<?>[] context = gatherAvailableConstructorContext();
 		Constructor<?> constructor = null;
 		List<Constructor<?>> contextConstructors = null;
 		if (nonEmptyContext(context)) {
-			contextConstructors = retrieveContextConstructors(context,
-					constructors);
+			contextConstructors = retrieveContextConstructors(context, constructors);
 		}
 
 		if (contextConstructors != null && contextConstructors.size() == 1)
@@ -171,10 +165,8 @@ public class InPUTConstructor {
 		return constructor;
 	}
 
-	private List<Constructor<?>> retrieveContextConstructors(
-			Class<?>[] context, Constructor<?>[] constructors) {
-		LinkedList<Constructor<?>> contextConstructors = new LinkedList<Constructor<?>>(
-				Arrays.asList(constructors));
+	private List<Constructor<?>> retrieveContextConstructors(Class<?>[] context, Constructor<?>[] constructors) {
+		LinkedList<Constructor<?>> contextConstructors = new LinkedList<Constructor<?>>(Arrays.asList(constructors));
 		for (int i = 0; i < context.length; i++) {
 			if (context[i] == null)
 				continue;
@@ -186,13 +178,10 @@ public class InPUTConstructor {
 		return contextConstructors;
 	}
 
-	private void reduceByContext(
-			LinkedList<Constructor<?>> contextConstructors, int i,
-			Class<?> context) {
+	private void reduceByContext(LinkedList<Constructor<?>> contextConstructors, int i, Class<?> context) {
 		List<Integer> toRemove = new ArrayList<Integer>();
 		for (int j = 0; j < contextConstructors.size(); j++)
-			if (!contextConstructors.get(j).getParameterTypes()[i]
-					.equals(context))
+			if (!contextConstructors.get(j).getParameterTypes()[i].equals(context))
 				toRemove.add(j);
 
 		int index;
@@ -209,8 +198,7 @@ public class InPUTConstructor {
 		return false;
 	}
 
-	private Class<?>[] gatherAvailableConstructorContext()
-			throws InPUTException {
+	private Class<?>[] gatherAvailableConstructorContext() throws InPUTException {
 		String identifier;
 		Class<?>[] context = new Class<?>[formalParamIds.length];
 		Class<?> cLass;
@@ -226,8 +214,7 @@ public class InPUTConstructor {
 		return context;
 	}
 
-	private Constructor<?>[] getCostructorsByNumber(
-			Constructor<?>[] constructors) {
+	private Constructor<?>[] getCostructorsByNumber(Constructor<?>[] constructors) {
 		List<Constructor<?>> result = new ArrayList<Constructor<?>>();
 		int number = formalParamIds.length;
 		for (int i = 0; i < constructors.length; i++)
@@ -239,7 +226,7 @@ public class InPUTConstructor {
 	private Class<?>[] extractParameterClasses() throws InPUTException {
 		Class<?>[] cLasses;
 		if (formalParamIds.length == 0)
-			cLasses = AStruct.EMPTY_CLASS_ARRAY;
+			cLasses = ValueGenerator.EMPTY_CLASS_ARRAY;
 		else
 			cLasses = initParameterClasses();
 
@@ -254,10 +241,8 @@ public class InPUTConstructor {
 		return cLasses;
 	}
 
-	private String[] initParamsByParent() throws InPUTException {
-		InPUTConstructor parentConstructor = ((SParam) param.getParentElement())
-				.getInPUTConstructor();
-		;
+	private String[] initParamsWithParentFormalParameters() throws InPUTException {
+		InPUTConstructor parentConstructor = ((SParam) param.getParentElement()).getInPUTConstructor();
 		return parentConstructor.getFormalParamIds();
 	}
 
@@ -275,28 +260,21 @@ public class InPUTConstructor {
 			} else
 				cLass = getClassForLocalContext(identifier);
 		} catch (Exception e) {
-		} finally {
-			if (cLass == null) {
-				throw new InPUTException(param.getId()
-						+ ": There is no class, subparam or parameter '"
-						+ param.getId() + "' with identifier '" + identifier
-						+ "'.");
-			}
+			throw new InPUTException(param.getId() + ": There is no class, subparam or parameter '" + param.getId() + "' with identifier '"
+					+ identifier + "'.");
 		}
 
 		return cLass;
 	}
 
-	private Class<?> getClassForLocalContext(String identifier)
-			throws InPUTException {
+	private Class<?> getClassForLocalContext(String identifier) throws InPUTException {
 		Class<?> cLass = getClassForNumericParam(identifier);
 
 		if (cLass == null) {
 			// first try the
 			cLass = getClassForGlobalContext(identifier);
 			if (cLass == null) {
-				Param paramForId = ParamUtil.getParamForLocalId(identifier,
-						param, ps);
+				Param<?> paramForId = ParamUtil.getParamForLocalId(identifier, param, ps);
 				if (paramForId != null) {
 					cLass = getClassForLocalParam(identifier, paramForId);
 				}
@@ -305,7 +283,7 @@ public class InPUTConstructor {
 		return cLass;
 	}
 
-	private Class<?> getClassForLocalParam(String identifier, Param param) {
+	private Class<?> getClassForLocalParam(String identifier, Param<?> param) throws InPUTException {
 		Class<?> cLass = null;
 		if (param != null)
 			cLass = param.getInPUTClass();
@@ -319,17 +297,41 @@ public class InPUTConstructor {
 		return Numeric.valueOf(identifier.toUpperCase()).getPrimitiveClass();
 	}
 
-	private Class<?> getClassForGlobalContext(String identifier)
-			throws InPUTException {
+	private Class<?> getClassForGlobalContext(String identifier) throws InPUTException {
 		Class<?> cLass = null;
-		Param param = ps.getParam(identifier);
+		Param<?> param = ps.getParam(identifier);
 		if (param != null)
 			cLass = param.getInPUTClass();
 		else if (ParamUtil.isMethodContext(identifier))
-			cLass = ParamUtil.getClassFromMethodReturnType(identifier,
-					this.param, ps);
+			cLass = getClassFromMethodReturnType(identifier, this.param, ps);
 
 		return cLass;
+	}
+
+	/**
+	 * Retrieves the return type class for a given a method identifier and a param element.
+	 * 
+	 * @param identifier
+	 * @param parentParam
+	 * @param ps
+	 * @return
+	 * @throws InPUTException
+	 */
+	public static Class<?> getClassFromMethodReturnType(String identifier, Param<?> parentParam, ParamStore ps) throws InPUTException {
+		String[] chops = identifier.split(Pattern.quote("."));
+		String methodId = chops[chops.length - 1];
+
+		String paramId = identifier.substring(0, identifier.length() - (methodId.length() + 1));
+
+		Param<?> param = ParamUtil.getParamForId(paramId, parentParam, ps);
+
+		Class<?> cLass = param.getInPUTClass();
+
+		try {
+			return cLass.getMethod(methodId, ValueGenerator.EMPTY_CLASS_ARRAY).getReturnType();
+		} catch (Exception e) {
+			throw new InPUTException(e.getMessage(), e);
+		}
 	}
 
 	private void init() throws InPUTException {
@@ -339,19 +341,16 @@ public class InPUTConstructor {
 	}
 
 	private void initClassType() throws InPUTException {
-		String className = mapping.getComponentId();
-		if (className == null)
+		if (componentType == null)
 			throw new InPUTException(
 					param.getId()
 							+ ": No entry for this choice element could be found in the code mappings file. Make sure that the mapping reference in your space descriptor points to the correct mapping file.");
 
 		Class<?> cLass;
 		try {
-			cLass = Class.forName(className);
+			cLass = Class.forName(componentType);
 		} catch (ClassNotFoundException e) {
-			throw new InPUTException(param.getId()
-					+ ": There is no such class '" + mapping.getComponentId()
-					+ "'.", e);
+			throw new InPUTException(param.getId() + ": There is no such class '" + componentType + "'.", e);
 		}
 		try {
 			Class<?>[] params = initConstructorFormalParamClasses();
@@ -362,17 +361,13 @@ public class InPUTConstructor {
 			else
 				constructor = cLass.getConstructor(params);
 		} catch (NoSuchMethodException e) {
-			throw new InPUTException(param.getId()
-					+ ": There is no such constructor.", e);
+			throw new InPUTException(param.getId() + ": There is no such constructor.", e);
 		} catch (SecurityException e) {
-			throw new InPUTException(param.getId()
-					+ ": You do not have the right to invoke the constructor.",
-					e);
+			throw new InPUTException(param.getId() + ": You do not have the right to invoke the constructor.", e);
 		}
 	}
 
-	public boolean isGlobalIdUsedInConstructor(String paramId)
-			throws InPUTException {
+	public boolean isGlobalIdUsedInConstructor(String paramId) throws InPUTException {
 		if (!init)
 			init();
 		return globalReferences.contains(paramId);
@@ -382,8 +377,7 @@ public class InPUTConstructor {
 		return formalParamIds;
 	}
 
-	public boolean isLocalInitByConstructor(String localId)
-			throws InPUTException {
+	public boolean isLocalInitByConstructor(String localId) throws InPUTException {
 		if (!init)
 			init();
 		return localReferences.contains(localId);
@@ -397,35 +391,36 @@ public class InPUTConstructor {
 		} catch (InstantiationException e) {
 			throw new InPUTException(
 					param.getId()
-							+ ": The object could not be instantiated due to some reason.",
+							+ ": The object could not be instantiated due to some reason. Is the class abstract? Then you cannot instantiate the constructor.",
 					e);
 		} catch (IllegalAccessException e) {
-			throw new InPUTException(param.getId()
-					+ ": The constructor you declared is not visible.", e);
+			throw new InPUTException(param.getId() + ": The constructor you declared is not visible.", e);
 		} catch (IllegalArgumentException e) {
-			throw new InPUTException(param.getId()
-					+ ": There is no constructor of type '"
-					+ constructor.getDeclaringClass().getName()
-					+ "' with argumens of type "
-					+ getClassesForArguments(actualParams), e);
+			throw new InPUTException(param.getId() + ": There is no constructor of type '" + constructor.getDeclaringClass().getName()
+					+ "' with arguments of type " + getClassesForArguments(actualParams), e);
 		} catch (InvocationTargetException e) {
-			throw new InPUTException(
-					param.getId()
-							+ ": Something went wrong with the creation of the constructor.",
-					e);
+			throw new InPUTException(param.getId() + ": Something went wrong with the creation of the constructor.", e);
 		}
 	}
 
 	private String getClassesForArguments(Object[] actualParams) {
 		StringBuilder b = new StringBuilder();
-		for (int i = 0; i < actualParams.length; i++) {
-			b.append(" ");
-			if (actualParams[i] != null) {
-				b.append(actualParams[i].getClass().getName());
-			} else
-				b.append("null");
-		}
+		if (actualParams != null) {
+			for (int i = 0; i < actualParams.length; i++) {
+				b.append(' ');
+				if (actualParams[i] != null) {
+					b.append(actualParams[i].getClass().getName());
+				} else
+					b.append("null");
+			}
+		} else
+			b.append("null");
 		return b.toString();
 	}
 
+	public void validateInPUT(Object value) throws InPUTException {
+		if (!constructor.getDeclaringClass().isInstance(value))
+			throw new InPUTException("The object \"" + value.toString() + "\" is of the wrong type. \""
+					+ constructor.getDeclaringClass().getName() + "\" was expected, but was " + value.getClass().getName() + ".");
+	}
 }

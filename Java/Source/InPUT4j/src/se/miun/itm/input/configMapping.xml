@@ -6,5 +6,4 @@
 <i:Mapping id="random" type="java.util.Random"/>
 <i:Mapping id="random.standard" type="java.util.Random"/>
 <i:Mapping id="random.mersenneTwister" type="org.uncommons.maths.random.MersenneTwisterRNG"/>
-<i:Mapping id="schemaPath" type="java.lang.String" constructor="java.lang.String"/>
 </i:CodeMappings>

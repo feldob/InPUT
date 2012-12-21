@@ -37,8 +37,10 @@ import se.miun.itm.input.util.Q;
 
 /**
  * An importer of InPUT objects, with zip files as sources.
+ * 
  * @author Felix Dobslaw
  *
+ * @NotThreadSafe
  */
 public class InPUTArchiveImporter extends FileNameAssigner implements
 InPUTImporter<IInPUT> {
@@ -63,7 +65,7 @@ InPUTImporter<IInPUT> {
 			ZipFile zipFile = new ZipFile(this.fileName);
 			entries = zipFile.entries();
 			while (entries.hasMoreElements()) {
-				ZipEntry entry = (ZipEntry) entries.nextElement();
+				ZipEntry entry = entries.nextElement();
 				if (!entry.isDirectory())
 					map.put(entry.getName(), zipFile.getInputStream(entry));
 			}
@@ -72,6 +74,7 @@ InPUTImporter<IInPUT> {
 					map);
 			zipFile.close();
 		} catch (IOException ioe) {
+			throw new InPUTException("The zip file could not be read from the given position: " + fileName);
 		}
 		return input;
 	}

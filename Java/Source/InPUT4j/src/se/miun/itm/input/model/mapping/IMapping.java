@@ -20,51 +20,31 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package se.miun.itm.input.model.mapping;
 
-import java.lang.reflect.Constructor;
+import org.jdom2.Element;
 
 import se.miun.itm.input.aspects.Dependable;
 import se.miun.itm.input.aspects.Identifiable;
 import se.miun.itm.input.model.InPUTException;
-import se.miun.itm.input.model.Numeric;
+
 /**
- * A mapping represents a single InPUT mapping element within the code mapping tree.
- * It is an extended pojo of the content in the mapping file, with easy access to class definitions.
+ * A mapping represents a single InPUT mapping element within the code mapping
+ * tree. It is an extended pojo of the content in the mapping file, with easy
+ * access to class definitions.
+ * 
  * @author Felix Dobslaw
- *
+ * 
+ * @NotThreadSafe
  */
-public interface IMapping extends Identifiable, Dependable<IMapping>, Comparable<IMapping>{
-	
-	String getComponentId();
+public interface IMapping extends Identifiable, Dependable<IMapping>,
+		Comparable<IMapping> {
 
 	String getSetter();
-	
+
 	String getGetter();
-	
-	String getConstructorSignature();
-	
-	Class<?> getWrapperClass();
-	
-	String getWrapperGetter();
-
-	String getWrapperSetter();
-
-	boolean hasWrapper();
-
-	Constructor<?> getWrapperConstructor(Numeric numericType) throws InPUTException;
-
-	boolean hasGetHandle();
-
-	boolean hasSetHandle();
-
-	IMappings getCodeMappings();
-
-	boolean containsInConstructorSignature(IMapping mapping);
 
 	String getLocalId();
 
-	Wrapper getWrapper();
+	IMapping clone(String id, IMapping mapping);
 
-	boolean isComplex();
-
-	Complex getComplex();
+	IMapping clone(String id, Element mapping) throws InPUTException;
 }

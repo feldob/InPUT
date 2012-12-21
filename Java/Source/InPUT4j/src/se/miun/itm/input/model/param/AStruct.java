@@ -20,17 +20,19 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package se.miun.itm.input.model.param;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.jdom2.Element;
 
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.element.ElementCache;
 import se.miun.itm.input.model.element.Value;
+import se.miun.itm.input.model.param.generator.StructuralGenerator;
 import se.miun.itm.input.util.ParamUtil;
 import se.miun.itm.input.util.Q;
 
@@ -39,134 +41,66 @@ import se.miun.itm.input.util.Q;
  * from SParam and SChoice, in order to increase code reuse.
  * 
  * @author Felix Dobslaw
+ * 
+ * @NotThreadSafe
  */
-public abstract class AStruct extends Param {
+public abstract class AStruct extends Param<StructuralGenerator> {
 
 	private static final long serialVersionUID = 5891445520352579733L;
 
-	public static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
+	private final List<Param<?>> inputChildren = new ArrayList<Param<?>>();
 
-	public static final Class<?>[] EMPTY_CLASS_ARRAY = new Class<?>[0];
-
-	private final Class<?> superClass;
-
-	private final boolean isEnum;
-
-	private final List<Param> inputChildren = new ArrayList<Param>();
-
-	private final Map<String, Param> inputChildrenM = new HashMap<String, Param>();
-
-	private InPUTConstructor inputConstructor;
+	private final Map<String, Param<?>> inputChildrenM = new HashMap<String, Param<?>>();
 
 	public AStruct(Element original, String designId, ParamStore ps)
 			throws InPUTException {
 		super(original, designId, ps);
-		superClass = initSuperClass();
-		isEnum = initIsEnum();
 		initParamChildren();
 	}
 
-	protected abstract boolean initIsEnum() throws InPUTException;
-
 	private void initParamChildren() {
-		Param elem;
+		Param<?> elem;
 		for (Object childElement : getChildren())
 			if (childElement instanceof NParam
 					|| childElement instanceof SParam) {
-				elem = (Param) childElement;
+				elem = (Param<?>) childElement;
 				inputChildren.add(elem);
 				inputChildrenM.put(elem.getLocalId(), elem);
 			}
 	}
 
-	@Override
-	public Method initSetMethod(Object parentValue) throws InPUTException {
-		Method handle;
-		try {
-			handle = parentValue.getClass().getMethod(getSetter(),
-					getSuperClass());
-		} catch (NoSuchMethodException e) {
-			throw new InPUTException(getId()
-					+ ": There is no such setter method by name '"
-					+ getSetter() + "' and type '" + getSuperClass()
-					+ "'. Look over your code mapping file.", e);
-		} catch (SecurityException e) {
-			throw new InPUTException(
-					getId()
-							+ ": You do not have the right to call the setter method by name '"
-							+ getSetter() + "'.", e);
-		}
-		return handle;
+	public Class<?> getSuperClass() throws InPUTException {
+		return generator.getSuperClass();
 	}
 
-	@Override
-	protected Method initGetMethod(Object parentValue) throws InPUTException {
-		Method handle;
-		try {
-			handle = parentValue.getClass().getMethod(getGetter(),
-					EMPTY_CLASS_ARRAY);
-		} catch (NoSuchMethodException e) {
-			throw new InPUTException(
-					getId()
-							+ ": There is no such setter method. Look over your code mapping file.",
-					e);
-		} catch (SecurityException e) {
-			throw new InPUTException(
-					getId()
-							+ ": You do not have the right to call getter method by name '"
-							+ getGetter() + "'.", e);
-		}
-		return handle;
-	}
-
-	protected abstract Class<?> initSuperClass() throws InPUTException;
-
-	public Class<?> getSuperClass() {
-		return superClass;
-	}
-
-	public List<Param> getParamChildren() {
+	public List<Param<?>> getParamChildren() {
 		return inputChildren;
 	}
 
-	public Param getChildParamElement(String localChildId) {
+	public Param<?> getChildParamElement(String localChildId) {
 		return inputChildrenM.get(localChildId);
 	}
 
-	protected void addChildParam(Param child) {
+	protected void addChildParam(Param<?> child) {
 		inputChildrenM.put(child.getLocalId(), child);
 	}
 
-	public boolean isEnum() {
-		return isEnum;
-	}
-
-	/**
-	 * should only be called internally.
-	 * 
-	 * @return
-	 * @throws InPUTException
-	 */
-	protected void initInPUTConstructor() throws InPUTException {
-		String constrString = mapping.getConstructorSignature();
-		inputConstructor = new InPUTConstructor(constrString, this, ps, mapping);
-	}
-
-	public boolean isInitByConstructor(String localId) throws InPUTException {
-		return inputConstructor.isLocalInitByConstructor(localId);
-	}
-
-	protected InPUTConstructor getInPUTConstructor() throws InPUTException {
-		return inputConstructor;
-	}
-
+	//TODO extract an enhancer class
 	public Object[] enhanceActualParams(Object[] actualParams,
-			List<Value<? extends Param>> subParamValueElements,
+			List<Value<?>> subParamValueElements,
 			ElementCache elementCache) throws InPUTException {
-		InPUTConstructor inputConstructor = getInPUTConstructor();
+		InPUTConstructor inputConstructor = generator.getInPUTConstructor();
 
 		String[] formalParamIds = inputConstructor.getFormalParamIds();
-		if (isParameterizable(actualParams, formalParamIds)) {
+
+		if (isStringType()) {
+			if (actualParams == null) {
+				actualParams = getStringTypeActualParam();
+			}
+		} else if (isParameterizable(actualParams, formalParamIds)) {
+			if (actualParams != null && formalParamIds.length > 0)
+				actualParams = Arrays.copyOfRange(actualParams, 0,
+						formalParamIds.length);
 			Object[] newParams = new Object[formalParamIds.length];
 			for (int i = 0; i < formalParamIds.length; i++)
 				newParams[i] = enhanceActualParam(actualParams,
@@ -177,30 +111,32 @@ public abstract class AStruct extends Param {
 		return actualParams;
 	}
 
+	public abstract Object[] getStringTypeActualParam();
+
+	public abstract boolean isStringType();
+
 	private boolean isParameterizable(Object[] actualParams,
 			String[] formalParamIds) {
-		return (actualParams != null && actualParams.length <= formalParamIds.length)
-				|| formalParamIds.length > 0;
+		return actualParams != null || formalParamIds.length > 0;
 	}
 
 	private Object enhanceActualParam(Object[] actualParams,
-			List<Value<? extends Param>> subParamValueElements,
+			List<Value<? extends Param<?>>> subParamValueElements,
 			ElementCache elementCache, InPUTConstructor inputConstructor,
 			String paramId, int i) throws InPUTException {
-		// prio 1 to actualParam input from user!
-		Object enhancedParam = null;
+		Object enhancedValue = null;
 		try {
 			if (actualParams != null && actualParams[i] != Q.BLANK) {
-				enhancedParam = actualParams[i];
+				enhancedValue = actualParams[i];
 			} else {
 				if (inputConstructor.isLocalInitByConstructor(paramId))
-					enhancedParam = getValueForLocalId(subParamValueElements,
+					enhancedValue = getValueForLocalId(subParamValueElements,
 							paramId);
 				else if (inputConstructor.isGlobalIdUsedInConstructor(paramId))
-					enhancedParam = getValueForGlobalParamId(
+					enhancedValue = getValueForGlobalParamId(
 							subParamValueElements, paramId, elementCache);
 				else if (elementCache != null)
-					enhancedParam = getValueForContext(actualParams,
+					enhancedValue = getValueForContext(actualParams,
 							elementCache, i, paramId);
 			}
 		} catch (Exception e) {
@@ -208,12 +144,12 @@ public abstract class AStruct extends Param {
 					getId()
 							+ ": An actual parameter with id or type '"
 							+ paramId
-							+ "' is missing for the initialization of the object of type '"
-							+ mapping.getComponentId()
+							+ "' is missing for the initialization of the object for type '"
+							+ generator.getComponentType()
 							+ "'. Please ensure that your InPUT mapping file, your constructor signature, and your user input are compatible. Another alternative is, if it is a complex mapping parameter, with subentries that have a wrong mapping setup.",
 					e);
 		}
-		return enhancedParam;
+		return enhancedValue;
 	}
 
 	private Object getValueForContext(Object[] actualParams,
@@ -234,16 +170,13 @@ public abstract class AStruct extends Param {
 	}
 
 	private Object getValueForGlobalParamId(
-			List<Value<? extends Param>> subParamValueElements, String paramId,
+			List<Value<? extends Param<?>>> subParamValueElements, String paramId,
 			ElementCache elementCache) throws InPUTException {
-		Value<? extends Param> valueE = elementCache.get(paramId);
+		Value<? extends Param<?>> valueE = elementCache.get(paramId);
 		if (valueE != null) {
 			Object value = valueE.getInputValue(null);
-			Param param = valueE.getParam();
-			if (param.isArrayType()) {
-				value = ParamUtil.packArrayForExport(param.getInPUTClass(),
-						value, param.getDimensions().length);
-			}
+			Param<?> param = valueE.getParam();
+			value = processForExport(param, value);
 			return value;
 		}
 		throw new InPUTException("The formal parameter '" + getParamId()
@@ -253,18 +186,14 @@ public abstract class AStruct extends Param {
 	}
 
 	private Object getValueForLocalId(
-			List<Value<? extends Param>> potentialActualParamsE, String localId)
+			List<Value<? extends Param<?>>> potentialActualParamsE, String localId)
 			throws InPUTException {
-		Param param;
-		for (Value<? extends Param> valueE : potentialActualParamsE) {
+		Param<?> param;
+		for (Value<? extends Param<?>> valueE : potentialActualParamsE) {
 			param = valueE.getParam();
 			if (param.getLocalId().equals(localId)) {
 				Object result = valueE.getInputValue(null);
-				if (param.isArrayType()) {
-					result = ParamUtil.packArrayForExport(
-							param.getInPUTClass(), result,
-							param.getDimensions().length);
-				}
+				result = processForExport(param, result);
 				return result;
 			}
 		}
@@ -278,12 +207,72 @@ public abstract class AStruct extends Param {
 						+ "' cannot be found to be among the children. Is the value really set in the descriptor?");
 	}
 
+	private Object processForExport(Param<?> param, Object value)
+			throws InPUTException {
+		if (param.isArrayType())
+			value = ParamUtil.packArrayForExport(param.getInPUTClass(), value,
+					param.getDimensions().length);
+		return value;
+	}
+
 	public Object newInstance(Object[] actualParams) throws InPUTException {
-		return getInPUTConstructor().newInstance(actualParams);
+		return generator.getInPUTConstructor().newInstance(actualParams);
 	}
 
 	@Override
-	public Class<?> getInPUTClass() {
+	public Class<?> getInPUTClass() throws InPUTException {
 		return getSuperClass();
+	}
+
+	@Override
+	protected Object nextArray(Param<?> param, int[] dimensions,
+			Map<String, Object> vars, Object[] actualParams)
+			throws InPUTException {
+		Object[] array = (Object[]) super.nextArray(param, dimensions, vars,
+				actualParams);
+		return generator.handleComplex(vars, actualParams, array);
+	}
+
+	public Object initComplex(Value<?> valueElement, Object[] actualParams)
+			throws InPUTException {
+		return generator.initComplex(valueElement, actualParams);
+	}
+
+	public boolean isEnum() throws InPUTException {
+		return generator.isEnum();
+	}
+
+	protected boolean isInitByConstructor(String localId) throws InPUTException {
+		return generator.isInitByConstructor(localId);
+	}
+
+	public InPUTConstructor getInPUTConstructor() throws InPUTException {
+		return generator.getInPUTConstructor();
+	}
+
+	public abstract boolean isImplicit();
+
+	@Override
+	public void checkIfParameterSettable(String paramId) throws InPUTException {
+		String[] idPath = paramId.split(Pattern.quote("."));
+		if (isInitByConstructor(idPath[idPath.length - 1]))
+			throw new InPUTException(
+					"The parameter you try to set cannot be set that way, as it is instantiated via constructor of its parent parameter. You will have to reset the parent parameter in order to change it.");
+	}
+	
+	@Override
+	protected boolean isPlainValueElement(Value<?> valueElement) throws InPUTException {
+		return valueElement.isPlainType();
+		}
+
+	public String getComponentType() throws InPUTException {
+		return generator.getComponentType();
+	}
+
+	public abstract String getValueForIndex(int index) throws InPUTException;
+	
+	@Override
+	public String getValueTypeString() {
+		return Q.SVALUE;
 	}
 }

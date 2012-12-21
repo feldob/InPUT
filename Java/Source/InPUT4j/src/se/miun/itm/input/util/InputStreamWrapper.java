@@ -25,11 +25,14 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * A helpers class that clones input streams in order to make them readable multiple times.
+ * 
  * @author Felix Dobslaw
  *
+ * @ThreadSafe
  */
 public class InputStreamWrapper {
 
@@ -50,7 +53,7 @@ public class InputStreamWrapper {
 	 * @return
 	 * @throws IOException
 	 */
-	private ByteArrayOutputStream init(InputStream is) throws IOException {
+	public static ByteArrayOutputStream init(InputStream is) throws IOException {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		int chunk = 0;
 		byte[] data = new byte[256];
@@ -67,5 +70,14 @@ public class InputStreamWrapper {
 	 */
 	public InputStream next() {
 		return new ByteArrayInputStream(os.toByteArray());
+	}
+
+	public static void fromInputStreamToOutputStream(InputStream in, OutputStream out) throws IOException {
+		byte[] buffer = new byte[1024];
+		int len = in.read(buffer);
+		while (len != -1) {
+		    out.write(buffer, 0, len);
+		    len = in.read(buffer);
+		}
 	}
 }

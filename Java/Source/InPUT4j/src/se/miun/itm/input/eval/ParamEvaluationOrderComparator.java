@@ -27,8 +27,10 @@ import se.miun.itm.input.util.Q;
 
 /**
  * ParamEvaluationOrder  helps defining the order for the design space parameter tree, depending on the dependencies.
+ * 
  * @author Felix Dobslaw
- *
+ * 
+ * @ThreadSafe
  * @param <Element>
  */
 public class ParamEvaluationOrderComparator<Element> implements Comparator<Object> {
@@ -38,7 +40,7 @@ public class ParamEvaluationOrderComparator<Element> implements Comparator<Objec
 	 * @param param1
 	 * @param param2
 	 */
-	public static void init(Param param1, Param param2) {
+	public static void init(Param<?> param1, Param<?> param2) {
 		if (!initDependencies(param1, param2))
 			initDependencies(param2, param1);
 	}
@@ -49,8 +51,8 @@ public class ParamEvaluationOrderComparator<Element> implements Comparator<Objec
 	 * @param param2
 	 * @return
 	 */
-	private static boolean initDependencies(Param param1,
-			Param param2) {
+	private static boolean initDependencies(Param<?> param1,
+			Param<?> param2) {
 		boolean result = false;
 		if (relativeTo(param1, param2, Q.INCL_MAX)
 				|| relativeTo(param1, param2, Q.EXCL_MAX)) {
@@ -74,8 +76,8 @@ public class ParamEvaluationOrderComparator<Element> implements Comparator<Objec
 
 		boolean directDependency = false;
 
-		Param param1 = (Param) arg0;
-		Param param2 = (Param) arg1;
+		Param<?> param1 = (Param<?>) arg0;
+		Param<?> param2 = (Param<?>) arg1;
 		if (dependsOn(param1, param2)) {
 			result = 1;
 			directDependency = true;
@@ -122,13 +124,13 @@ public class ParamEvaluationOrderComparator<Element> implements Comparator<Objec
 	 * @param param2
 	 * @return
 	 */
-	private boolean dependsOn(Param param1, Param param2) {
+	private boolean dependsOn(Param<?> param1, Param<?> param2) {
 		if (param1.dependsOn(param2))
 			return true;
 		return false;
 	}
 
-	private static boolean relativeTo(Param param1, Param param2,
+	private static boolean relativeTo(Param<?> param1, Param<?> param2,
 			String extremeAttr) {
 		String extremeValue = param1.getAttributeValue(extremeAttr);
 		if (extremeValue != null)

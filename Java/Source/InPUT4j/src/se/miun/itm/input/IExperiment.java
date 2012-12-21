@@ -23,9 +23,9 @@ package se.miun.itm.input;
 import java.util.Map;
 
 import se.miun.itm.input.aspects.Exportable;
+import se.miun.itm.input.aspects.Extendable;
 import se.miun.itm.input.aspects.Identifiable;
 import se.miun.itm.input.aspects.Importable;
-import se.miun.itm.input.aspects.InPUTExportable;
 import se.miun.itm.input.aspects.Outable;
 import se.miun.itm.input.aspects.Valuable;
 import se.miun.itm.input.model.Document;
@@ -51,7 +51,7 @@ import se.miun.itm.input.model.design.IDesign;
  * @author Felix Dobslaw
  * 
  */
-public interface IExperiment extends Identifiable, Exportable, InPUTExportable,
+public interface IExperiment extends Identifiable, Exportable, Extendable,
 		Valuable, Outable, Importable<Void, Map<String, Document>> {
 
 	/**
@@ -125,4 +125,8 @@ public interface IExperiment extends Identifiable, Exportable, InPUTExportable,
 	 * @return
 	 */
 	IInPUT getInPUT();
+
+	boolean investigatesSameConfiguration(IExperiment experiment);
+
+	boolean same(IExperiment algorithmDesign);
 }

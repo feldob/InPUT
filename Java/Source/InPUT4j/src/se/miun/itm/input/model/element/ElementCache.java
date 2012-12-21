@@ -31,29 +31,33 @@ import java.util.Set;
 import org.jdom2.Element;
 
 import se.miun.itm.input.model.InPUTException;
-import se.miun.itm.input.model.param.Param;
 
 /**
  * The element cache is a data-structure that holds references to all current
  * values for each parameter. This is necessary for the dynamic parameter
  * evaluations based on dependencies and a fast response for user requests.
  * 
+ * Users have to make sure to unregister designs that are registed, in order to free resources.
+ * 
  * The scope of an element cache can be extended to other caches.
+ * 
  * @author Felix Dobslaw
+ * 
+ * @NotThreadSafe
  * 
  */
 public class ElementCache {
 
-	private Map<String, Value<? extends Param>> cache = new HashMap<String, Value<? extends Param>>();
+	private Map<String, Value<?>> cache = new HashMap<String, Value<?>>();
 
-	private List<ElementCache> neighbors = new ArrayList<ElementCache>();
+	private final List<ElementCache> neighbors = new ArrayList<ElementCache>();
 
 	public void setReadOnly() {
 		cache = Collections.unmodifiableMap(cache);
 	}
 
-	public Value<? extends Param> get(String paramId) {
-		Value<? extends Param> value = cache.get(paramId);
+	public Value<?> get(String paramId) {
+		Value<?> value = cache.get(paramId);
 
 		if (value == null)
 			for (ElementCache neighbor : neighbors) {
@@ -65,8 +69,13 @@ public class ElementCache {
 		return value;
 	}
 
-	public void put(String id, Value<? extends Param> valueE) {
-		cache.put(id, valueE);
+	public void put(String id, Value<?> valueE)
+			throws InPUTException {
+		try {
+			cache.put(id, valueE);
+		} catch (UnsupportedOperationException e) {
+			throw new InPUTException("The design is read only!", e);
+		}
 	}
 
 	public boolean containsKey(String paramId) {
@@ -84,8 +93,12 @@ public class ElementCache {
 		return false;
 	}
 
-	public void remove(String id) {
-		cache.remove(id);
+	public void remove(String id) throws InPUTException {
+		try {
+			cache.remove(id);
+		} catch (UnsupportedOperationException e) {
+			throw new InPUTException("The design is read only!", e);
+		}
 	}
 
 	public Set<String> getSupportedParamIds() {
@@ -100,15 +113,42 @@ public class ElementCache {
 	}
 
 	public void extendScope(ElementCache cache) {
-		neighbors.add(cache);
+		if (!equals(cache) && !neighbors.contains(cache))
+			neighbors.add(cache);
 	}
-
+	
+	public void reduceScope(ElementCache cache) {
+		if (!equals(cache) && neighbors.contains(cache))
+			neighbors.remove(cache);
+	}
+	
 	public void updateCache(Value<?> element) throws InPUTException {
-		Value<?> upper = element;
-		Element parent = upper.getParentElement();
+		Value<?> parentValue = element;
+		Element parent = parentValue.getParentElement();
 		if (parent instanceof Value<?>) {
-			upper = (Value<?>) parent;
-			upper.init(null);
+			parentValue = (Value<?>) parent;
+			parentValue.getParam().init(parentValue, null, this);
 		}
+	}
+	
+	public boolean same(Object obj) {
+		if (!(obj instanceof ElementCache))
+			return false;
+		
+		ElementCache foreigner = ((ElementCache)obj);
+		Value<?> entry1, entry2;
+		for (String key : cache.keySet()) {
+			entry1 = cache.get(key);
+			entry2 = foreigner.get(key);
+			if (!entry1.same(entry2))
+				return false;
+		}
+		
+		return true;
+	}
+	
+	@Override
+	public String toString() {
+		return cache.toString();
 	}
 }

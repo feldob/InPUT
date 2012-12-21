@@ -20,7 +20,17 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package se.miun.itm.input.model;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+
+import se.miun.itm.input.InPUTConfig;
+import se.miun.itm.input.eval.InputEvaluator;
+import se.miun.itm.input.model.element.ElementCache;
 import se.miun.itm.input.model.param.NParam;
+import se.miun.itm.input.model.param.Param;
 import se.miun.itm.input.util.Q;
 
 /**
@@ -29,7 +39,10 @@ import se.miun.itm.input.util.Q;
  * 
  * @author Felix Dobslaw
  * 
- * TODO for performance reasons, make ranges less generic (no casting!)!
+ * @NotThreadSafe
+ * 
+ *                TODO for performance reasons, make ranges less generic (no
+ *                casting!)!
  */
 public class Ranges {
 
@@ -47,21 +60,80 @@ public class Ranges {
 
 	private final Numeric type;
 
-	private final NParam param;
+	private final String paramId;
+
+	private final String spaceId;
+
+	private final Set<Param<?>> maxDependencies;
+
+	private final Set<Param<?>> minDependencies;
+
+	private Object evalLock = Integer.MIN_VALUE;
+
+	private static InputEvaluator eval;
+
+	private Ranges(String spaceId, String paramId, Numeric type,
+			Set<Param<?>> minDependencies, Set<Param<?>> maxDependencies)
+			throws InPUTException {
+		this.type = type;
+		this.spaceId = spaceId;
+		this.paramId = paramId;
+		this.minDependencies = minDependencies;
+		this.maxDependencies = maxDependencies;
+	}
+
+	private InputEvaluator getEval() throws InPUTException {
+		if (eval == null)
+			synchronized (evalLock) {
+				eval = InPUTConfig.getValue(Q.EVALUATOR);
+			}
+		return eval;
+	}
+
+	public Ranges(Ranges ranges) throws InPUTException {
+		this(ranges.spaceId, ranges.paramId, ranges.type,
+				ranges.minDependencies, ranges.maxDependencies);
+		this.minIncl = ranges.minIncl;
+		this.maxIncl = ranges.maxIncl;
+		this.minExpr = ranges.minExpr;
+		this.maxExpr = ranges.maxExpr;
+		this.min = ranges.min;
+		this.max = ranges.max;
+	}
+
+	public Ranges(String spaceId, String paramId, Numeric type,
+			Set<Param<?>> minDependencies, String inclMin, String exclMin,
+			Set<Param<?>> maxDependencies, String inclMax, String exclMax)
+			throws InPUTException {
+		this(spaceId, paramId, type, minDependencies, maxDependencies);
+
+		initMin(type, inclMin, exclMin);
+		initMax(type, inclMax, exclMax);
+	}
 
 	public Ranges(NParam param) throws InPUTException {
-		this.param = param;
-		this.type = param.getNumericType();
+		this(param.getSpaceId(), param.getId(), Numeric.valueOf(param), param
+				.getMinDependencies(), param.getAttributeValue(Q.INCL_MIN),
+				param.getAttributeValue(Q.EXCL_MIN),
+				param.getMaxDependencies(),
+				param.getAttributeValue(Q.INCL_MAX), param
+						.getAttributeValue(Q.EXCL_MAX));
+	}
 
-		setStaticMin(true, param.getAttributeValue(Q.INCL_MIN));
-		setStaticMin(false, param.getAttributeValue(Q.EXCL_MIN));
-		if (minExpr == null)
-			min = type.getMin();
-
-		setStaticMax(true, param.getAttributeValue(Q.INCL_MAX));
-		setStaticMax(false, param.getAttributeValue(Q.EXCL_MAX));
+	private void initMax(Numeric type, String inclMax, String exclMax)
+			throws InPUTException {
+		setStaticMax(true, inclMax);
+		setStaticMax(false, exclMax);
 		if (maxExpr == null)
 			max = type.getMax();
+	}
+
+	private void initMin(Numeric type, String inclMin, String exclMin)
+			throws InPUTException {
+		setStaticMin(true, inclMin);
+		setStaticMin(false, exclMin);
+		if (minExpr == null)
+			min = type.getMin();
 	}
 
 	private void setStaticMin(boolean inclusive, String expr)
@@ -73,17 +145,17 @@ public class Ranges {
 				minIncl = inclusive;
 				minExpr = expr;
 
-				if (!param.isMinDependent()) {
+				if (!isMinDependent()) {
 					min = initMin(expr);
 					if (max != null && compareTo(min, max) > 0) {
 						throw new InPUTException(
-								param.getId()
+								paramId
 										+ ": A minimum value has to be smaller than the maximum value.");
 					}
 				}
 			} else
 				throw new InPUTException(
-						param.getId()
+						paramId
 								+ ": exclMax and inclMax attributes are mutual exclusive.");
 		}
 	}
@@ -91,6 +163,9 @@ public class Ranges {
 	private int compareTo(Comparable<?> min, Comparable<?> max) {
 		int result = 0;
 		switch (type) {
+		case DECIMAL:
+			result = ((BigDecimal) min).compareTo((BigDecimal) max);
+			break;
 		case DOUBLE:
 			result = Double.compare((Double) min, (Double) max);
 			break;
@@ -125,10 +200,12 @@ public class Ranges {
 	}
 
 	public void setDynamicMin(String expression) {
+		minExpr = expression;
 		min = initMin(expression);
 	}
 
 	public void setDynamicMax(String expression) {
+		maxExpr = expression;
 		max = initMax(expression);
 	}
 
@@ -140,16 +217,16 @@ public class Ranges {
 				maxIncl = inclusive;
 				maxExpr = expr;
 
-				if (!param.isMaxDependent()) {
+				if (!isMaxDependent()) {
 					max = initMax(expr);
 					if (min != null && compareTo(min, max) > 0)
 						throw new InPUTException(
-								param.getId()
+								paramId
 										+ ": A maximum value has to be larger than the minimum value.");
 				}
 			} else
 				throw new InPUTException(
-						param.getId()
+						paramId
 								+ ": exclMax and inclMax attributes are mutual exclusive.");
 		}
 	}
@@ -196,23 +273,23 @@ public class Ranges {
 				b.append("]-\\infty ");
 			} else {
 				if (minIncl) {
-					b.append("[");
+					b.append('[');
 				} else {
-					b.append("]");
+					b.append(']');
 				}
 				b.append(minExpr);
 			}
 
-			b.append(", ");
+			appendComma(b);
 
 			if (maxExpr == null) {
 				b.append("\\infty[");
 			} else {
 				b.append(maxExpr);
 				if (maxIncl) {
-					b.append("]");
+					b.append(']');
 				} else {
-					b.append("[");
+					b.append('[');
 				}
 			}
 		} else {
@@ -220,6 +297,22 @@ public class Ranges {
 		}
 
 		return b.toString();
+	}
+
+	private void appendComma(StringBuilder b) {
+		String comma = null;
+		switch (type) {
+		case LONG:
+		case SHORT:
+		case INTEGER:
+			comma = ", \\dots, "; 
+			break;
+
+		default:
+			comma = ", "; 
+			break;
+		}
+		b.append(comma);
 	}
 
 	public Comparable<?> getStrongTypedMin() {
@@ -234,6 +327,9 @@ public class Ranges {
 			Comparable<?> summand2) {
 		Comparable<?> result = null;
 		switch (type) {
+		case DECIMAL:
+			result = ((BigDecimal) summand1).add((BigDecimal) summand2);
+			break;
 		case DOUBLE:
 			result = (Double) summand1 + (Double) summand2;
 			break;
@@ -257,6 +353,9 @@ public class Ranges {
 			Comparable<?> summand2) {
 		Comparable<?> result = null;
 		switch (type) {
+		case DECIMAL:
+			result = ((BigDecimal) summand1).subtract((BigDecimal) summand2);
+			break;
 		case DOUBLE:
 			result = (Double) summand1 - (Double) summand2;
 			break;
@@ -276,20 +375,158 @@ public class Ranges {
 		return result;
 	}
 
-	public NParam getParam() {
-		return param;
+	public void checkValidity(Object value, ElementCache elementCache)
+			throws InPUTException {
+		if (isOfValidPlainType(value)) {
+			checkValidPlainValidity(value, elementCache);
+		} else if (value.getClass().isArray()) {
+			checkValidArrayType(value);
+		} else
+			throw new InPUTException("The value " + value.toString()
+					+ " is not of correct primitive type, it is of type \""
+					+ value.getClass().getName() + "\". Type \"" +type.getNumClass().getName() + "\" or \"" + type.getPrimitiveClass().getName() +"\" were expected.");
+
 	}
-	
-	public void checkValidity(Comparable<Comparable<?>> value) {
+
+	@SuppressWarnings("unchecked")
+	private void checkValidPlainValidity(Object value, ElementCache elementCache)
+			throws InPUTException {
+		Comparable<Comparable<?>> theValue = (Comparable<Comparable<?>>) value;
+
 		switch (type) {
 		case BOOLEAN:
 			break;
 		default:
-			if (!param.isMinDependent() && minExpr != null && ((minIncl && value.compareTo(min) < 0) || (!minIncl && value.compareTo(min) <= 0)))
-				throw new IllegalArgumentException(param.getDesignSpaceId() + ": The entered value \"" + value + "\" for the parameter with id \""+ param.getId()+"\" is out of range (below minimum threshold \"" + min + "\")." );
-			else if (!param.isMaxDependent() && maxExpr != null && ((maxIncl && value.compareTo(max) > 0) || (!maxIncl && value.compareTo(max) >= 0)))
-			throw new IllegalArgumentException(param.getDesignSpaceId() + ": The entered value \"" + value + "\" for the parameter with id \""+ param.getId()+"\" is out of range (above maximum threshold \"" + max + "\")." );
+			Ranges evaluatedRanges = initEvaluatedRanges(elementCache);
+
+			if (theValue.compareTo(evaluatedRanges.getStrongTypedMin()) < 0)
+				throw new IllegalArgumentException(spaceId
+						+ ": The entered value \"" + value
+						+ "\" for the parameter with id \"" + paramId
+						+ "\" is out of range (below minimum threshold \""
+						+ min + "\").");
+			else if (theValue.compareTo(evaluatedRanges.getStrongTypedMax()) > 0)
+				throw new IllegalArgumentException(spaceId
+						+ ": The entered value \"" + value
+						+ "\" for the parameter with id \"" + paramId
+						+ "\" is out of range (above maximum threshold \""
+						+ max + "\").");
+		}
+	}
+
+	private boolean checkValidArrayType(Object value) {
+		Class<?> compType = value.getClass().getComponentType();
+		if (compType.isAssignableFrom(type.getPrimitiveClass())
+				|| compType.isAssignableFrom(type.getNumClass()))
+			return true;
+		return false;
+	}
+
+	private boolean isOfValidPlainType(Object value) {
+		return type.getPrimitiveClass().isInstance(value)
+				|| type.getNumClass().isInstance(value);
+	}
+
+	private Ranges initEvaluatedRanges(ElementCache elementCache)
+			throws InPUTException {
+		Ranges evaluatedRanges;
+		if (!isIndependant()) {
+
+			Map<String, Object> vars = initVarsFromElementCache(elementCache);
+			evaluatedRanges = getEval().evaluate(this, vars);
+		} else
+			evaluatedRanges = this;
+		return evaluatedRanges;
+	}
+
+	private Map<String, Object> initVarsFromElementCache(
+			ElementCache elementCache) {
+		Map<String, Object> dependencies = new HashMap<String, Object>();
+		addDependencies(elementCache, dependencies, getMinDependencies());
+		addDependencies(elementCache, dependencies, getMaxDependencies());
+		return dependencies;
+	}
+
+	private void addDependencies(ElementCache elementCache,
+			Map<String, Object> dependencies, Set<Param<?>> params) {
+		for (Param<?> param : params)
+			dependencies.put(param.getId(), elementCache.get(param.getId())
+					.getInputValue());
+	}
+
+	public boolean isIndependant() {
+		return !(isMaxDependent() || isMinDependent());
+	}
+
+	public boolean isMinDependent() {
+		return !minDependencies.isEmpty();
+	}
+
+	public Set<Param<?>> getMinDependencies() {
+		return minDependencies;
+	}
+
+	public boolean isMaxDependent() {
+		return !maxDependencies.isEmpty();
+	}
+
+	public Set<Param<?>> getMaxDependencies() {
+		return maxDependencies;
+	}
+
+	public Object parse(String valueString) {
+		return type.parse(valueString);
+	}
+
+	public Object next(Random rng, Map<String, Object> vars)
+			throws InPUTException {
+		Ranges ranges = getEval().evaluate(this, vars);
+		return type.random(ranges, rng);
+	}
+
+	public String ensureType(String expression) {
+		switch (type) {
+		case INTEGER:
+			expression = "" + new BigDecimal(expression).intValue();
+			break;
+		case SHORT:
+			expression = "" + new BigDecimal(expression).shortValue();
+			break;
+		case LONG:
+			expression = "" + new BigDecimal(expression).longValue();
 			break;
 		}
+		return expression;
+	}
+
+	public Numeric getType() {
+		return type;
+	}
+
+	public boolean isCountable() {
+		return type.isCountable();
+	}
+
+	public void checkTypeSafety(Object value) throws InPUTException {
+		if ((!type.getPrimitiveClass().isInstance(value))
+				&& !type.getNumClass().isInstance(value)) {
+			if (value.getClass().isArray()) {
+				Class<?> componentType = getComponentType(value);
+				value.getClass().getComponentType();
+				if (!type.equals(Numeric.DECIMAL) && (!componentType.equals(type.getPrimitiveClass())
+						&& (!componentType.equals(type.getNumClass())) && !type
+						.getNumClass().isInstance(value)))
+					throw new InPUTException("The value \"" + value.toString()
+							+ "\" is of the wrong type. \""
+							+ type.getPrimitiveClass().getName() + "\" or \""
+							+ type.getNumClass()
+							+ "\" was expected, but was \""
+							+ value.getClass().getName() + "\".");
+			}
+		}
+	}
+
+	private Class<?> getComponentType(Object value) {
+		return value.getClass().getComponentType();
 	}
 }

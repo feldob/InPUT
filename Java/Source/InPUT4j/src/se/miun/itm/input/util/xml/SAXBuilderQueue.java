@@ -30,6 +30,7 @@ import org.jdom2.input.SAXBuilder;
  * 
  * @author Felix Dobslaw
  * 
+ * @NotThreadSafe
  */
 public class SAXBuilderQueue extends ArrayBlockingQueue<SAXBuilder> {
 
@@ -38,7 +39,6 @@ public class SAXBuilderQueue extends ArrayBlockingQueue<SAXBuilder> {
 	private static final String CHECKING = "http://apache.org/xml/features/validation/schema-full-checking";
 	private static final String VALIDATION = "http://xml.org/sax/features/validation";
 	private static final String VALIDATION_SCHEMA = "http://apache.org/xml/features/validation/schema";
-	private static final String PARSER = "org.apache.xerces.parsers.SAXParser";
 
 	/**
 	 * A queue with SaxBuilders that supports the processing of building requests, either with or without XML verification support.
@@ -59,7 +59,7 @@ public class SAXBuilderQueue extends ArrayBlockingQueue<SAXBuilder> {
 	}
 
 	private static SAXBuilder createBuilder(boolean verify) {
-		SAXBuilder builder = new SAXBuilder(PARSER, verify);
+		SAXBuilder builder = new SAXBuilder();
 		builder.setFeature(VALIDATION_SCHEMA, verify);
 		builder.setFeature(VALIDATION, verify);
 		builder.setFeature(CHECKING, verify);

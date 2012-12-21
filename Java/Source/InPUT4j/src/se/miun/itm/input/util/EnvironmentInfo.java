@@ -26,6 +26,7 @@ import se.miun.itm.input.InPUTConfig;
 
 /**
  * A util that collects environmental information via Java.
+ * 
  * @author Felix Dobslaw
  *
  */
@@ -42,7 +43,7 @@ public class EnvironmentInfo {
 	public static String getInfo() {
 		StringBuilder b = new StringBuilder();
 		b.append( Calendar.getInstance().getTime());
-		b.append("\n");
+		b.append('\n');
 		b.append("Environment: Language=\"java\" Version=\"");
 		b.append(System.getProperty("java.version"));
 		b.append("\" Architecture=\"");
@@ -53,7 +54,7 @@ public class EnvironmentInfo {
 		b.append(System.getProperty("os.name"));
 		b.append("\" Memory=\"");
 		b.append( Runtime.getRuntime().totalMemory());
-		b.append("\"");
+		b.append('\"');
 		return b.toString();
 	}
 

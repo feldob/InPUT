@@ -23,12 +23,17 @@ package se.miun.itm.input.model;
 import java.math.BigDecimal;
 import java.util.Random;
 
+import se.miun.itm.input.model.param.NParam;
+import se.miun.itm.input.util.Q;
+
 /**
  * Numeric is the service enum that supplies lower and upper extrema for all
- * numeric values, and supports the random creation of numeric values of all supported kinds, given range restrictions.
+ * numeric values, and supports the random creation of numeric values of all
+ * supported kinds, given range restrictions.
  * 
  * @author Felix Dobslaw
  * 
+ *  @ThreadSafe
  */
 public enum Numeric {
 
@@ -44,12 +49,12 @@ public enum Numeric {
 			Short.class, Short.TYPE, "Short", Short.MIN_VALUE, Short.MAX_VALUE,
 			1);
 
-	private Class<?> numClass;
-	private Class<?> numPrimClass;
-	private String className;
-	private Comparable<?> atom;
-	private Comparable<?> min;
-	private Comparable<?> max;
+	private final Class<?> numClass;
+	private final Class<?> numPrimClass;
+	private final String className;
+	private final Comparable<?> atom;
+	private final Comparable<?> min;
+	private final Comparable<?> max;
 
 	public Class<?> getNumClass() {
 		return numClass;
@@ -86,11 +91,10 @@ public enum Numeric {
 		this.max = max;
 	}
 
-	public static Object randomValue(Numeric type, Ranges ranges, Random rng) {
-
-		switch (type) {
+	public Object random(Ranges ranges, Random rng) {
+		switch (this) {
 		case DECIMAL:
-			return randomdecimal(type, ranges, rng);
+			return randomdecimal(ranges, rng);
 		case INTEGER:
 			return randominteger((Integer) ranges.getStrongTypedMin(),
 					(Integer) ranges.getStrongTypedMax(), rng);
@@ -113,28 +117,27 @@ public enum Numeric {
 
 	}
 
-	private static BigDecimal randomdecimal(Numeric type, Ranges ranges,
-			Random rng) {
+	private BigDecimal randomdecimal(Ranges ranges, Random rng) {
 		BigDecimal min, max;
 
 		if (ranges.getMinExpression() == null)
-			min = (BigDecimal) type.getMin();
+			min = (BigDecimal) getMin();
 		else {
 			BigDecimal entry = (BigDecimal) ranges.getStrongTypedMin();
 			if (ranges.includesMinimum())
 				min = entry;
 			else
-				min = entry.add((BigDecimal) type.getAtom());
+				min = entry.add((BigDecimal) getAtom());
 		}
 
 		if (ranges.getMaxExpression() == null)
-			max = (BigDecimal) type.getMax();
+			max = (BigDecimal) getMax();
 		else {
 			BigDecimal entry = (BigDecimal) ranges.getStrongTypedMax();
 			if (ranges.includesMaximum())
 				max = entry;
 			else
-				max = entry.subtract((BigDecimal) type.getAtom());
+				max = entry.subtract((BigDecimal) getAtom());
 		}
 
 		return min.add(new BigDecimal(rng.nextDouble()).multiply(max
@@ -181,19 +184,19 @@ public enum Numeric {
 			result = new BigDecimal(expression);
 			break;
 		case DOUBLE:
-			result = Double.parseDouble(expression);
+			result = new BigDecimal(expression).doubleValue();
 			break;
 		case FLOAT:
-			result = Float.parseFloat(expression);
+			result = new BigDecimal(expression).floatValue();
 			break;
 		case INTEGER:
-			result = Integer.parseInt(expression);
+			result = new BigDecimal(expression).intValue();
 			break;
 		case SHORT:
-			result = Short.parseShort(expression);
+			result = new BigDecimal(expression).shortValue();
 			break;
 		case LONG:
-			result = Long.parseLong(expression);
+			result = new BigDecimal(expression).longValue();
 			break;
 		case BOOLEAN:
 			result = Boolean.parseBoolean(expression);
@@ -211,5 +214,22 @@ public enum Numeric {
 			flag = false;
 		}
 		return flag;
+	}
+
+	public static Numeric valueOf(NParam param) {
+		return valueOf(param.getAttributeValue(Q.TYPE_ATTR).split(
+				Q.ESCAPED_ARRAY_START)[0].toUpperCase());
+	}
+
+	public boolean isCountable() {
+		boolean countable = false;
+		switch (this) {
+		case INTEGER:
+		case SHORT:
+		case LONG:
+		case BOOLEAN:
+			countable = true;
+		}
+		return countable;
 	}
 }

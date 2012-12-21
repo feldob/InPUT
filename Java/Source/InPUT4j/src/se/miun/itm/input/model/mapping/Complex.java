@@ -35,6 +35,7 @@ import se.miun.itm.input.util.Q;
  * 
  * @author Felix Dobslaw
  * 
+ * @NotThreadSafe
  */
 public class Complex {
 
@@ -94,5 +95,9 @@ public class Complex {
 		} catch (Exception e) {
 			throw new InPUTException(e.getMessage(), e);
 		}
+	}
+	
+	public Class<?> getType() {
+		return type;
 	}
 }

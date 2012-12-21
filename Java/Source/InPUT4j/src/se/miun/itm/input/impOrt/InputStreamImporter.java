@@ -28,8 +28,10 @@ import se.miun.itm.input.util.xml.SAXUtil;
 
 /**
  * Imports an InPUT element stream and returns it as a document.
+ * 
  * @author Felix Dobslaw
  *
+ * @NotThreadSafe
  */
 public class InputStreamImporter implements InPUTImporter<Document> {
 

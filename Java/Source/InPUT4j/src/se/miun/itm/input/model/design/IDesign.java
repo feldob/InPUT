@@ -59,6 +59,7 @@ public interface IDesign extends Identifiable, Exportable, Valuable,
 	 *            The full path of the algorithm design file to be imported
 	 * @throws InPUTException
 	 */
+	@Override
 	Void impOrt(InPUTImporter<Document> importer) throws InPUTException;
 
 	/**
@@ -86,4 +87,11 @@ public interface IDesign extends Identifiable, Exportable, Valuable,
 	 * @param neighbor
 	 */
 	void extendScope(IDesign neighbor);
+
+	/**
+	 * compares if two designs are defining the same configuration; not necessarily having the same id, and are not necessarily equal.
+	 * @param obj
+	 * @return
+	 */
+	boolean same(Object obj);
 }

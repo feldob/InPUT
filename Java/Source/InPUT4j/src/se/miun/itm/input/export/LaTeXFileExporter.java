@@ -23,15 +23,15 @@ package se.miun.itm.input.export;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jdom2.Element;
 
+import se.miun.itm.input.aspects.Exportable;
 import se.miun.itm.input.aspects.FileNameAssigner;
-import se.miun.itm.input.aspects.InPUTExportable;
 import se.miun.itm.input.model.Document;
 import se.miun.itm.input.model.InPUTException;
-import se.miun.itm.input.model.Ranges;
 import se.miun.itm.input.model.param.NParam;
 import se.miun.itm.input.util.Q;
 
@@ -40,15 +40,15 @@ import se.miun.itm.input.util.Q;
  * 
  * @author Felix Dobslaw
  * 
+ * @NotThreadSafe
+ * 
  */
-public class LaTeXFileExporter extends FileNameAssigner implements
-		InPUTExporter<Void> {
+public class LaTeXFileExporter extends FileNameAssigner implements Exporter<Void> {
 
-	private final static String linebreak = System
-			.getProperty("line.separator");
+	private final static String LINEBREAK = System.getProperty("line.separator");
 
 	public LaTeXFileExporter() {
-		super("");
+		this("");
 	}
 
 	public LaTeXFileExporter(String path) {
@@ -58,8 +58,7 @@ public class LaTeXFileExporter extends FileNameAssigner implements
 	@Override
 	public Void export(Document xml) throws InPUTException {
 		if (xml == null)
-			throw new IllegalArgumentException(
-					"There has to be a context Document given for export.");
+			throw new IllegalArgumentException("There has to be a context Document given for export.");
 
 		String type = xml.getRootElement().getName();
 		if (type.equals(Q.DESIGN_SPACE_ROOT)) {
@@ -69,15 +68,13 @@ public class LaTeXFileExporter extends FileNameAssigner implements
 		} else if (type.equals(Q.MAPPINGS)) {
 			exportCodeMappings(xml);
 		} else
-			throw new IllegalArgumentException(
-					"The document you supplied is not of InPUT type because the root element has the name '"
-							+ type + "', which is not supported.");
+			throw new IllegalArgumentException("The document you supplied is not of InPUT type because the root element has the name '"
+					+ type + "', which is not supported.");
 		return null;
 	}
 
 	private void exportCodeMappings(Document xml) {
-		throw new IllegalArgumentException(
-				"The method is not supported for code mappings (yet).");
+		throw new IllegalArgumentException("The method is not supported for code mappings (yet).");
 
 	}
 
@@ -89,9 +86,9 @@ public class LaTeXFileExporter extends FileNameAssigner implements
 
 		List<Element> values = xml.getRootElement().getChildren();
 		for (Element value : values) {
-			b.append(linebreak);
+			b.append(LINEBREAK);
 			b.append("\\hline");
-			b.append(linebreak);
+			b.append(LINEBREAK);
 			appendValueToTable(b, value);
 		}
 		appendDesignTableEnd(b, id);
@@ -101,15 +98,15 @@ public class LaTeXFileExporter extends FileNameAssigner implements
 
 	private void appendDesignTableEnd(StringBuilder b, String id) {
 		b.append("\\end{tabular}");
-		b.append(linebreak);
+		b.append(LINEBREAK);
 		b.append("\\caption{The parameter values for design \\textit{");
 		b.append(id);
 		b.append("}.}");
-		b.append(linebreak);
+		b.append(LINEBREAK);
 		b.append("\\label{table:design-");
 		b.append(id);
-		b.append("}");
-		b.append(linebreak);
+		b.append('}');
+		b.append(LINEBREAK);
 		b.append("\\end{table}");
 	}
 
@@ -118,17 +115,17 @@ public class LaTeXFileExporter extends FileNameAssigner implements
 		b.append(" & ");
 		extractAndAppendValue(b, value);
 		b.append("\\\\");
-		b.append(linebreak);
+		b.append(LINEBREAK);
 		b.append("\\hline");
-		b.append(linebreak);
+		b.append(LINEBREAK);
 	}
 
 	private void extractAndAppendValue(StringBuilder b, Element value) {
 		if (value.getAttribute(Q.VALUE_ATTR) != null) {
 			if (value.getName().equals(Q.NVALUE)) {
-				b.append("$");
+				b.append('$');
 				b.append(value.getAttributeValue(Q.VALUE_ATTR));
-				b.append("$");
+				b.append('$');
 			} else if (value.getName().equals(Q.SVALUE)) {
 				appendStructuralValue(b, value);
 			}
@@ -137,14 +134,14 @@ public class LaTeXFileExporter extends FileNameAssigner implements
 			int depth = getDepth(value);
 			if (depth <= 2) {
 				b.append("$\\left(");
-				b.append(linebreak);
+				b.append(LINEBREAK);
 				b.append("\\begin{array}{");
 				appendCs(b, getAmountElements(children));
-				b.append("}");
-				b.append(linebreak);
+				b.append('}');
+				b.append(LINEBREAK);
 				appendMatrixContent(b, children, depth);
 				b.append("\\end{array}");
-				b.append(linebreak);
+				b.append(LINEBREAK);
 				b.append("\\right)$");
 			} else {
 				b.append("Too high dimensional to visualize.");
@@ -165,21 +162,20 @@ public class LaTeXFileExporter extends FileNameAssigner implements
 		List<Element> children = value.getChildren();
 		if (!children.isEmpty()) {
 			int count = 0;
-			b.append("(");
+			b.append('(');
 			for (Element child : children) {
 				b.append(child.getAttributeValue(Q.ID_ATTR));
-				b.append("=");
+				b.append('=');
 				extractAndAppendValue(b, child);
 				if (count < children.size() - 1)
 					b.append(", ");
 				count++;
 			}
-			b.append(")");
+			b.append(')');
 		}
 	}
 
-	private void appendMatrixContent(StringBuilder b, List<Element> children,
-			int depth) {
+	private void appendMatrixContent(StringBuilder b, List<Element> children, int depth) {
 		int count = 0;
 		for (Element child : children) {
 			appendMatrixRow(b, child, depth);
@@ -191,7 +187,7 @@ public class LaTeXFileExporter extends FileNameAssigner implements
 
 	private void appendMatrixRow(StringBuilder b, Element child, int depth) {
 		if (child.getAttributeValue(Q.VALUE_ATTR) == null)
-			appendMatrixRow(b, (Element) child.getChildren().get(0), depth);
+			appendMatrixRow(b, child.getChildren().get(0), depth);
 		else {
 			if (depth == 1)
 				extractAndAppendValue(b, child);
@@ -200,7 +196,7 @@ public class LaTeXFileExporter extends FileNameAssigner implements
 				for (int i = 0; i < values.size(); i++) {
 					extractAndAppendValue(b, values.get(i));
 					if (i < values.size() - 1)
-						b.append("&");
+						b.append('&');
 				}
 			}
 		}
@@ -213,29 +209,29 @@ public class LaTeXFileExporter extends FileNameAssigner implements
 			if (child.getAttributeValue(Q.VALUE_ATTR) != null)
 				break;
 			count++;
-			child = (Element) child.getChildren().get(0);
+			child = child.getChildren().get(0);
 		}
 		return count;
 	}
 
 	private void appendCs(StringBuilder b, int depth) {
 		for (int i = 0; i < depth; i++)
-			b.append("c");
+			b.append('c');
 	}
 
 	private void appendDesignTableStart(StringBuilder b, String id) {
 		b.append("\\begin{table}");
-		b.append(linebreak);
+		b.append(LINEBREAK);
 		b.append("\\centering");
-		b.append(linebreak);
+		b.append(LINEBREAK);
 		b.append("\\begin{tabular}{|l|l|}");
-		b.append(linebreak);
+		b.append(LINEBREAK);
 		b.append("\\hline");
-		b.append(linebreak);
+		b.append(LINEBREAK);
 		b.append("\\textbf{Parameter} & \\textbf{Value} \\\\");
-		b.append(linebreak);
+		b.append(LINEBREAK);
 		b.append("\\hline");
-		b.append(linebreak);
+		b.append(LINEBREAK);
 	}
 
 	private void exportDesignSpace(Document xml) throws InPUTException {
@@ -246,9 +242,9 @@ public class LaTeXFileExporter extends FileNameAssigner implements
 
 		List<Element> params = xml.getRootElement().getChildren();
 		for (Element param : params) {
-			b.append(linebreak);
+			b.append(LINEBREAK);
 			b.append("\\hline");
-			b.append(linebreak);
+			b.append(LINEBREAK);
 			appendParamToTable(b, param, id);
 		}
 		appendDesignSpaceTableEnd(b, id);
@@ -263,31 +259,67 @@ public class LaTeXFileExporter extends FileNameAssigner implements
 			bw.append(b.toString());
 			bw.close();
 		} catch (IOException e) {
-			throw new InPUTException("The file by name '" + fileName
-					+ "' could not be written successfully.", e);
+			throw new InPUTException("The file by name '" + fileName + "' could not be written successfully.", e);
 		}
 	}
 
-	private void appendParamToTable(StringBuilder b, Element param, String id)
-			throws InPUTException {
+	private void appendParamToTable(StringBuilder b, Element param, String id) throws InPUTException {
+
+		String fixed = getFixedValue(param);
 
 		if (!param.getName().equals(Q.SCHOICE)) {
 			appendParamId(b, param);
 			b.append(" & \\texttt{");
 			b.append(getTypeString(param));
 			b.append("} & ");
-			b.append(getRangeString(param));
+			if (isNonComplexFixed(fixed))
+				b.append("\\textbf{");
+			b.append(getRangeString(param, fixed));
+			if (isNonComplexFixed(fixed))
+				b.append("}");
 			b.append("\\\\");
-			b.append(linebreak);
+			b.append(LINEBREAK);
 			b.append("\\hline");
-			b.append(linebreak);
+			b.append(LINEBREAK);
 		}
+		appendChildren(b, param, id, fixed);
+	}
 
+	private boolean isNonComplexFixed(String fixed) {
+		return fixed != null && !fixed.contains(" ");
+	}
+
+	private String getFixedValue(Element param) {
+		String fixed = param.getAttributeValue(Q.FIXED_ATTR);
+		if (fixed == null && !Q.STRING.equals(param.getAttributeValue(Q.TYPE_ATTR))) {
+			if (param.getName().equals(Q.SPARAM)) {
+				List<Element> choices = getChoiceChildren(param);
+				if (choices.isEmpty())
+					fixed = param.getAttributeValue(Q.ID_ATTR); 
+				else if (choices.size() == 1)
+					fixed = choices.get(0).getAttributeValue(Q.ID_ATTR);
+			}
+		}
+		return fixed;
+	}
+
+	private List<Element> getChoiceChildren(Element param) {
+		List<Element> choices = new ArrayList<Element>();
+		List<Element> children = param.getChildren();
+		for (Element child : children)
+			if (child.getName().equals(Q.SCHOICE))
+				choices.add(child);
+		return choices;
+	}
+
+	private void appendChildren(StringBuilder b, Element param, String id, String fixed) throws InPUTException {
 		List<Element> children = param.getChildren();
 		for (Element child : children) {
-			if (!child.getName().equals(Q.SCHOICE)) {
+			if (child.getName().equals(Q.SCHOICE)) {
+				if (isNonComplexFixed(fixed) && !child.getAttributeValue(Q.ID_ATTR).equals(fixed))
+					continue;
+			} else
 				b.append("\\hspace{2 mm}");
-			}
 			appendParamToTable(b, child, id);
 		}
 	}
@@ -298,100 +330,117 @@ public class LaTeXFileExporter extends FileNameAssigner implements
 			b.append("\\textit{");
 			b.append(param.getParentElement().getAttributeValue(Q.ID_ATTR));
 			b.append("}.");
-		} else {
-			b.append(paramId);
 		}
+		b.append(paramId);
 	}
 
-	private Object getRangeString(Element param) throws InPUTException {
+	private String getRangeString(Element param, String fixed) throws InPUTException {
 		String value = null;
-		if (param.getName().equals(Q.SPARAM))
+		if (isNonComplexFixed(fixed)) {
+				value = fixed;
+		} else if (param.getName().equals(Q.SPARAM))
 			value = getStructRangeString(param);
 		else if (param.getName().equals(Q.NPARAM))
 			value = getNumericalRange(param);
 		else {
-			throw new InPUTException(
-					"The given parameter element cannot be recognized as such by InPUT.");
+			throw new InPUTException("The given parameter element cannot be recognized as such by InPUT.");
 		}
 		return value;
 	}
 
 	private String getNumericalRange(Element original) throws InPUTException {
-		Element clone = (Element) original.clone();
+		Element clone = original.clone();
 		new Element("something").addContent(clone);
 		NParam element = new NParam(clone, "something", null);
 		element.addMaxDependency(element);
 		element.addMinDependency(element);
-		return "$" + new Ranges(element).toString() + "$";
+		element.initRanges();
+
+		return "$" + element.toString() + "$";
 	}
 
 	private static String getStructRangeString(Element param) {
-		StringBuilder b = new StringBuilder("\\{");
-		Element subParamE;
-		int amountStruct = 0;
-		for (Object subParam : param.getChildren()) {
-			subParamE = (Element) subParam;
-			if (subParamE.getName().equals(Q.SCHOICE)) {
-				b.append(subParamE.getAttributeValue(Q.ID_ATTR));
-				b.append(", \\\\ &&");
-				amountStruct++;
+		StringBuilder b = new StringBuilder();
+		if (!param.getChildren().isEmpty()) {
+			b.append("\\{");
+			Element subParamE;
+			int amountStruct = 0;
+			for (Object subParam : param.getChildren()) {
+				subParamE = (Element) subParam;
+				if (subParamE.getName().equals(Q.SCHOICE)) {
+					b.append(subParamE.getAttributeValue(Q.ID_ATTR));
+					b.append(", \\\\ &&");
+					amountStruct++;
+				}
 			}
+			if (amountStruct != 0) {
+				b.delete(b.length() - 7, b.length());
+			} else {
+				param.getAttributeValue(Q.DEFAULT);
+			}
+			b.append("\\}");
 		}
-		if (amountStruct != 0) {
-			b.delete(b.length() - 7, b.length());
-		} else {
-			param.getAttributeValue(Q.DEFAULT);
-		}
-		b.append("\\}");
 		return b.toString();
 	}
 
 	private String getTypeString(Element param) throws InPUTException {
 		String value = null;
-		if (param.getName().equals(Q.SPARAM))
-			value = "structured";
-		else if (param.getName().equals(Q.NPARAM))
+		if (param.getName().equals(Q.SPARAM)) {
+			String type = param.getAttributeValue(Q.TYPE_ATTR);
+			if (Q.STRING.equals(type))
+				value = Q.STRING;
+			else
+				value = initStructuralString(type);
+		} else if (param.getName().equals(Q.NPARAM))
 			value = param.getAttributeValue(Q.TYPE_ATTR);
 		else {
-			throw new InPUTException(
-					"The given parameter element can not be recognized as such by InPUT.");
+			throw new InPUTException("The given parameter element can not be recognized as such by InPUT.");
+		}
+		return value;
+	}
+
+	private String initStructuralString(String type) {
+		String value = "struct";
+		if (type != null) {
+			int firstApp = type.indexOf('[');
+			if (firstApp != -1)
+				value = value + type.substring(firstApp, type.length());
 		}
 		return value;
 	}
 
 	private void appendDesignSpaceTableEnd(StringBuilder b, String id) {
 		b.append("\\end{tabular}");
-		b.append(linebreak);
+		b.append(LINEBREAK);
 		b.append("\\caption{The parameter ranges for design space \\textit{");
 		b.append(id);
-		b.append("}.}");
-		b.append(linebreak);
+		b.append("}(Constants in bold font).}");
+		b.append(LINEBREAK);
 		b.append("\\label{table:paramranges-");
 		b.append(id);
-		b.append("}");
-		b.append(linebreak);
+		b.append('}');
+		b.append(LINEBREAK);
 		b.append("\\label{table:design-space-");
 		b.append(id);
-		b.append("}");
-		b.append(linebreak);
+		b.append('}');
+		b.append(LINEBREAK);
 		b.append("\\end{table}");
 	}
 
 	private void appendDesignSpaceTableStart(StringBuilder b, String id) {
 		b.append("\\begin{table}");
-		b.append(linebreak);
+		b.append(LINEBREAK);
 		b.append("\\centering");
-		b.append(linebreak);
+		b.append(LINEBREAK);
 		b.append("\\begin{tabular}{|l|l|c|}");
-		b.append(linebreak);
+		b.append(LINEBREAK);
 		b.append("\\hline");
-		b.append(linebreak);
+		b.append(LINEBREAK);
 		b.append("\\textbf{Parameter} & \\textbf{Type} & \\textbf{Range} \\\\");
 	}
 
 	@Override
-	public Void export(InPUTExportable input) throws InPUTException {
-		throw new IllegalArgumentException(
-				"The method is not supported for a complete InPUT object (yet).");
+	public Void export(Exportable input) throws InPUTException {
+		throw new IllegalArgumentException("The method is not supported for a complete InPUT object (yet).");
 	}
 }

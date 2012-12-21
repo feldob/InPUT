@@ -20,17 +20,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package se.miun.itm.input.model.element;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.jdom2.Attribute;
 import org.jdom2.Content;
 import org.jdom2.Element;
 
-import se.miun.itm.input.model.Dimensions;
 import se.miun.itm.input.model.InPUTException;
-import se.miun.itm.input.model.mapping.Complex;
 import se.miun.itm.input.model.param.Param;
 import se.miun.itm.input.util.ParamUtil;
 import se.miun.itm.input.util.Q;
@@ -50,9 +47,9 @@ import se.miun.itm.input.util.Q;
  * @author Felix Dobslaw
  * 
  * @param <AParam>
- * @ThreadSafe
+ * @NotThreadSafe
  */
-public abstract class Value<AParam extends Param> extends InPUTElement {
+public abstract class Value<AParam extends Param<?>> extends InPUTElement {
 
 	private static final long serialVersionUID = -8840060757041893991L;
 
@@ -60,15 +57,15 @@ public abstract class Value<AParam extends Param> extends InPUTElement {
 
 	protected final AParam param;
 
-	protected final Integer[] dimensions;
+	protected final int[] dimensions;
 
 	protected final ElementCache elementCache;
 
-	public Value(String name, AParam param, Element original, Integer[] sizeArray, ElementCache elementCache) throws InPUTException {
+	public Value(String name, AParam param, Element original, int[] sizeArray, ElementCache elementCache) throws InPUTException {
 		super(name, Q.DESIGN_NAMESPACE, param, original);
 
 		this.param = param;
-		dimensions = initDimensions(sizeArray);
+		dimensions = ParamUtil.initDimensions(sizeArray);
 		initLocalId(original);
 
 		this.elementCache = elementCache;
@@ -84,7 +81,7 @@ public abstract class Value<AParam extends Param> extends InPUTElement {
 		setAttribute(Q.ID_ATTR, localId);
 	}
 
-	public Value(String name, AParam param, Integer[] sizeArray, ElementCache elementCache) throws InPUTException {
+	public Value(String name, AParam param, int[] sizeArray, ElementCache elementCache) throws InPUTException {
 		this(name, param, null, sizeArray, elementCache);
 	}
 
@@ -108,13 +105,6 @@ public abstract class Value<AParam extends Param> extends InPUTElement {
 		}
 	}
 
-	private Integer[] initDimensions(Integer[] sizeArray) {
-		if (Param.isArrayType(sizeArray))
-			return sizeArray;
-		else
-			return Dimensions.DEFAULT_DIM;
-	}
-
 	/**
 	 * uses lazy loading.
 	 * 
@@ -124,7 +114,7 @@ public abstract class Value<AParam extends Param> extends InPUTElement {
 	 */
 	public Object getInputValue(Object[] actualParams) throws InPUTException {
 		if (value == null)
-			init(actualParams);
+			param.init(this, actualParams, elementCache);
 		return value;
 	}
 
@@ -145,132 +135,68 @@ public abstract class Value<AParam extends Param> extends InPUTElement {
 		return "[" + super.toString() + ", value = " + valueToString() + "]";
 	}
 
-	private void initArray(Object[] actualParams) throws InPUTException {
-		// make the return value an array of appropriate size
-		value = new Object[getChildren().size()];
-		// container for the lower dimensional value entries
-		Value<?> subE;
-		// for all children run the casting again.
-		for (int i = 0; i < getChildren().size(); i++) {
-			subE = (Value<?>) getChildren().get(i);
-			// get object for numeric element and set as child
-			Array.set(value, i, subE.getInputValue(actualParams));
-		}
-	}
-
-	public Param getParam() {
-		return param;
-	}
-
-	protected void injectOnParent(Object parentValue) throws InPUTException {
-		getInputValue(null);
-		param.invokeSetter(parentValue, value);
-	}
-
-	protected void init(Object[] actualParams) throws InPUTException {
-
-		// retrieve the value String of the element
-		String valueString = getAttributeValue(Q.VALUE_ATTR);
-
-		if (valueString != null || (param.isImplicit() && !param.isArrayType())
-				|| (param.isImplicit() && param.isArrayType() && !getId().equals(param.getId())))
-			initValue(actualParams);
-		else if (param.isComplex())
-			initComplex(actualParams);
-		else if (param.isArrayType())
-			initArray(actualParams);
-	}
-
-	@SuppressWarnings("unchecked")
-	private void initComplex(Object[] actualParams) throws InPUTException {
-		Complex complex = param.getComplex();
-		Object complexValue = complex.newInstance();
-		List<SValue> children = (List<SValue>) (List<?>) getChildren();
-		for (SValue sValue : children) {
-			complex.invokeAdd(complexValue, sValue.getInputValue(actualParams));
-		}
-		value = complexValue;
-	}
-
 	protected abstract void initRandom(Map<String, Object> vars, Object[] actualParams, boolean lazy) throws InPUTException;
 
-	protected abstract void initValue(Object[] actualParams) throws InPUTException;
+	public Param<?> getParam() {
+		return param;
+	}
 
 	public String getLocalId() {
 		return getAttributeValue(Q.ID_ATTR);
 	}
 
-	protected Object getInputValue() {
+	public Object getInputValue() {
 		return value;
-	}
-
-	public Object random(Integer[] dimensions, Map<String, Object> vars) throws InPUTException {
-		Object value;
-		if (dimensions.length > 1)
-			value = randomArray(dimensions, vars);
-		else
-			value = random(dimensions[0], vars);
-		return value;
-
-	}
-
-	private Object random(Integer type, Map<String, Object> vars) throws InPUTException {
-		return randomValue(type, vars);
-	}
-
-	private Object randomValue(Integer type, Map<String, Object> vars) throws InPUTException {
-		Object value;
-		// either only a single value of the type
-		if (type == 0) {
-			value = randomValue(vars);
-		} else {
-			// or an array of that type
-			if (type < 0)
-				type = 1;
-			Object[] values = new Object[type];
-			for (int i = 0; i < values.length; i++) {
-				values[i] = random(vars);
-			}
-			value = values;
-		}
-
-		return value;
-	}
-
-	private Object randomValue(Map<String, Object> vars) throws InPUTException {
-		if (param.isFixed())
-			return param.getFixedValue();
-		else
-			return random(vars);
-	}
-
-	private Object randomArray(Integer[] dimensions, Map<String, Object> vars) throws InPUTException {
-		Object[] valueArray;
-		if (dimensions[0] > 0)
-			// create a container for the array of the first dimension
-			valueArray = new Object[dimensions[0]];
-		else
-			// for now, randomly created entries without specific definition,
-			// will receive minimum size.
-			valueArray = new Object[1];
-		// for all dimensions
-		for (int i = 0; i < valueArray.length; i++) {
-			// call the method again without the first dimension.
-			valueArray[i] = random(Arrays.copyOfRange(dimensions, 1, dimensions.length), vars);
-		}
-		return valueArray;
 	}
 
 	public Integer getDimensions() {
 		return dimensions.length;
 	}
 
-	protected abstract Object random(Map<String, Object> vars) throws InPUTException;
-
 	public void renewId() {
 		if (param.isArrayType())
-			setFullId(ParamUtil.deriveInputId(this));
+			setFullId(ParamUtil.deriveInputParamId(this));
 		for (Element child : getChildren())
 			((Value<?>) child).renewId();
 	}
+
+	@SuppressWarnings("unchecked")
+	public boolean same(Object obj) {
+		if (!(obj instanceof Value))
+			return false;
+		
+		Value<? extends Param<?>> foreigner = (Value<?>)obj;
+		Attribute forAttr;
+		for (Attribute attr : getAttributes()) {
+			forAttr = foreigner.getAttribute(attr.getName());
+			if (forAttr == null || !forAttr.getValue().equals(attr.getValue()))
+				return false;
+		}
+		
+		List<Value<?>> myChildren = (List<Value<?>>)(List<?>)getChildren();
+		List<Value<?>> foreignerChildren = (List<Value<?>>)(List<?>)foreigner.getChildren();
+		if (myChildren.size() != foreignerChildren.size())
+			return false;
+		
+		Value<?> foreignerValue;
+		for (Value<?> value : myChildren) {
+			foreignerValue = getSame(value, foreignerChildren);
+			if (foreignerValue == null || !value.same(foreignerValue))
+				return false;
+		}
+		
+		return true;
+	}
+
+	private Value<?> getSame(Value<?> value, List<Value<?>> foreignerChildren) {
+		for (Value<?> foreignerValue  : foreignerChildren)
+			if (value.getId().equals(foreignerValue.getId()))
+				return foreignerValue;
+		return null;
+	}
+
+	public boolean isPlainType() {
+		return dimensions.length == 1 && dimensions[0] == 0;
+	}
+	
 }

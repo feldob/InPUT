@@ -25,7 +25,10 @@ import se.miun.itm.input.model.InPUTException;
 
 /**
  * A delegate implementation of a document importer, which simply delegates the document.
+ * 
  * @author Felix Dobslaw
+ * 
+ * @NotThreadSafe
  *
  */
 public class DocumentImporter implements InPUTImporter<Document> {
@@ -44,12 +47,12 @@ public class DocumentImporter implements InPUTImporter<Document> {
 		return "Simply returns documents for import purposes";
 	}
 
-	public void resetContext(Document document) {
+	public synchronized void resetContext(Document document) {
 		this.document = document;
 	}
 
 	@Override
-	public Document impOrt() throws InPUTException {
+	public synchronized Document impOrt() throws InPUTException {
 		if (document == null)
 			throw new InPUTException("You have not set the context for importer DocumentImporter appropriately. The document is not initialized.");
 		return document;

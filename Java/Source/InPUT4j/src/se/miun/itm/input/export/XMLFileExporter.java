@@ -27,8 +27,8 @@ import java.io.IOException;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
+import se.miun.itm.input.aspects.Exportable;
 import se.miun.itm.input.aspects.FileNameAssigner;
-import se.miun.itm.input.aspects.InPUTExportable;
 import se.miun.itm.input.model.Document;
 import se.miun.itm.input.model.InPUTException;
 
@@ -37,26 +37,32 @@ import se.miun.itm.input.model.InPUTException;
  * 
  * @param outputPathName
  *            The full path of the file for algorithm design export
- * @ThreadSafe
+ * @NotThreadSafe (name and exporter are related!)
+ * 
  * @throws InputException
  */
-public class XMLFileExporter extends FileNameAssigner implements InPUTExporter<Void> {
+public class XMLFileExporter extends FileNameAssigner implements Exporter<Void> {
 
 	private final XMLOutputter outputter = new XMLOutputter(
 			Format.getPrettyFormat());
 
+	public XMLFileExporter() {
+		this("");
+	}
+	
 	public XMLFileExporter(String fileName) {
 		super(fileName);
 	}
 
-	public void resetExportFileName(String fileName) {
+	@Override
+	public synchronized void resetFileName(String fileName) {
 		if (!fileName.contains(".xml"))
 			fileName += ".xml";
 		super.resetFileName(fileName);
 	}
-
+	
 	@Override
-	public Void export(Document xml) throws InPUTException{
+	public synchronized Void export(Document xml) throws InPUTException{
 			try {
 				outputter.output(xml, new BufferedWriter(new FileWriter(fileName)));
 			} catch (IOException e) {
@@ -66,7 +72,7 @@ public class XMLFileExporter extends FileNameAssigner implements InPUTExporter<V
 	}
 
 	@Override
-	public Void export(InPUTExportable input) throws InPUTException{
+	public Void export(Exportable input) throws InPUTException{
 		throw new InPUTException(
 				"The export of complex InPUT structures to plain XML is not supported. Look for the ZipExporter instead."); 
 	}

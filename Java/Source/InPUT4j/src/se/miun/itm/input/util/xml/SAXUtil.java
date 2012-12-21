@@ -34,7 +34,10 @@ import se.miun.itm.input.util.Q;
 
 /**
  * The util class that is used by InPUT for most of the parsing and processing of XML data.
+ * 
  * @author Felix Dobslaw
+ * 
+ * @NotThreadSafe
  */
 public class SAXUtil {
 

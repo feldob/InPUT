@@ -21,6 +21,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package se.miun.itm.input.util;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -28,16 +29,21 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 import org.jdom2.Element;
 
+import se.miun.itm.input.model.DimensionHelper;
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.element.ElementCache;
 import se.miun.itm.input.model.element.Value;
 import se.miun.itm.input.model.param.AStruct;
 import se.miun.itm.input.model.param.Param;
 import se.miun.itm.input.model.param.ParamStore;
+import se.miun.itm.input.model.param.SChoice;
+import se.miun.itm.input.model.param.SParam;
+import se.miun.itm.input.model.param.generator.ValueGenerator;
 
 /**
  * A class upplying basic features to support the extraction of information from param elements or parsing and processing of id related
@@ -45,6 +51,7 @@ import se.miun.itm.input.model.param.ParamStore;
  * 
  * @author Felix Dobslaw
  * 
+ * @ThreadSafe
  */
 public class ParamUtil {
 
@@ -59,32 +66,6 @@ public class ParamUtil {
 	}
 
 	/**
-	 * Retrieves the return type class for a given a method identifier and a param element.
-	 * 
-	 * @param identifier
-	 * @param parentParam
-	 * @param ps
-	 * @return
-	 * @throws InPUTException
-	 */
-	public static Class<?> getClassFromMethodReturnType(String identifier, Param parentParam, ParamStore ps) throws InPUTException {
-		String[] chops = identifier.split(Pattern.quote("."));
-		String methodId = chops[chops.length - 1];
-
-		String paramId = identifier.substring(0, identifier.length() - (methodId.length() + 1));
-
-		Param param = getParamForId(paramId, parentParam, ps);
-
-		Class<?> cLass = param.getInPUTClass();
-
-		try {
-			return cLass.getMethod(methodId, AStruct.EMPTY_CLASS_ARRAY).getReturnType();
-		} catch (Exception e) {
-			throw new InPUTException(e.getMessage(), e);
-		}
-	}
-
-	/**
 	 * returns the parameter from the parameter store, given its id.
 	 * 
 	 * @param paramId
@@ -92,8 +73,8 @@ public class ParamUtil {
 	 * @param ps
 	 * @return
 	 */
-	public static Param getParamForId(String paramId, Param parentParam, ParamStore ps) {
-		Param param = ps.getParam(paramId);
+	public static Param<?> getParamForId(String paramId, Param<?> parentParam, ParamStore ps) {
+		Param<?> param = ps.getParam(paramId);
 		if (param == null)
 			param = getParamForLocalId(paramId, parentParam, ps);
 		return param;
@@ -107,8 +88,8 @@ public class ParamUtil {
 	 * @param ps
 	 * @return
 	 */
-	public static Param getParamForLocalId(String paramId, Param parentParam, ParamStore ps) {
-		Param localParam = ps.getParam(parentParam.getParamId() + "." + paramId);
+	public static Param<?> getParamForLocalId(String paramId, Param<?> parentParam, ParamStore ps) {
+		Param<?> localParam = ps.getParam(parentParam.getParamId() + "." + paramId);
 		if (localParam == null)
 			localParam = ps.getParam(parentParam.getId() + "." + paramId);
 		return localParam;
@@ -139,8 +120,8 @@ public class ParamUtil {
 		Object parentValue = value.getInputValue(null);
 
 		try {
-			Method method = parentValue.getClass().getMethod(methodId, AStruct.EMPTY_CLASS_ARRAY);
-			return method.invoke(parentValue, AStruct.EMPTY_OBJECT_ARRAY);
+			Method method = parentValue.getClass().getMethod(methodId, ValueGenerator.EMPTY_CLASS_ARRAY);
+			return method.invoke(parentValue, ValueGenerator.EMPTY_OBJECT_ARRAY);
 		} catch (Exception e) {
 			throw new InPUTException(e.getMessage(), e);
 		}
@@ -158,8 +139,8 @@ public class ParamUtil {
 	 */
 	private static Value<?> getValueForId(String valueParamId, String paramElementId, String paramId, ParamStore ps, ElementCache cache) {
 		// first lookup for local param.
-		Param parentParam = ps.getParam(paramId);
-		Param param = getParamForLocalId(valueParamId, parentParam, ps);
+		Param<?> parentParam = ps.getParam(paramId);
+		Param<?> param = getParamForLocalId(valueParamId, parentParam, ps);
 		// no success -> lookup in cache directly by global name.
 		String eventualParamId;
 
@@ -191,7 +172,7 @@ public class ParamUtil {
 	public static String extractDescriptorId(String descriptorFile) throws InPUTException {
 		try {
 			String temp;
-			BufferedReader r = new BufferedReader(new FileReader(descriptorFile));
+			BufferedReader r = new BufferedReader(new FileReader(new File(descriptorFile).getAbsolutePath()));
 			while (r.ready()) {
 				temp = r.readLine();
 				if (temp.contains("id=\""))
@@ -228,7 +209,7 @@ public class ParamUtil {
 	 * @param param
 	 * @return
 	 */
-	public static String deriveValueReferenceId(final Element original, final Param param) {
+	public static String deriveValueReferenceId(final Element original, final Param<?> param) {
 		// if original contains an integer as id : its a reference to a matrix
 		// parameter and the id should be given containing the int entries.
 
@@ -265,14 +246,14 @@ public class ParamUtil {
 		while (chops1.length > i && chops2.length > i) {
 			if (chops2[i].equals(chops1[i])) {
 				b.append(chops2[i]);
-				b.append(".");
+				b.append('.');
 				i++;
 			} else
 				break;
 		}
 
 		b.append(chops2[i]);
-		b.append(".");
+		b.append('.');
 		return b.toString();
 	}
 
@@ -284,6 +265,20 @@ public class ParamUtil {
 	 */
 	public static String deriveParamId(Element param) {
 		return deriveParamId(param, param.getAttributeValue(Q.ID_ATTR));
+	}
+
+	public static String deriveInputValueId(Element value) {
+		Element parent =value.getParentElement();
+		String localId = value.getAttributeValue(Q.ID_ATTR);
+		if (value.getName().equals(Q.SVALUE))
+			localId = value.getAttributeValue(Q.ID_ATTR) + "." + value.getAttributeValue(Q.VALUE_ATTR);
+		return deriveInputValueId(parent, localId);
+	}
+	
+	public static String deriveInputValueId(Element value, String localId) {
+		if (value == null || value.isRootElement())
+			return localId;
+		return deriveInputValueId(value.getParentElement()) + "." + localId;
 	}
 
 	/**
@@ -366,14 +361,20 @@ public class ParamUtil {
 		return value;
 	}
 
-	public static String deriveInputId(Value<?> element) {
-		return deriveInputId(element.getParentElement(), element.getLocalId());
+	public static String deriveInputParamId(Element element) {
+		return deriveInputId(element.getParentElement(), element.getAttributeValue(Q.ID_ATTR));
 	}
 
-	private static String deriveInputId(Element parent, String id) {
-		if (parent.isRootElement())
+	private static String deriveInputId(Element element, String id) {
+		if (element.isRootElement())
 			return id;
-		return deriveInputId(parent.getParentElement(), parent.getAttributeValue(Q.ID_ATTR) + "." + id);
+		
+		if (element.getName().equals(Q.SVALUE) && element.getAttributeValue(Q.VALUE_ATTR) != null)
+			id = element.getAttributeValue(Q.ID_ATTR) + "." + element.getAttributeValue(Q.VALUE_ATTR)+ "." + id;
+		else
+			id = element.getAttributeValue(Q.ID_ATTR) + "." + id;
+		
+		return deriveInputId(element.getParentElement(), id);
 	}
 
 	public static boolean isIntegerString(String stringValue) {
@@ -383,5 +384,69 @@ public class ParamUtil {
 			return false;
 		}
 		return true;
+	}
+
+	public static boolean isDimensionalArray(int[] sizeArray) {
+		return !(sizeArray.length == 0 || (sizeArray.length == 1 && sizeArray[0] == 0));
+	}
+	
+	public static int[] initDimensions(int[] sizeArray) {
+		if (Param.isArrayType(sizeArray))
+			return sizeArray;
+		else
+			return DimensionHelper.DEFAULT_DIM;
+	}
+
+	
+	public static Param<?> retrieveParamForValueE(SParam param, Element originalChild,
+			Element originalChoice) throws InPUTException {
+		// get the param for sub value. A sub value can be of two types
+		String choiceLocalId = originalChoice.getAttributeValue(Q.VALUE_ATTR);
+		String subParamId = originalChild.getAttributeValue(Q.ID_ATTR);
+		// this is a subentry of an array type, get back to the parent type.
+		if (choiceLocalId == null && ParamUtil.isIntegerString(subParamId))
+			return null;
+		else {
+			// either its child of the choice or the param.
+			Param<?> subParam = param.getChildParamElement(subParamId);
+			if (subParam == null) {
+				// chances are its a neighbor param of the parent. lets get it
+				// via lookup!
+				subParam = param.getChildParamElement(subParamId);
+				if (subParam == null) {
+					AStruct choice = param.getChoiceById(choiceLocalId);
+					if (choice == null) {
+						throw new InPUTException(
+								"Configuration error for parameter \""
+										+ param.getId()
+										+ "\". Potential sources: "
+										+ "1) You set a sub-parameter \""
+										+ subParamId
+										+ "\" to the configuration, which does not exist. 2) "
+										+ "you misspelled the choice entry in your design: \""
+										+ choiceLocalId
+										+ "\". In any case, make sure that the identfiers in design (value), design space and mapping (choice or parameter) match.");
+					}
+					subParam = choice.getChildParamElement(subParamId);
+				}
+			}
+			return subParam;
+		}
+	}
+	
+	public static <T> T[] concat(T[] first, T[] second) {
+		  T[] result = Arrays.copyOf(first, first.length + second.length);
+		  System.arraycopy(second, 0, result, first.length, second.length);
+		  return result;
+		}
+
+	public static String getParentId(Param<?> param) {
+		Element parent =param.getParentElement(); 
+		if (parent.isRootElement())
+			return "";
+
+		if (parent instanceof SChoice )
+			return ((Param<?>)parent.getParentElement()).getId();
+		return ((Param<?>)parent).getId();
 	}
 }

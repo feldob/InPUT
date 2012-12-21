@@ -22,7 +22,8 @@ package se.miun.itm.input.model;
 
 /**
  * The generic exception, that handles all kind of exceptions. A user usually only deals with this type of exceptions.
- * @author felix
+ * 
+ * @author Felix Dobslaw
  *
  */
 public class InPUTException extends Exception {

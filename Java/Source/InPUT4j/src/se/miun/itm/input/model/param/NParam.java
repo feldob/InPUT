@@ -20,173 +20,166 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package se.miun.itm.input.model.param;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.util.Map;
+import java.util.Random;
 
 import org.jdom2.Element;
 
-import se.miun.itm.input.InPUTConfig;
-import se.miun.itm.input.eval.EvaluationEngine;
-import se.miun.itm.input.eval.InputEvaluator;
 import se.miun.itm.input.model.InPUTException;
-import se.miun.itm.input.model.Numeric;
-import se.miun.itm.input.model.Ranges;
+import se.miun.itm.input.model.element.ElementCache;
+import se.miun.itm.input.model.element.NValue;
+import se.miun.itm.input.model.element.Value;
+import se.miun.itm.input.model.param.generator.FixedNumericGenerator;
+import se.miun.itm.input.model.param.generator.NumericGenerator;
+import se.miun.itm.input.model.param.generator.RandomNumericGenerator;
 import se.miun.itm.input.util.Q;
 
 /**
- * A concrete implementation of a parameter, which represents numerical values, given their definition ranges and their evaluation engine.
+ * A concrete implementation of a parameter, which represents numerical values,
+ * given their definition ranges and their evaluation engine.
  * 
  * @author Felix Dobslaw
  * 
+ * @NotThreadSafe
  */
-public class NParam extends Param {
+public class NParam extends Param<NumericGenerator>{
 
 	private static final long serialVersionUID = 4936437855938927299L;
 
-	private final Numeric type;
-
-	// @LazyInit
-	private Ranges ranges;
-
-	// @LazyLoading
-	private InputEvaluator eval;
-
-	public NParam(Element original, String designId, ParamStore ps) throws InPUTException {
+	public NParam(Element original, String designId, ParamStore ps)
+			throws InPUTException {
 		super(original, designId, ps);
-		type = Numeric.valueOf(getAttributeValue(Q.TYPE_ATTR).split(Q.ESCAPED_ARRAY_START)[0].toUpperCase());
+	}
+
+	@Override
+	protected NumericGenerator initGenerator() throws InPUTException {
+		String fixedValue = getFixedValue();
+		if (fixedValue != null)
+			return new FixedNumericGenerator(this, fixedValue);
+		
+		return new RandomNumericGenerator(this, initRandom(ps));
+	}
+
+	private Random initRandom(ParamStore ps) {
+		if (ps != null)
+			return ps.getRNG();
+		return new Random();
 	}
 
 	// has to be done after the order is defined, otherwise not semantically
 	// correct.
 	public void initRanges() throws InPUTException {
-		ranges = new Ranges(this);
+		generator.initRanges();
 	}
 
 	@Override
-	public Method initGetMethod(Object parentValue) throws InPUTException {
-		String getter = getGetter();
-		Method handle;
-		if (mapping.hasWrapper())
-			try {
-				handle = mapping.getWrapperClass().getMethod(getter, AStruct.EMPTY_CLASS_ARRAY);
-			} catch (NoSuchMethodException e) {
-				throw new InPUTException(getId() + ": There is no getter method by name '" + getter + "'.", e);
-			} catch (SecurityException e) {
-				throw new InPUTException(getId() + ": access to the method '" + getter + " ' is not allowed due to security restrictions.",
-						e);
-			}
+	public Class<?> getInPUTClass() {
+		if (generator.hasWrapper())
+			return generator.getWrapperClass();
+		return generator.getPrimitiveClass();
+	}
+
+	public void isValid(Object value, ElementCache elementCache) throws InPUTException {
+		if (generator.hasWrapper())
+			value = invokeGetter(value);
+		generator.validateInPUT(value, elementCache);
+	}
+
+	@Override
+	public Object invokeGetter(Object value) throws InPUTException {
+		return generator.invokeGetter(value);
+	}
+
+	@Override
+	public void initValue(Value<?> nValue, Object[] actualParams, ElementCache elementCache) throws InPUTException {
+		String valueString = nValue.getAttributeValue(Q.VALUE_ATTR);
+		// retrieve the numeric of the element
+		Object value = generator.parse(valueString);
+		if (generator.hasWrapper()) {
+			// if wrapper object -> instantiate the wrapper object
+			value = generator.newInstance(new Object[] { value });
+		}
+		nValue.setInputValue(value);
+	}
+
+	public void initValueAttribute(NValue nValue, Object value) throws InPUTException {
+			String valueString;
+			// differentiate between wrapper and plain types.
+			if (generator.hasWrapper())
+				// with a wrapper, the 'real' value has to be retrieved
+				valueString = invokeGetter(value).toString();
+			else
+				// otherwise, simply tostring it, that works for all plain types.
+				valueString = value.toString();
+			// now, set the value to the element.
+			nValue.setAttribute(Q.VALUE_ATTR, valueString);
+		}
+
+	public void initNumericElementFromValue(NValue nValue, Object value) throws InPUTException {
+		if (!value.getClass().isArray())
+			nValue.setAttribute(Q.VALUE_ATTR, value.toString());
 		else
-			try {
-				handle = parentValue.getClass().getMethod(getter, AStruct.EMPTY_CLASS_ARRAY);
-			} catch (NoSuchMethodException e) {
-				throw new InPUTException(getId() + ": There is no getter method by name '" + getter + "'.", e);
-			} catch (SecurityException e) {
-				throw new InPUTException(getId() + ": access to the method '" + getter + " ' is not allowed due to security restrictions.",
-						e);
-			}
-		return handle;
-	}
-
-	@Override
-	protected Method initSetMethod(Object parentValue) throws InPUTException {
-		String setter;
-		Class<?> cLass;
-		if (mapping.hasWrapper()) {
-			cLass = mapping.getWrapperClass();
-			setter = getWrapperSetter();
-		} else {
-			cLass = getNumericType().getNumClass();
-			setter = getSetter();
-		}
-
-		return initMethodHandle(parentValue, setter, cLass);
-	}
-
-	private Method initMethodHandle(Object parentValue, String setter, Class<?> cLass) throws InPUTException {
-		Method m;
-		try {
-			m = parentValue.getClass().getMethod(setter, cLass);
-		} catch (Exception e) {
-			try {
-				m = parentValue.getClass().getMethod(setter, getNumericType().getPrimitiveClass());
-			} catch (NoSuchMethodException e2) {
-				throw new InPUTException(getId() + ": There is no setter method by name '" + setter + "'.", e2);
-			} catch (SecurityException e2) {
-				throw new InPUTException(getId() + ": access to the method '" + setter + " ' is not allowed due to security restrictions.",
-						e2);
-			}
-		}
-		return m;
-	}
-
-	public Numeric getNumericType() {
-		return type;
-	}
-
-	public Class<?> getWrapperClass() {
-		return mapping.getWrapperClass();
-	}
-
-	public String getWrapperGetter() {
-		return mapping.getWrapperGetter();
-	}
-
-	public String getWrapperSetter() {
-		return mapping.getWrapperSetter();
-	}
-
-	public boolean hasWrapper() {
-		return mapping.hasWrapper();
-	}
-
-	public Constructor<?> getWrapperConstructor() throws InPUTException {
-
-		return mapping.getWrapperConstructor(type);
-	}
-
-	public Ranges getEvaluatedRanges(Map<String, Object> vars) throws InPUTException {
-		Ranges ranges;
-		if (isIndependant())
-			ranges = this.ranges;
-		else {
-			if (eval == null)
-				eval = InPUTConfig.getValue("evaluator");
-			ranges = EvaluationEngine.evaluate(eval, this.ranges, vars);
-		}
-		return ranges;
+			nValue.setInputValue(generator.hasWrapper() ? null : value);
 	}
 
 	@Override
 	public String getParamId() {
 		return getId();
 	}
-
+	
 	@Override
-	public Object getFixedValue() {
-		return type.parse(getFixed());
+	public void checkIfParameterSettable(String paramId) throws InPUTException {
+		
 	}
 
 	@Override
-	public boolean isImplicit() {
-		return false;
+	public boolean isPlainValueElement(Value<?> valueElement) {
+		// / retrieve the value String of the element
+		String valueString = valueElement.getAttributeValue(Q.VALUE_ATTR);
+		return (valueString != null && !valueString.equals(Q.NULL))
+				|| !isArrayType()
+				|| (isArrayType() && !getId().equals(getId()));
+	}
+
+	public String getMaxValue() {
+		return generator.getMaxValue();
+	}
+
+	public String getMinValue() {
+		return generator.getMinValue();
+	}
+
+	public boolean isCountable() {
+		return generator.isCountable();
+	}
+
+	public boolean hasWrapper() {
+		return generator.hasWrapper();
 	}
 
 	@Override
-	public Class<?> getInPUTClass() {
-		if (hasWrapper())
-			return getWrapperClass();
-		return getNumericType().getPrimitiveClass();
+	public Object getValueForString(String valueString) throws InPUTException {
+		return generator.parse(valueString);
 	}
-
+	
 	@Override
-	public boolean isComplex() {
-		return false;
+	public String getValueTypeString() {
+		return Q.NVALUE;
+	}
+	
+	@Override
+	public String toString() {
+		return generator.toString();
 	}
 
-	public void isValid(Object value) throws InPUTException {
-		if (hasWrapper())
-			value = invokeGetter(value);
-		ranges.checkValidity((Comparable<Comparable<?>>) value);
+	public String getNumericMaxValue() {
+		return generator.getNumericMaxValue();
+	}
+
+	public String getNumericMinValue() {
+		return generator.getNumericMinValue();
+	}
+
+	public boolean isBoolean() {
+		return generator.isBoolean();
 	}
 }

@@ -50,22 +50,25 @@ import se.miun.itm.input.util.Q;
 import se.miun.itm.input.util.xml.XPathProcessor;
 
 /**
- * a The datastructure that manages all parameter related activities in InPUT.
- * Every design space has a parameter store, to which it outsources its
- * initialization, parameter lookup, and data consistency control.
+ * a The data-structure that manages all parameter related activities in InPUT. Every design space has a parameter store, to which it
+ * out-sources its initialization, parameter lookup, and data consistency control.
  * 
- * The ParamStore makes sure that the mappings are bound correctly to the
- * parameter definitions, and else report otherwise.
+ * The ParamStore makes sure that the mappings are bound correctly to the parameter definitions, and else report otherwise.
  * 
  * @author Felix Dobslaw
+ * 
+ * @NotThreadSafe
  */
 public class ParamStore implements Identifiable {
 
 	private static final Map<String, ParamStore> stores = new HashMap<String, ParamStore>();
 
-	private final Map<String, Param> params = new HashMap<String, Param>();
+	private final Map<String, Param<?>> inputParamElements = new HashMap<String, Param<?>>();
 
-	private final Map<Param, String> paramsInv = new HashMap<Param, String>();
+	private final Map<Param<?>, String> paramsInv = new HashMap<Param<?>, String>();
+
+	// @Lazy
+	private List<Param<?>> fixed;
 
 	private final String id;
 
@@ -79,8 +82,7 @@ public class ParamStore implements Identifiable {
 
 	private final int hash;
 
-	private ParamStore(IDesignSpace space, Document designSpace,
-			InputStream mappingStream) throws InPUTException {
+	private ParamStore(IDesignSpace space, Document designSpace, InputStream mappingStream) throws InPUTException {
 		id = designSpace.getRootElement().getAttributeValue(Q.ID_ATTR);
 		hash = id.hashCode();
 		this.space = space;
@@ -95,17 +97,13 @@ public class ParamStore implements Identifiable {
 		return hash;
 	}
 
-	private IMappings initCodeMapping(InputStream mappingStream)
-			throws InPUTException {
-		String mappingFilePath = spaceTree.getRootElement().getAttributeValue(
-				Q.MAPPING_ATTR);
-		IMappings codeMappings = initCodeMappings(mappingFilePath,
-				mappingStream);
+	private IMappings initCodeMapping(InputStream mappingStream) throws InPUTException {
+		String mappingFilePath = spaceTree.getRootElement().getAttributeValue(Q.MAPPING_ATTR);
+		IMappings codeMappings = initCodeMappings(mappingFilePath, mappingStream);
 		return codeMappings;
 	}
 
-	private IMappings initCodeMappings(String mappingFilePath,
-			InputStream mappingStream) throws InPUTException {
+	private IMappings initCodeMappings(String mappingFilePath, InputStream mappingStream) throws InPUTException {
 		InputStream is = null;
 		if (mappingStream != null)
 			is = mappingStream;
@@ -118,7 +116,8 @@ public class ParamStore implements Identifiable {
 				is = new FileInputStream(mappingFilePath);
 			} catch (FileNotFoundException e1) {
 				throw new InPUTException("The file by name '" + mappingFilePath
-						+ "' could not be found.", e1);
+						+ "' could not be located. Alternatively, the mapping with id \"" + space.getId()
+						+ "\" cannot be found. Make sure that your space and mapping file have identical id attributes.", e1);
 			}
 		}
 
@@ -127,9 +126,7 @@ public class ParamStore implements Identifiable {
 			try {
 				mappingId = Mappings.initMapping(is);
 			} catch (IOException e) {
-				throw new InPUTException(
-						"The inputStream for the codeMapping file could not be read successflly.",
-						e);
+				throw new InPUTException("The inputStream for the codeMapping file could not be read successfully.", e);
 			}
 
 			if (mappingId != null) {
@@ -152,11 +149,10 @@ public class ParamStore implements Identifiable {
 
 	private void initParams() throws InPUTException {
 		preprocessTreeForTypes();
-		LinkedList<Element> params = ParamInitializer.getOrderedInitParams(
-				spaceTree, mappings);
+		LinkedList<Element> params = ParamInitializer.getOrderedInitParams(spaceTree, mappings);
 
 		for (Element param : params)
-			initParam(id, (Element) param);
+			initParam(id, param);
 		initDependencies();
 		initRanges();
 	}
@@ -165,30 +161,70 @@ public class ParamStore implements Identifiable {
 		Element root = spaceTree.getRootElement();
 		List<Element> params = root.getChildren();
 		String typeId;
-		while (params.size() > 0
-				&& params.get(0).getName().equals(Q.SCHOICE_TYPE)) {
-			typeId = params.get(0).getAttributeValue(Q.ID_ATTR);
+		Element param;
+		while (params.size() > 0) {
+			param = params.get(0);
+			if (!param.getName().equals(Q.SCHOICE_TYPE))
+				break;
 
-			// find all choices that refer to the type
-			List<Object> dependers = XPathProcessor.query(
-					createTypeQuery(typeId), Q.DESIGN_SPACE_NAMESPACE, root);
-
-			for (Object choice : dependers)
-				initChoiceByType((Element) choice, params.get(0));
+			typeId = param.getAttributeValue(Q.ID_ATTR);
+			initTypeChoices(root, param, typeId);
+			initTypeParams(root, param, typeId);
 
 			root.removeContent(params.get(0));
 		}
 	}
 
-	private void initChoiceByType(Element choice, Element type) {
-		Element newChoice = (Element) type.clone();
-		String localId = choice.getAttributeValue(Q.ID_ATTR);
-		addAlias(choice, type);
+	private void initTypeParams(Element root, Element param, String typeId) throws InPUTException {
+		initType(root, param, typeId, Q.SPARAM);
+	}
+
+	private void initTypeChoices(Element root, Element param, String typeId) throws InPUTException {
+		initType(root, param, typeId, Q.SCHOICE);
+	}
+
+	private void initType(Element root, Element param, String typeId, String referentType) throws InPUTException {
+		List<Element> dependers = XPathProcessor.query(createTypeQuery(typeId, referentType), Q.DESIGN_SPACE_NAMESPACE, root);
+
+		for (Element referent : dependers)
+			initElementByType(referentType, referent, param);
+	}
+
+	private void initElementByType(String referentType, Element referent, Element type) {
+		Element newChoice = type.clone();
+		String localId = referent.getAttributeValue(Q.ID_ATTR);
+		addAlias(referent, type);
 		newChoice.setAttribute(Q.ID_ATTR, localId);
-		newChoice.setName(Q.SCHOICE);
-		Element parent = choice.getParentElement();
-		parent.removeContent(choice);
+		newChoice.setName(referentType);
+		overrideSubElementsIfExist(referent, newChoice);
+		Element parent = referent.getParentElement();
+		parent.removeContent(referent);
 		parent.addContent(newChoice);
+	}
+
+	private void overrideSubElementsIfExist(Element referent, Element typeElement) {
+
+		Element overriden;
+		
+		Element[] children = referent.getChildren().toArray(new Element[]{});
+		for (Element introduced : children) {
+			overriden = getIfHasSuchChild(typeElement, introduced);
+			if (overriden != null)
+				typeElement.removeContent(overriden);
+			referent.removeContent(introduced);
+			typeElement.addContent(introduced);
+		}
+	}
+
+	private Element getIfHasSuchChild(Element parent, Element potential) {
+		Element existing = null;
+		for (Element child : parent.getChildren()) {
+			if (potential.getAttributeValue(Q.ID_ATTR).equals(child.getAttributeValue(Q.ID_ATTR))) {
+				existing = child;
+				break;
+			}
+		}
+		return existing;
 	}
 
 	private void addAlias(Element choice, Element newChoice) {
@@ -212,10 +248,10 @@ public class ParamStore implements Identifiable {
 	}
 
 	// SChoice[@type='id']
-	private String createTypeQuery(String typeId) {
+	private String createTypeQuery(String typeId, String typeName) {
 		StringBuilder b = new StringBuilder();
 		b.append("//");
-		b.append(Q.SCHOICE);
+		b.append(typeName);
 		b.append("[@");
 		b.append(Q.TYPE_ATTR);
 		b.append("='");
@@ -225,13 +261,13 @@ public class ParamStore implements Identifiable {
 	}
 
 	private void initRanges() throws InPUTException {
-		for (Param param : params.values())
+		for (Param<?> param : inputParamElements.values())
 			if (param instanceof NParam)
 				((NParam) param).initRanges();
 	}
 
 	private void initParam(String id, Element param) throws InPUTException {
-		Param paramE = null;
+		Param<?> paramE = null;
 		if (param.getName().equals(Q.NPARAM))
 			paramE = new NParam(param, id, this);
 		else if (param.getName().equals(Q.SPARAM))
@@ -242,10 +278,10 @@ public class ParamStore implements Identifiable {
 	}
 
 	private void initDependencies() {
-		List<Param> paramList;
-		paramList = new ArrayList<Param>(params.values());
+		List<Param<?>> paramList;
+		paramList = new ArrayList<Param<?>>(inputParamElements.values());
 
-		Param first;
+		Param<?> first;
 		for (int i = 0; i < paramList.size(); i++) {
 			first = paramList.get(i);
 			for (int j = i + 1; j < paramList.size(); j++)
@@ -253,32 +289,32 @@ public class ParamStore implements Identifiable {
 		}
 	}
 
-	private void initParam(final Param param) {
+	private void initParam(final Param<?> param) {
 		String paramId = param.getId();
-		params.put(paramId, param);
+		inputParamElements.put(paramId, param);
 		paramsInv.put(param, paramId);
-
 		// log.info(paramId + ": Success");
 	}
 
 	public boolean containsParam(String paramId) {
-		return params.containsKey(paramId);
+		return inputParamElements.containsKey(paramId);
 	}
 
-	public Param getParam(String paramId) {
-		return params.get(paramId);
+	public Param<?> getParam(String paramId) {
+		return inputParamElements.get(paramId);
 	}
 
+	@Override
 	public String getId() {
 		return id;
 	}
 
-	public Collection<Param> getImplementationSpecific() {
+	public Collection<Param<?>> getImplementationSpecific() {
 		return Collections.unmodifiableCollection(paramsInv.keySet());
 	}
 
-	public Set<String> getParamIds() {
-		return Collections.unmodifiableSet(params.keySet());
+	public Set<String> getAllParameterIds() {
+		return Collections.unmodifiableSet(inputParamElements.keySet());
 	}
 
 	public static ParamStore getInstance(String id) {
@@ -289,8 +325,7 @@ public class ParamStore implements Identifiable {
 		return Collections.unmodifiableSet(stores.keySet());
 	}
 
-	public static void register(IDesignSpace space, InputStream mappingStream,
-			Document designSpace) throws InPUTException {
+	public static void register(IDesignSpace space, InputStream mappingStream, Document designSpace) throws InPUTException {
 		String id = designSpace.getRootElement().getAttributeValue(Q.ID_ATTR);
 		if (!stores.containsKey(id)) {
 			ParamStore ps = new ParamStore(space, designSpace, mappingStream);
@@ -312,5 +347,23 @@ public class ParamStore implements Identifiable {
 
 	public Random getRNG() {
 		return rng;
+	}
+
+	public static void releaseAllParamStores() {
+		stores.clear();
+	}
+
+	private void initFixed() {
+		fixed = new ArrayList<Param<?>>();
+		for (Param<?> param : paramsInv.keySet())
+			if (param.isFixed())
+				fixed.add(param);
+		fixed = Collections.unmodifiableList(fixed);
+	}
+
+	public List<Param<?>> getFixed() {
+		if (fixed == null)
+			initFixed();
+		return fixed;
 	}
 }

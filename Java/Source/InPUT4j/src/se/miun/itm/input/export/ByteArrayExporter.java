@@ -26,7 +26,7 @@ import java.io.IOException;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
-import se.miun.itm.input.aspects.InPUTExportable;
+import se.miun.itm.input.aspects.Exportable;
 import se.miun.itm.input.model.Document;
 import se.miun.itm.input.model.InPUTException;
 
@@ -34,27 +34,29 @@ import se.miun.itm.input.model.InPUTException;
  * Exports the design in it's current state to an OutputStream.
  * 
  * @ThreadSafe
+ * 
  * @throws InputException
  */
 
-public class ByteArrayExporter implements InPUTExporter<ByteArrayOutputStream> {
+public class ByteArrayExporter implements Exporter<ByteArrayOutputStream> {
 
 	private final XMLOutputter outputter = new XMLOutputter(
 			Format.getPrettyFormat());
-	
+
 	@Override
-	public ByteArrayOutputStream export(InPUTExportable input) throws InPUTException {
+	public ByteArrayOutputStream export(Exportable input) throws InPUTException {
 		throw new InPUTException("unsupported so far.");
 	}
 
 	@Override
-	public ByteArrayOutputStream export(Document xml) throws InPUTException {
+	public synchronized ByteArrayOutputStream export(Document xml) throws InPUTException {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		try {
 			outputter.output(xml, out);
 		} catch (IOException e) {
 			throw new InPUTException(
-					"The xml could not be exported succesfully. The output stream could not be closed.", e);
+					"The xml could not be exported succesfully. The output stream could not be closed.",
+					e);
 		}
 		return out;
 	}

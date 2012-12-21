@@ -28,7 +28,7 @@ import org.jdom2.Element;
  * users directly depend on them, and due to the restrictions of third party
  * class exposure to service consumers.
  * 
- * @author felix
+ * @author Felix Dobslaw
  * 
  */
 public class Document extends org.jdom2.Document {

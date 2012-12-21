@@ -62,6 +62,7 @@ public interface IDesignSpace extends Identifiable, Exportable,
 	 * @return the imported design
 	 * @throws InPUTException
 	 */
+	@Override
 	IDesign impOrt(InPUTImporter<Document> importer) throws InPUTException;
 
 	/**
@@ -116,13 +117,13 @@ public interface IDesignSpace extends Identifiable, Exportable,
 	 * @param paramId
 	 *            The parameter id for a valid parameter type definition in this
 	 *            design space.
-	 * @param sizeArray
+	 * @param dimensions
 	 *            specifies the amount of dimensions for the output with its
 	 *            amount of desired entries
 	 * @return The array of randomly chosen parameter value
 	 * @throws InPUTException
 	 */
-	<T> T next(String paramId, Integer[] sizeArray) throws InPUTException;
+	<T> T next(String paramId, int[] dimensions) throws InPUTException;
 
 	/**
 	 * Returns a randomly chosen parameter value, with respect to this valid
@@ -143,12 +144,12 @@ public interface IDesignSpace extends Identifiable, Exportable,
 	/**
 	 * Returns a matrix of randomly chosen parameter values, with respect to
 	 * this design space. Only required if relative extreme values are defined,
-	 * otherwise use next(String, Integer[]).
+	 * otherwise use next(String, int[]).
 	 * 
 	 * @param paramId
 	 *            The parameter id for a valid parameter type definition in this
 	 *            design space.
-	 * @param sizeArray
+	 * @param dimensions
 	 *            specifies the amount of dimensions for the output with its
 	 *            amount of desired entries
 	 * @param vars
@@ -157,7 +158,7 @@ public interface IDesignSpace extends Identifiable, Exportable,
 	 * @return The array of randomly chosen parameter value
 	 * @throws InPUTException
 	 */
-	<T> T next(String paramId, Integer[] sizeArray, Map<String, Object> vars)
+	<T> T next(String paramId, int[] dimensions, Map<String, Object> vars)
 			throws InPUTException;
 
 	/**
@@ -179,7 +180,7 @@ public interface IDesignSpace extends Identifiable, Exportable,
 	 * @param paramId
 	 *            The parameter id for a valid parameter type definition in this
 	 *            design space.
-	 * @param sizeArray
+	 * @param dimensions
 	 *            specifies the amount of dimensions for the output with its
 	 *            amount of desired entries
 	 * @param objects
@@ -188,7 +189,7 @@ public interface IDesignSpace extends Identifiable, Exportable,
 	 * @return A random choice of the parameter with id paramId
 	 * @throws InPUTException
 	 */
-	<T> T next(String paramId, Integer[] sizeArray, Object[] objects)
+	<T> T next(String paramId, int[] dimensions, Object[] objects)
 			throws InPUTException;
 
 	/**
@@ -221,7 +222,7 @@ public interface IDesignSpace extends Identifiable, Exportable,
 	 * @param paramId
 	 *            The parameter id for a valid parameter type definition in this
 	 *            design space.
-	 * @param sizeArray
+	 * @param dimensions
 	 *            specifies the amount of dimensions for the output with its
 	 *            amount of desired entries
 	 * @param vars
@@ -235,7 +236,7 @@ public interface IDesignSpace extends Identifiable, Exportable,
 	 * @return The randomly chosen parameter value
 	 * @throws InPUTException
 	 */
-	<T> T next(String paramId, Integer[] sizeArray, Map<String, Object> vars,
+	<T> T next(String paramId, int[] dimensions, Map<String, Object> vars,
 			Object[] objects) throws InPUTException;
 
 	boolean isFile();

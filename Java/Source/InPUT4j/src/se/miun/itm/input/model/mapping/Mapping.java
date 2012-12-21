@@ -20,9 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package se.miun.itm.input.model.mapping;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,127 +29,80 @@ import java.util.regex.Pattern;
 import org.jdom2.Element;
 
 import se.miun.itm.input.model.InPUTException;
-import se.miun.itm.input.model.Numeric;
 import se.miun.itm.input.util.Q;
 
 /**
- * The standard implementation for a concrete, user defined, mapping in InPUT. 
+ * An abstract definition of a mapping, which contains common information,
+ * developed for maximum code reuse.
+ * 
  * @author Felix Dobslaw
- *
+ * 
+ * @NotThreadSafe
  */
-public class Mapping extends AMapping {
+public abstract class Mapping implements IMapping {
 
-	private final String componentId;
-	private final String constrSign;
-	private final Wrapper wrapper;
-	private final Complex complex;
-	private final IMappings mappings;
+	protected final String paramId;
+
+	protected final String localId;
+
+	private final String getter;
+
+	private final String setter;
+
+	private final int hash;
+
 	private final Set<IMapping> dependees = new HashSet<IMapping>();
-	private final Set<String> signChops;
 
-	public Mapping(Element mapping, IMappings mappings)
-			throws InPUTException {
-		super(mapping.getAttributeValue(Q.ID_ATTR), mapping
+	public Mapping(Element mapping) throws InPUTException {
+		this(mapping.getAttributeValue(Q.ID_ATTR), mapping
 				.getAttributeValue(Q.SET_ATTR), mapping
 				.getAttributeValue(Q.GET_ATTR));
-		componentId = mapping.getAttributeValue(Q.TYPE_ATTR);
-		wrapper = initWrapper(mapping);
-		complex = initComplex(mapping);
-		constrSign = initConstrSignature(mapping);
-		signChops = initSignatureChops();
-		this.mappings = mappings;
 	}
 
-	public Mapping(String id, IMapping mapping) {
-		super(id, mapping.getSetter(), mapping.getGetter());
-		componentId = mapping.getComponentId();
-		wrapper = mapping.getWrapper();
-		complex = mapping.getComplex();
-		constrSign = mapping.getConstructorSignature();
-		signChops = initSignatureChops();
-		this.mappings = mapping.getCodeMappings();
-	}
-
-	private Set<String> initSignatureChops() {
-		Set<String> chops;
-		if (constrSign != null) {
-			String[] entries = constrSign.split(Pattern.quote(" "));
-			chops = new HashSet<String>(Arrays.asList(entries));
-		} else
-			chops = new HashSet<String>();
-		return chops;
-	}
-
-	private String initConstrSignature(Element mapping) {
-		if (wrapper == null)
-			return mapping.getAttributeValue(Q.CONSTR_ATTR);
-		else
-			return wrapper.getConstructorSignature();
-	}
-
-
-	private Complex initComplex(Element mapping) throws InPUTException {
-		List<Element> children = mapping.getChildren();
-		Element complex;
-		if (children.size() > 0) {
-			complex = children.get(0);
-			if (complex.getName().equals(Q.COMPLEX))
-				return new Complex(complex, mapping);
-		}
-
-		return null;
-	}
-	
-	private Wrapper initWrapper(Element mapping) throws InPUTException {
-		List<Element> children = mapping.getChildren();
-		Element wrap;
-		if (children.size() > 0) {
-			wrap = children.get(0);
-			if (wrap.getName().equals(Q.WRAPPER))
-				return new Wrapper(localId, wrap, mapping);
-		}
-
-		return null;
-	}
-
-	public Class<?> getWrapperClass() {
-		return wrapper.getWrapperClass();
+	public Mapping(String paramId, String setter, String getter) {
+		this.paramId = paramId;
+		hash = paramId.hashCode();
+		localId = initLocalId();
+		this.getter = initGetSet(Q.GET_ATTR, getter);
+		this.setter = initGetSet(Q.SET_ATTR, setter);
 	}
 
 	@Override
-	public String getComponentId() {
-		return componentId;
+	public int hashCode() {
+		return hash;
+	}
+
+	private String initLocalId() {
+		String[] chopped = paramId.split(Pattern.quote("."));
+		return chopped[chopped.length - 1];
+	}
+
+	private String initGetSet(String defauLt, String getSet) {
+		if (getSet == null)
+			getSet = defauLt + localId;
+		else if (getSet.equals("false"))
+			getSet = null;
+		return getSet;
 	}
 
 	@Override
-	public String getConstructorSignature() {
-		return constrSign;
+	public String getId() {
+		return paramId;
 	}
 
 	@Override
-	public String getWrapperGetter() {
-		return wrapper.getGetter();
+	public String getSetter() {
+		return setter;
 	}
 
 	@Override
-	public String getWrapperSetter() {
-		return wrapper.getSetter();
+	public String getGetter() {
+		return getter;
 	}
 
 	@Override
-	public boolean hasWrapper() {
-		return wrapper != null;
-	}
-
-	@Override
-	public Constructor<?> getWrapperConstructor(Numeric numType)
-			throws InPUTException {
-		return wrapper.getWrapperConstructor(numType);
-	}
-
-	@Override
-	public IMappings getCodeMappings() {
-		return mappings;
+	public String getLocalId() {
+		return localId;
 	}
 
 	@Override
@@ -176,23 +127,6 @@ public class Mapping extends AMapping {
 		return false;
 	}
 
-	/**
-	 * important note: dependability is only relevant for the global order of the 
-	 * parameter init, and therefore, a parameter is NOT dependent on its children,
-	 * meaning that local dependencies are not of interest here.
-	 */
-	@Override
-	public boolean containsInConstructorSignature(IMapping mapping) {
-		if (signChops.contains(mapping.getId()))
-			return true;
-		return false;
-	}
-	
-	@Override
-	public String toString() {
-		return getId() + "[constructor=\"" + constrSign +"\"]";
-	}
-	
 	@Override
 	public int compareTo(IMapping o) {
 		if (dependsOn(o))
@@ -205,20 +139,5 @@ public class Mapping extends AMapping {
 	@Override
 	public List<IMapping> getDependees() {
 		return new ArrayList<IMapping>(dependees);
-	}
-
-	@Override
-	public Wrapper getWrapper() {
-		return wrapper;
-	}
-
-	@Override
-	public boolean isComplex() {
-		return complex != null;
-	}
-
-	@Override
-	public Complex getComplex() {
-		return complex;
 	}
 }

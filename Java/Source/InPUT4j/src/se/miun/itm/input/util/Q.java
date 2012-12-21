@@ -182,6 +182,8 @@ public class Q {
 	public static final String DEFAULT = "default";
 
 	public static final Object BLANK = Void.TYPE;
+	
+	public static final Object PLACEHOLDER = "...";
 
 	public static final String COMPLEX = "Complex";
 
@@ -205,15 +207,27 @@ public class Q {
 	public static final String DESIGN_SPACE_NAMESPACE_ID = NAMESPACE_ID
 			+ DESIGN_SPACE_ROOT;
 
+	public static final String MAPPING_NAMESPACE_ID = NAMESPACE_ID + CODE_MAPPING;
+	
 	public static final Namespace DESIGN_SPACE_NAMESPACE = Namespace
 			.getNamespace(MY_NAMESPACE_PREFIX, NAMESPACE_ID + DESIGN_SPACE_ROOT);
 
 	public static final Namespace DESIGN_NAMESPACE = Namespace.getNamespace(
 			MY_NAMESPACE_PREFIX, DESIGN_NAMESPACE_ID);
 
-	private static final String SCHEMA_PATH = "schemaPath";
+	public static final String SCHEMA_PATH = "schemaPath";
 
 	public static final String RUNTIME_VALIDATION = "runtimeValidation";
+
+	public static final String STRING = "String";
+
+	public static final String STRING_TYPE = "java.lang.String";
+
+	public static final Object[] DEFAULT_STRING_ACTUAL_PARAMS = {DEFAULT};
+
+	public static final String EVALUATOR = "evaluator";
+
+	public static final String NULL = "null";
 
 	public static String getSchemaLocation() throws InPUTException {
 		String result = DESIGN_NAMESPACE_ID + " " + InPUTConfig.getValue(SCHEMA_PATH) + DESIGN_ROOT

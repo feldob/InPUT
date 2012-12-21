@@ -22,10 +22,12 @@ package se.miun.itm.input.util.xml;
 
 import java.util.List;
 
-
-import org.jdom2.JDOMException;
+import org.jdom2.Element;
 import org.jdom2.Namespace;
-import org.jdom2.xpath.XPath;
+import org.jdom2.filter.ElementFilter;
+import org.jdom2.filter.Filter;
+import org.jdom2.xpath.XPathExpression;
+import org.jdom2.xpath.XPathFactory;
 
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.util.Q;
@@ -36,31 +38,21 @@ import se.miun.itm.input.util.Q;
  * 
  * @author Felix Dobslaw
  * 
+ * @NotThreadSafe
  */
 public class XPathProcessor {
 
-	// TODO buggy for other than DesignSpace context.
-	@SuppressWarnings("unchecked")
-	public static List<Object> query(final String xpath, Namespace nameSpace,
+	private static final Filter<Element> ELEMENT_FILTER = new ElementFilter();
+
+	public static List<Element> query(String expression, Namespace nameSpace,
 			Object context) throws InPUTException {
-		XPath inst;
-		try {
-			inst = XPath.newInstance(correctNamespaceInPUT(xpath));
-		} catch (JDOMException e) {
-			throw new InPUTException(
-					"The expression '"
-							+ xpath
-							+ "' could not be processed as intended. A query error has been caught.",
-					e);
-		}
-		inst.addNamespace(nameSpace);
-		try {
-			return (List<Object>) (List<?>) inst.selectNodes(context);
-		} catch (JDOMException e) {
-			throw new InPUTException(
-					"An internal error occured: The design file that has been querried was not part of the document.",
-					e);
-		}
+		XPathFactory inst;
+		inst = XPathFactory.instance();
+		expression = correctNamespaceInPUT(expression, nameSpace);
+
+		XPathExpression<Element> expr = inst.compile(expression,
+				ELEMENT_FILTER, null, nameSpace);
+		return expr.evaluate(context);
 	}
 
 	public static String correctNamespaceGiveInPUT(String expression) {
@@ -72,11 +64,14 @@ public class XPathProcessor {
 		return expression;
 	}
 
-	public static String correctNamespaceInPUT(String expression) {
-		for (int i = 0; i < Q.DESIGN_SPACE_ELEMENT_IDS.length; i++) {
-			expression = expression.replace(Q.DESIGN_SPACE_ELEMENT_IDS[i],
-					Q.DESIGN_SPACE_NAMESPACE.getPrefix() + ":"
-							+ Q.DESIGN_SPACE_ELEMENT_IDS[i]);
+	public static String correctNamespaceInPUT(String expression,
+			Namespace nameSpace) {
+		if (!nameSpace.equals(Namespace.NO_NAMESPACE)) {
+			for (int i = 0; i < Q.DESIGN_SPACE_ELEMENT_IDS.length; i++) {
+				expression = expression.replace(Q.DESIGN_SPACE_ELEMENT_IDS[i],
+						Q.DESIGN_SPACE_NAMESPACE.getPrefix() + ":"
+								+ Q.DESIGN_SPACE_ELEMENT_IDS[i]);
+			}
 		}
 		return expression;
 	}

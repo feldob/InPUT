@@ -20,6 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package se.miun.itm.input.impOrt;
 
+import se.miun.itm.input.InPUTConfig;
 import se.miun.itm.input.aspects.FileNameAssigner;
 import se.miun.itm.input.model.Document;
 import se.miun.itm.input.model.InPUTException;
@@ -27,7 +28,10 @@ import se.miun.itm.input.util.xml.SAXUtil;
 
 /**
  * Imports InPUT xml files from the file system, returning documents.
+ * 
  * @author Felix Dobslaw
+ * 
+ * @NotThreadSafe
  */
 public class XMLFileImporter extends FileNameAssigner implements InPUTImporter<Document>  {
 
@@ -42,6 +46,6 @@ public class XMLFileImporter extends FileNameAssigner implements InPUTImporter<D
 	@Override
 	public Document impOrt() throws InPUTException {
 			// build the instance file
-			return SAXUtil.build(fileName, true);
+			return SAXUtil.build(fileName, InPUTConfig.isValidationActive());
 	}
 }

@@ -26,6 +26,10 @@ import java.util.List;
 import org.jdom2.Element;
 
 import se.miun.itm.input.model.InPUTException;
+import se.miun.itm.input.model.element.ElementCache;
+import se.miun.itm.input.model.element.Value;
+import se.miun.itm.input.model.param.generator.FixedStructuralGenerator;
+import se.miun.itm.input.model.param.generator.StructuralGenerator;
 
 /**
  * A structural choice element can in principle be seen as a new root to a new
@@ -37,7 +41,8 @@ import se.miun.itm.input.model.InPUTException;
  * another sub-type.
  * 
  * @author Felix Dobslaw
- * 
+ *
+ * @NotThreadSafe
  */
 public class SChoice extends AStruct {
 
@@ -45,26 +50,16 @@ public class SChoice extends AStruct {
 
 	private final List<SParam> structChildren;
 
-	private final Enum<?> enumValue;
-
-	final SParam param;
-
 	public SChoice(Element original, String designId, ParamStore ps)
 			throws InPUTException {
 		super(original, designId, ps);
-		param = ((SParam) getParentElement());
-		param.addChoice(this);
+		((SParam)getParent()).addChoice(this);
 		structChildren = initStructChildren();
-		enumValue = initEnum();
-		initInPUTConstructor();
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private Enum<?> initEnum() {
-		if (isEnum())
-			return Enum.valueOf((Class<? extends Enum>) getSuperClass(),
-					getLocalId());
-		return null;
+	@Override
+	protected StructuralGenerator initGenerator() throws InPUTException {
+			return new FixedStructuralGenerator(this, getLocalId());
 	}
 
 	private List<SParam> initStructChildren() {
@@ -79,36 +74,17 @@ public class SChoice extends AStruct {
 		return structChildren;
 	}
 
-	@Override
-	protected boolean initIsEnum() {
-		return ((SParam) getParentElement()).isEnum();
-	}
-
-	@Override
-	protected Class<?> initSuperClass() {
-		return ((SParam) getParentElement()).getSuperClass();
-	}
-
 	public List<SParam> getStructChildren() {
 		return structChildren;
 	}
 
-	public Enum<?> getEnumValue() {
-		return enumValue;
+	protected Enum<?> getEnumValue() throws InPUTException {
+		return generator.getEnumValue();
 	}
 
 	@Override
 	public String getParamId() {
-		return param.getId();
-	}
-	
-	public SParam getParam() {
-		return param;
-	}
-
-	@Override
-	public Object getFixedValue() {
-		return this;
+		return ((SParam)getParent()).getId();
 	}
 
 	@Override
@@ -116,12 +92,51 @@ public class SChoice extends AStruct {
 		return false;
 	}
 
-	public String getComponentId() {
-		return mapping.getComponentId();
+	protected String getComponentId() throws InPUTException {
+		return generator.getComponentType();
 	}
 
 	@Override
-	public boolean isComplex() {
-		return ((SParam) getParentElement()).isComplex();
+	protected boolean isInitByConstructor(String localId) throws InPUTException {
+		return getInPUTConstructor().isLocalInitByConstructor(localId)
+				|| ((SParam)getParent()).getInPUTConstructor()
+						.isLocalInitByConstructor(localId);
+	}
+
+	@Override
+	public Object[] getStringTypeActualParam() {
+		Object[] actualStringParams = { getLocalId() };
+		return actualStringParams;
+	}
+
+	@Override
+	public boolean isStringType() {
+			return ((SParam)getParent()).isStringType();
+	}
+
+	@Override
+	public void initValue(Value<?> value, Object[] actualParams, ElementCache elementCache)
+			throws InPUTException {
+		((SParam)getParent()).initValue(value, actualParams, elementCache);
+	}
+	
+	@Override
+	public Object getValueForString(String stringValue) throws InPUTException {
+		return newInstance(null);
+	}
+	
+	@Override
+	public String getValueForIndex(int index) {
+		return getLocalId();
+	}
+	
+	@Override
+	public String toString() {
+		return getLocalId();
+	}
+	
+	@Override
+	public boolean isFixed() {
+		return false;
 	}
 }

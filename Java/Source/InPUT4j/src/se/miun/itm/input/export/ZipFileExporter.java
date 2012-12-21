@@ -20,6 +20,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package se.miun.itm.input.export;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -33,7 +35,6 @@ import se.miun.itm.input.IExperiment;
 import se.miun.itm.input.IInPUT;
 import se.miun.itm.input.aspects.Exportable;
 import se.miun.itm.input.aspects.FileNameAssigner;
-import se.miun.itm.input.aspects.InPUTExportable;
 import se.miun.itm.input.model.Document;
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.design.IDesign;
@@ -45,22 +46,26 @@ import se.miun.itm.input.util.Q;
  * Exports the given experiment or InPUT to a zip file.
  * @author Felix Dobslaw
  * 
+ * @NotThreadSafe (name and exporter are related!)
  */
 public class ZipFileExporter extends FileNameAssigner implements
-		InPUTExporter<Void> {
+		Exporter<Void> {
 
 	private ByteArrayExporter byteExporter;
 
+	public ZipFileExporter() {
+		this("");
+	}
+	
 	public ZipFileExporter(String fileName) {
 		super(fileName);
-		resetExportContext(fileName);
 		byteExporter = new ByteArrayExporter();
 	}
 
 	@Override
-	public Void export(InPUTExportable input) throws InPUTException {
+	public synchronized Void export(Exportable input) throws InPUTException {
 		try {
-			exportToStream(input, new FileOutputStream(fileName));
+			exportToStream(input);
 		} catch (FileNotFoundException e) {
 			throw new InPUTException(
 					"A problem creating an output stream to file by name "
@@ -73,17 +78,24 @@ public class ZipFileExporter extends FileNameAssigner implements
 		return null;
 	}
 
-	private OutputStream exportToStream(InPUTExportable input, OutputStream os)
+	private OutputStream exportToStream(Exportable input)
 			throws InPUTException, IOException {
-		ZipOutputStream zipFile = new ZipOutputStream(os);
 
+		fileName = new File(this.fileName).getAbsolutePath();
+		ZipOutputStream zipFile = null;
+		OutputStream os = null;
 		if (input instanceof IExperiment) {
+			preprocessName(Q.EXP);
+			os = new FileOutputStream(fileName);
+			zipFile = new ZipOutputStream(os);
 			exportExperiment((IExperiment) input, zipFile);
 		} else if (input instanceof IInPUT) {
+			preprocessName(Q.INP);
+			os = new FileOutputStream(fileName);
+			zipFile = new ZipOutputStream(os);
 			exportSetup((IInPUT) input, zipFile);
+			exportMappings(input, zipFile);
 		}
-
-		exportMappings(input, zipFile);
 
 		zipFile.close();
 
@@ -92,19 +104,26 @@ public class ZipFileExporter extends FileNameAssigner implements
 
 	private void exportExperiment(IExperiment input, ZipOutputStream zipFile)
 			throws InPUTException {
-		preprocessName(Q.EXP);
 		
 		addZipEntry(zipFile, input.getAlgorithmDesign(),
 				Q.ALGORITHM_DESIGN_XML);
 		addZipEntry(zipFile, input.getProblemFeatures(),
 				Q.PROBLEM_FEATURES_XML);
 		addZipEntry(zipFile, input.getPreferences(), Q.PREFERENCES_XML);
-
+		
 		// export the output!
 		List<IDesign> output = input.getOutput();
 		for (int i = 0; i < output.size(); i++)
 			addZipEntry(zipFile, output.get(i), Q.OUTPUT + (i + 1)
 					+ Q.XML);
+		
+		addContent(input, zipFile);
+	}
+
+	private void addContent(IExperiment input, ZipOutputStream zipFile) throws InPUTException {
+		for (String contentName : input.getContentNames()) {
+			addZipEntry(zipFile, input.getContentFor(contentName), contentName);
+		}
 	}
 
 	private void preprocessName(String extension) {
@@ -114,7 +133,6 @@ public class ZipFileExporter extends FileNameAssigner implements
 
 	private void exportSetup(IInPUT input, ZipOutputStream zipFile)
 			throws InPUTException {
-		preprocessName(Q.INP);
 		
 		addZipEntry(zipFile, input.getAlgorithmDesignSpace(),
 				Q.ALGORITHM_DESIGN_SPACE_XML);
@@ -126,7 +144,7 @@ public class ZipFileExporter extends FileNameAssigner implements
 				Q.OUTPUT_SPACE_XML);
 	}
 
-	private void exportMappings(InPUTExportable exportable,
+	private void exportMappings(Exportable exportable,
 			ZipOutputStream zipFile) throws InPUTException {
 		IInPUT input = getInPUT(exportable);
 
@@ -144,7 +162,7 @@ public class ZipFileExporter extends FileNameAssigner implements
 		
 	}
 
-	private IInPUT getInPUT(InPUTExportable input) {
+	private IInPUT getInPUT(Exportable input) {
 		if (input instanceof IInPUT)
 			return (IInPUT) input;
 		else
@@ -153,31 +171,30 @@ public class ZipFileExporter extends FileNameAssigner implements
 
 	private void addZipEntry(ZipOutputStream zipfile, Exportable design,
 			String fileName) throws InPUTException {
-		if (design != null) {
-			try {
-				zipfile.putNextEntry(new ZipEntry(fileName));
-			} catch (IOException e) {
-				throw new InPUTException("The entry for '" + fileName
-						+ "' could not be added to the zip file '" + zipfile
-						+ ".", e);
-			}
-			try {
-				zipfile.write(design.export(byteExporter).toByteArray());
-			} catch (IOException e) {
-				throw new InPUTException("The entry for '" + fileName
-						+ "' could not be written to the zip file '" + zipfile
-						+ ".", e);
-			}
-		}
+		if (design != null)
+			addZipEntry(zipfile, design.export(byteExporter), fileName);
 	}
 
-	public void resetExportContext(String fileName) {
-		resetFileName(fileName);
+	private void addZipEntry(ZipOutputStream zipfile, ByteArrayOutputStream os, String fileName) throws InPUTException {
+		try {
+			zipfile.putNextEntry(new ZipEntry(fileName));
+		} catch (IOException e) {
+			throw new InPUTException("The entry for '" + fileName
+					+ "' could not be added to the zip file '" + zipfile
+					+ ".", e);
+		}
+		try {
+			zipfile.write(os.toByteArray());
+		} catch (IOException e) {
+			throw new InPUTException("The entry for '" + fileName
+					+ "' could not be written to the zip file '" + zipfile
+					+ ".", e);
+		}
 	}
 
 	@Override
 	public Void export(Document xml) throws InPUTException {
 		throw new InPUTException(
-				"exporting an xml document a zip file is not supported. Look for the FileExporter instead.");
+				"exporting an xml document a zip file is not supported. Look for the XMLFileExporter instead.");
 	}
 }

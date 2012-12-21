@@ -43,9 +43,11 @@ import se.miun.itm.input.util.xml.SAXUtil;
  * scope of any design or experiment.
  * 
  * @author Felix Dobslaw
+ * 
+ * @NotThreadSafe
  */
 public class InPUTConfig {
-
+	
 	private static IDesign config;
 
 	private static Document configDoc;
@@ -62,6 +64,7 @@ public class InPUTConfig {
 					IInPUT.class.getResourceAsStream(Q.CONFIG), false);
 			// import the design
 			config = configSpace.impOrt(importer);
+			
 		} catch (InPUTException e) {
 			System.out
 					.println("The InPUT configuration is broken. Please consult the InPUT team.");
@@ -78,6 +81,10 @@ public class InPUTConfig {
 	 */
 	public static <T> T getValue(String paramId) throws InPUTException {
 		return config.getValue(paramId);
+	}
+
+	public static boolean isValidationActive() throws InPUTException {
+		return config.getValue(Q.RUNTIME_VALIDATION);
 	}
 
 	/**
@@ -113,6 +120,7 @@ public class InPUTConfig {
 			try {
 				return initProperties(type);
 			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		} else {
 			try {

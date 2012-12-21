@@ -36,6 +36,7 @@ import se.miun.itm.input.util.Q;
  * 
  * @author Felix Dobslaw
  * 
+ * @NotThreadSafe
  */
 public class Wrapper {
 
@@ -43,17 +44,18 @@ public class Wrapper {
 	private final String getter;
 	private Constructor<?> constructor;
 	private final String setter;
-	private final String constructorSign;
+	private final String constructorSignature;
+	private final String paramId;
 
 	public Wrapper(String localId, Element wrap, Element mapping)
 			throws InPUTException {
 		cLass = initWrapperClass(wrap);
+		paramId = mapping.getAttributeValue(Q.ID_ATTR);
 		getter = initGetter(mapping, wrap, localId);
 		setter = initSetter(mapping, wrap, localId);
-		constructorSign = wrap.getAttributeValue(Q.CONSTR_ATTR);
+		constructorSignature = wrap.getAttributeValue(Q.CONSTR_ATTR);
 	}
 
-	// TODO not supported yet
 	private Constructor<?> initConstructor(Numeric numericType)
 			throws InPUTException {
 		Class<?>[] formalParam = { numericType.getPrimitiveClass() };
@@ -87,7 +89,7 @@ public class Wrapper {
 	}
 
 	public String getConstructorSignature() {
-		return constructorSign;
+		return constructorSignature;
 	}
 
 	public String getGetter() {
@@ -116,5 +118,10 @@ public class Wrapper {
 		if (constructor == null)
 			initConstructor(numType);
 		return constructor;
+	}
+
+	public void checkTypeSafety(Object value) throws InPUTException {
+		if (!cLass.isInstance(value))
+			throw new InPUTException("The value " + value.toString() + " for the wrapper class of parameter \""+paramId+"\" is not of the defined type \"" + cLass.getName() + "\".");
 	}
 }

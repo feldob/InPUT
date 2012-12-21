@@ -30,7 +30,10 @@ import se.miun.itm.input.util.ParamUtil;
 /**
  * The most general type of InPUT Xml elements. The standard XML implementations of jdom have been extended to carry
  * the necessary meta data for an easy tree treatment.
+ * 
  * @author Felix Dobslaw
+ * 
+ * @NotThreadSafe
  */
 public abstract class InPUTElement extends Element implements Identifiable {
 
@@ -40,7 +43,7 @@ public abstract class InPUTElement extends Element implements Identifiable {
 	private String fullId;
 
 	protected InPUTElement(String name, Namespace designNamespace,
-			Param param, Element original) {
+			Param<?> param, Element original) {
 		super(name, designNamespace);
 		fullId = ParamUtil.deriveValueReferenceId(original, param);
 	}

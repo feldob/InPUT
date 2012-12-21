@@ -20,7 +20,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package se.miun.itm.input.eval;
 
-import se.miun.itm.input.model.Numeric;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import se.miun.itm.input.model.InPUTException;
+import se.miun.itm.input.model.Ranges;
+import se.miun.itm.input.model.param.Param;
+
 
 /**
  * ensures for the supported primitive types that they hold an appropriate
@@ -29,21 +36,85 @@ import se.miun.itm.input.model.Numeric;
  * 
  * @author Felix Dobslaw
  * 
+ * @ThreadSafe
  */
 public abstract class AbstractEvaluator implements InputEvaluator {
+	
+	/**
+	 * for a given evaluation engine, and a set of ranges, process the logical
+	 * or numerical expressions, and return the evaluated ranges.
+	 * 
+	 * @param eval
+	 * @param ranges
+	 * @param vars
+	 * @return
+	 * @throws InPUTException
+	 */
+	@Override
+	public Ranges evaluate(Ranges ranges, Map<String, Object> vars)
+			throws InPUTException {
+		Ranges newRanges;
+		if (ranges.isIndependant()) {
+			newRanges = ranges;
+		} else {
+			newRanges = new Ranges(ranges);
+			String expression;
+			Set<String> usedVars = new HashSet<String>();
+			String id;
 
-	protected static String ensureType(Numeric valueType, String evaluate) {
-		switch (valueType) {
-		case INTEGER:
-			evaluate = "" + new Double(evaluate).intValue();
-			break;
-		case SHORT:
-			evaluate = "" + new Double(evaluate).shortValue();
-			break;
-		case LONG:
-			evaluate = "" + new Double(evaluate).longValue();
-			break;
+			Object extremeValue;
+			if (ranges.isMinDependent()) {
+				for (Param<?> dep : ranges.getMinDependencies()) {
+					id = dep.getId();
+					usedVars.add(id);
+					putVariable(id, vars.get(id));
+				}
+
+				extremeValue = ranges.getMinExpression();
+				if (extremeValue != null) {
+					expression = extremeValue.toString();
+					expression = evaluate(newRanges, expression, usedVars);
+					newRanges.setDynamicMin(expression);
+				}
+			}
+
+			if (ranges.isMaxDependent()) {
+				for (Param<?> dep : ranges.getMaxDependencies()) {
+					id = dep.getId();
+					usedVars.add(id);
+					putVariable(id, vars.get(id));
+				}
+
+				extremeValue = ranges.getMaxExpression();
+				if (extremeValue != null) {
+					expression = extremeValue.toString();
+					expression = evaluate(newRanges, expression, usedVars);
+					newRanges.setDynamicMax(expression);
+				}
+
+			}
+			clearVariables();
 		}
-		return evaluate;
+		return newRanges;
+
 	}
+
+	private String evaluate(Ranges ranges,
+			String expression, Set<String> vars) throws InPUTException {
+		String value = null;
+		if (expression != null) {
+			try {
+				value = evaluate(vars, expression);
+				value = ranges.ensureType(value);
+			} catch (Exception e) {
+				throw new InPUTException(
+						"The evaluation engine could not process the expression '"
+								+ expression + "'.", e);
+			}
+		}
+		return value;
+	}
+	
+	protected abstract String evaluate(Set<String> vars, String expression) throws Exception;
+
 }

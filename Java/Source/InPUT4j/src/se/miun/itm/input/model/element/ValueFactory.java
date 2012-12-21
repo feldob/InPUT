@@ -36,11 +36,12 @@ import se.miun.itm.input.model.param.SParam;
  * 
  * @author Felix Dobslaw
  * 
+ * @NotThreadSafe
  */
 public class ValueFactory {
 
-	public static Value<? extends Param> constructElementByElement(
-			Element original, Param param, Integer[] dimensions,
+	public static Value<?> constructElementByElement(
+			Element original, Param<?> param, int[] dimensions,
 			ElementCache elementCache) throws InPUTException {
 		if (param instanceof SParam)
 			return new SValue(original, (SParam) param, dimensions,
@@ -50,8 +51,8 @@ public class ValueFactory {
 		return null;
 	}
 
-	public static Value<? extends Param> constructElementByValue(
-			final Object value, final Param param, final Integer[] dimensions,
+	public static Value<?> constructElementByValue(
+			final Object value, final Param<?> param, final int[] dimensions,
 			final ElementCache elementCache) throws InPUTException {
 		if (param instanceof SParam)
 			return new SValue(value, (SParam) param, dimensions, elementCache);
@@ -60,11 +61,11 @@ public class ValueFactory {
 		return null;
 	}
 
-	public static Value<? extends Param> constructRandomElement(
-			final Param param, final Integer[] sizeArray,
+	public static Value<?> constructRandomElement(
+			final Param<?> param, final int[] sizeArray,
 			final Map<String, Object> vars, final Object[] actualParams,
 			final ElementCache elementCache) throws InPUTException {
-		Value<? extends Param> randomE;
+		Value<? extends Param<?>> randomE;
 		if (param instanceof SParam)
 			randomE = new SValue((SParam) param, sizeArray, elementCache);
 		else if (param instanceof NParam)
@@ -75,13 +76,12 @@ public class ValueFactory {
 			throw new InPUTException(
 					"InPUT cannot recognize the given parameter id to be part of the design space: "
 							+ param);
-
 		randomE.initRandom(vars, actualParams, true);
 		return randomE;
 	}
 
-	public static Value<? extends Param> constructValueElement(
-			final Param param, final ElementCache elementCache) throws InPUTException {
+	public static Value<?> constructValueElement(
+			final Param<?> param, final ElementCache elementCache) throws InPUTException {
 		if (param instanceof SParam)
 			return new SValue((SParam) param, param.getDimensions(), elementCache);
 		else if (param instanceof NParam)

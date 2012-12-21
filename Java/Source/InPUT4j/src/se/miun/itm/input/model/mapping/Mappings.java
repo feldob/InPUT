@@ -32,7 +32,8 @@ import java.util.Set;
 
 import org.jdom2.Element;
 
-import se.miun.itm.input.export.InPUTExporter;
+import se.miun.itm.input.InPUTConfig;
+import se.miun.itm.input.export.Exporter;
 import se.miun.itm.input.model.Document;
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.util.InputStreamWrapper;
@@ -42,7 +43,10 @@ import se.miun.itm.input.util.xml.SAXUtil;
 
 /**
  * The standard implementation for InPUT4j of code mappings via IMappings.
+ * 
  * @author Felix Dobslaw
+ * 
+ * @NotThreadSafe
  */
 public class Mappings implements IMappings {
 
@@ -70,21 +74,6 @@ public class Mappings implements IMappings {
 		initDependencies();
 	}
 
-	private void initDependencies() {
-		List<IMapping> entries = new ArrayList<IMapping>(
-				mappings.values());
-		for (int i = 0; i < entries.size(); i++)
-			for (int j = i + 1; j < entries.size(); j++)
-				initDependencies(entries.get(i), entries.get(j));
-	}
-
-	private void initDependencies(IMapping mapping, IMapping mapping2) {
-		if (mapping.containsInConstructorSignature(mapping2))
-			mapping.addDependee(mapping2);
-		else if (mapping2.containsInConstructorSignature(mapping))
-			mapping2.addDependee(mapping);
-	}
-
 	private Mappings(String inputId, InputStream codeMappingStream)
 			throws InPUTException {
 		this.id = inputId;
@@ -94,18 +83,33 @@ public class Mappings implements IMappings {
 		initDependencies();
 	}
 
-	private Mappings(String mappingId, Document mapping)
-			throws InPUTException {
+	private Mappings(String mappingId, Document mapping) throws InPUTException {
 		this.id = mappingId;
 		hash = id.hashCode();
 		document = initMappings(mapping);
 		initDependencies();
 	}
 
+	private void initDependencies() {
+		List<IMapping> entries = new ArrayList<IMapping>(mappings.values());
+		for (int i = 0; i < entries.size(); i++)
+			for (int j = i + 1; j < entries.size(); j++)
+				initDependencies(entries.get(i), entries.get(j));
+	}
+
+	private void initDependencies(IMapping mapping, IMapping mapping2) {
+		if (mapping instanceof StructuralMapping)
+			if (((StructuralMapping)mapping).containsInConstructorSignature(mapping2.getId()))
+				mapping.addDependee(mapping2);
+		else if (mapping2 instanceof StructuralMapping)
+			if (((StructuralMapping)mapping2).containsInConstructorSignature(mapping.getId()))
+				mapping2.addDependee(mapping);
+	}
+
 	private Document initTypes(String codeMappingFilePath)
 			throws InPUTException {
 
-		Document document = SAXUtil.build(codeMappingFilePath, true);
+		Document document = SAXUtil.build(codeMappingFilePath,  InPUTConfig.isValidationActive());
 
 		return initMappings(document);
 	}
@@ -131,22 +135,42 @@ public class Mappings implements IMappings {
 		IMapping mapping;
 		String type = mappingElement.getAttributeValue(Q.TYPE_ATTR);
 		String id = mappingElement.getAttributeValue(Q.ID_ATTR);
-		if (type != null && types.containsKey(type))
-			mapping = new Mapping(id, types.get(type));
-		else
-			mapping = new Mapping(mappingElement, this);
+		mapping = createMapping(mappingElement, type, id);
 		mappings.put(mapping.getId(), mapping);
+	}
+
+	private IMapping createMapping(Element mappingElement, String type,
+			String id) throws InPUTException {
+		IMapping mapping;
+		if (type != null && types.containsKey(type)){
+			mapping = types.get(type).clone(id, mappingElement);
+		}
+		else
+			mapping = getInstance(mappingElement);
+		return mapping;
+	}
+	
+	private IMapping getInstance(Element mappingElement) throws InPUTException {
+		String mappingType = mappingElement.getAttributeValue(Q.TYPE_ATTR);
+
+		IMapping mapping;
+		if (mappingType == null)
+			mapping = new NumericMapping(mappingElement);
+		else
+			mapping = new StructuralMapping(mappingElement);
+		return mapping;
 	}
 
 	private void initTypeMapping(Element mappingElement) throws InPUTException {
 		IMapping mapping;
-		mapping = new Mapping(mappingElement, this);
+		mapping = getInstance(mappingElement);
 		types.put(mapping.getId(), mapping);
 	}
 
 	@Override
 	public String getComponentId(String paramId) {
-		return mappings.get(alias(paramId)).getComponentId();
+		return ((StructuralMapping) mappings.get(alias(paramId)))
+				.getComponentType();
 	}
 
 	private String alias(String paramId) {
@@ -180,8 +204,8 @@ public class Mappings implements IMappings {
 	}
 
 	public static void initMapping(Document mapping) throws InPUTException {
-		String mappingId = mapping.getRootElement().getAttributeValue(
-				Q.ID_ATTR);
+		String mappingId = mapping.getRootElement()
+				.getAttributeValue(Q.ID_ATTR);
 		IMappings mappings = new Mappings(mappingId, mapping);
 		initMapping(mappingId, mappings);
 	}
@@ -223,7 +247,26 @@ public class Mappings implements IMappings {
 
 	@Override
 	public IMapping getMapping(String paramId) {
-		return mappings.get(alias(paramId));
+		// if a parameter is both, alias and type, merge them!
+		String alias = alias(paramId);
+		if (alias.equals(paramId) || !mappings.containsKey(paramId)) {
+			return mappings.get(alias);
+		} else {
+			return merge(mappings.get(alias), mappings.get(paramId));
+		}
+	}
+
+	private IMapping merge(IMapping abstractMapping, IMapping concreteMapping) {
+		if (abstractMapping == null)
+			return concreteMapping;
+		
+		IMapping mapping = abstractMapping.clone(id, concreteMapping);
+
+		// now, substitute the mapping; the alias is not needed anymore!
+		mappings.put(mapping.getId(), mapping);
+		alias.remove(mapping.getId());
+		
+		return mapping;
 	}
 
 	@Override
@@ -232,12 +275,16 @@ public class Mappings implements IMappings {
 	}
 
 	@Override
-	public <O> O export(InPUTExporter<O> exporter) throws InPUTException {
+	public <O> O export(Exporter<O> exporter) throws InPUTException {
 		return exporter.export(document);
 	}
 
 	@Override
 	public int hashCode() {
 		return hash;
+	}
+
+	public static void releaseAllMappings() {
+		inputs.clear();
 	}
 }

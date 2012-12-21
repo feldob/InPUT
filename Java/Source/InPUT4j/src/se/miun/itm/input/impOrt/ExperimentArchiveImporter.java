@@ -30,11 +30,14 @@ import java.util.zip.ZipFile;
 import se.miun.itm.input.aspects.FileNameAssigner;
 import se.miun.itm.input.model.Document;
 import se.miun.itm.input.model.InPUTException;
+import se.miun.itm.input.util.Q;
 import se.miun.itm.input.util.xml.SAXUtil;
 /**
  * An importer of experiments, with zip files as sources.
+ * 
  * @author Felix Dobslaw
  *
+ * @NotThreadSafe
  */
 public class ExperimentArchiveImporter extends FileNameAssigner
 implements InPUTImporter<Map<String, Document>> {
@@ -55,14 +58,28 @@ implements InPUTImporter<Map<String, Document>> {
 			ZipFile zipFile = new ZipFile(fileName);
 			entries = zipFile.entries();
 			while (entries.hasMoreElements()) {
-				ZipEntry entry = (ZipEntry) entries.nextElement();
-				if (!entry.isDirectory())
+				ZipEntry entry = entries.nextElement();
+				if (!entry.isDirectory() && isExperimentalFile(entry.getName())){
+					
 					map.put(entry.getName(),
 							SAXUtil.build(zipFile.getInputStream(entry), false));
+				}
 			}
 			zipFile.close();
 		} catch (IOException ioe) {
+			throw new InPUTException("The zip file could not be read from the given position: " + fileName, ioe);
 		}
 		return map;
+	}
+
+	private boolean isExperimentalFile(String entry) {
+		
+		if (entry.startsWith(Q.OUTPUT) && entry.endsWith(Q.XML))
+			return true;
+		
+		if (entry.equals(Q.PROBLEM_FEATURES_XML) || entry.equals(Q.ALGORITHM_DESIGN_XML) || entry.equals(Q.PREFERENCES_XML))
+			return true;
+		
+		return false;
 	}
 }

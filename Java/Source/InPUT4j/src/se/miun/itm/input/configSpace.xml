@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <i:DesignSpace id="config" mapping="configMapping.xml" xmlns:i="http://TheInPUT.org/DesignSpace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://TheInPUT.org/DesignSpace.xsd ">
-  <i:NParam id="threadSafe" type="boolean"/>
+  <i:NParam id="threadSafe" type="boolean"/> <!-- not supported yet -->
   <i:NParam id="injection" type="boolean"/>
-  <i:NParam id="logging" type="boolean"/>
+  <i:NParam id="logging" type="boolean"/> <!-- not supported yet -->
   <i:SParam id="evaluator">
     <i:SChoice id="jeval"/>
     <i:SChoice id="javascript"/>
@@ -12,5 +12,5 @@
   	<i:SChoice id="mersenneTwister"/>
   </i:SParam>
   <i:NParam id="runtimeValidation" type="boolean"/>
-  <i:SParam id="schemaPath"/>
+  <i:SParam id="schemaPath" type="String"/>
 </i:DesignSpace>

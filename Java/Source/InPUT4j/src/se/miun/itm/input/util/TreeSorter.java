@@ -34,6 +34,8 @@ import se.miun.itm.input.model.param.Param;
  * dependencies.
  * 
  * @author Felix Dobslaw
+ * 
+ * @NotThreadSafe
  */
 public class TreeSorter {
 
@@ -48,15 +50,15 @@ public class TreeSorter {
 	@SuppressWarnings("unchecked")
 	public static void reorganizeTree(final Element parent,
 			final ParamEvaluationOrderComparator<Element> comparator) {
-		List<Param> params = (List<Param>)(List<?>)parent.getChildren();
+		List<Param<?>> params = (List<Param<?>>)(List<?>)parent.getChildren();
 		if (params != null && !params.isEmpty()) {
-			List<Param> paramsCopy = new ArrayList<Param>();
+			List<Param<?>> paramsCopy = new ArrayList<Param<?>>();
 
-			for (Param child : params) {
+			for (Param<?> child : params) {
 				reorganizeTree(child, comparator);
 				paramsCopy.add(child);
 				if (parent instanceof Param)
-					addDependenciesToParent((Param) parent, child);
+					addDependenciesToParent((Param<?>) parent, child);
 			}
 
 			parent.removeContent();
@@ -75,14 +77,14 @@ public class TreeSorter {
 	 * @param parent
 	 * @param child
 	 */
-	private static void addDependenciesToParent(Param parent, Param child) {
-		for (Param dependee : child.getDependees())
+	private static void addDependenciesToParent(Param<?>  parent, Param<?>  child) {
+		for (Param<?> dependee : child.getDependees())
 			if (!isUpperLevelRelevant(parent, dependee))
 				parent.addDependee(dependee);
-		for (Param minDependency : child.getMinDependencies())
+		for (Param<?> minDependency : child.getMinDependencies())
 			if (!isUpperLevelRelevant(parent, minDependency))
 				parent.addMinDependency(minDependency);
-		for (Param maxDependency : child.getMaxDependencies())
+		for (Param<?> maxDependency : child.getMaxDependencies())
 			if (!isUpperLevelRelevant(parent, maxDependency))
 				parent.addMaxDependency(maxDependency);
 	}
@@ -94,8 +96,8 @@ public class TreeSorter {
 	 * @param relationParam
 	 * @return
 	 */
-	private static boolean isUpperLevelRelevant(Param parent,
-			Param relationParam) {
+	private static boolean isUpperLevelRelevant(Param<?> parent,
+			Param<?> relationParam) {
 		return relationParam.getId().startsWith(parent.getId());
 	}
 }

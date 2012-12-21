@@ -20,9 +20,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package se.miun.itm.input.eval;
 
-import java.util.Set;
+import java.util.Map;
 
-import se.miun.itm.input.model.param.NParam;
+import se.miun.itm.input.model.InPUTException;
+import se.miun.itm.input.model.Ranges;
 
 /**
  * The interface that has to be implemented for evaluators in order to be InPUT compliant.
@@ -51,7 +52,7 @@ public interface InputEvaluator {
 	 * @return
 	 * @throws Exception
 	 */
-	String evaluate(NParam param, Set<String> vars,
-			String expression) throws Exception;
+	Ranges evaluate(Ranges ranges, Map<String, Object> vars)
+			throws InPUTException;
 
 }
