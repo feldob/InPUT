@@ -1,6 +1,6 @@
 # What is InPUT?
 
-InPUT offers a descriptive and programming language independent format and API for a customizable configuration of software and design of computer experiments. It allows for the definition of well defined, complex, input and output parameter ranges. The code mapping concept allows you to repeat experiments from third parties by importing descriptors into your algorithm implementation of choice, thus increases reproducibility and simplifies documentation, as well as the collaboration between researchers and/or practitioners. Descriptors are written in XML. We offer adapters for different programming languages to further simplify the software development aspects of experimental and algorithm design all together. In that sense, InPUT realizes the distinction between the specification (*design spaces*, *design*), implementation (*code mappings*), and use (InPUT API) of experimental or software configurations, similar to how the [web service architecture](http://en.wikipedia.org/wiki/Web_service) differentiates between specification (WSDL), implementation (programming language of choice), and consumption (REST, SOAP) of services.
+InPUT offers a descriptive and programming language independent format and API for a customizable configuration of software and design of computer experiments. It allows for the definition of well defined, complex, input and output parameter ranges. The code mapping concept allows you to repeat experiments from third parties by importing descriptors into your algorithm implementation of choice, thus increases reproducibility and simplifies documentation, as well as the collaboration between researchers and/or practitioners. Descriptors are written in XML. We offer adapters for different programming languages to further simplify the software development aspects of experimental and algorithm design all together. In that sense, InPUT realizes the distinction between the specification ( *design spaces*, *design*), implementation ( *code mappings*), and use (InPUT API) of experimental or software configurations, similar to how the [web service architecture](http://en.wikipedia.org/wiki/Web_service) differentiates between specification (WSDL), implementation (programming language of choice), and consumption (REST, SOAP) of services.
 For more info, see [wiki](https://github.com/feldob/InPUT/wiki), [scientific publication](http://dl.acm.org/citation.cfm?id=2330784.2330807), and [presentation slides](http://theinput.org/InPUT/input_gecco2012.pdf).
 
 # Example (Java):
@@ -60,13 +60,12 @@ Each programming language offers a language specific Readme in the respective fo
 
 # Good to know...
 
-When working offline, the *schemaLocation* attribute for each InPUT XML descriptor file has to be set to a local version of the respective XSD schema (DesignSpace, Design, or CodeMappings). The schemata for the latest version can always be downloaded from here:
+When working offline, and input validation is desired, the schemaPath parameter in the [config.xml](https://github.com/feldob/InPUT/blob/master/Java/Source/InPUT4j/src/se/miun/itm/input/config.xml) must be set to a reachable location in the local network,
+containing the InPUT XSD descriptors (DesignSpace, Design, or CodeMappings). The latest schemata can always be downloaded from here:
 
 * [design](https://github.com/feldob/InPUT/blob/master/Design.xsd)
 * [designSpace](https://github.com/feldob/InPUT/blob/master/DesignSpace.xsd)
 * [codeMappings](https://github.com/feldob/InPUT/blob/master/CodeMappings.xsd)
-
-For instance, for those descriptors you want to use offline, change <code>schemaLocation="http://theInput.org/Design http://theInput.org/Design.xsd</code> in the root node to <code>schemaLocation="http://theInput.org/Design SCHEMA_PATH/Design.xsd"</code>, if Design.xsd resides in SCHEMA_PATH of your computer or local network. The *schemaPath* parameter of the InPUT4j\*.jar in file *src/se/miun/itm/input/config.xml* should then be set to SCHEMA_PATH too, so that all descriptors comply by default. Now, you can fully work offline, which further should boost the InPUT parsing performance.
 
 #License
 
