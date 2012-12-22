@@ -60,13 +60,12 @@ Each programming language offers a language specific Readme in the respective fo
 
 # Good to know...
 
-When working offline, the *schemaLocation* attribute for each InPUT XML descriptor file has to be set to a local version of the respective XSD schema (DesignSpace, Design, or CodeMappings). The schemata for the latest version can always be downloaded from here:
+When working offline, and input validation is desired, the schemaPath parameter in the [config.xml](https://github.com/feldob/InPUT/blob/master/Java/Source/InPUT4j/src/se/miun/itm/input/config.xml) must be set to a reachable location in the local network,
+containing the InPUT XSD descriptors (DesignSpace, Design, or CodeMappings). The latest schemata can always be downloaded from here:
 
 * [design](https://github.com/feldob/InPUT/blob/master/Design.xsd)
 * [designSpace](https://github.com/feldob/InPUT/blob/master/DesignSpace.xsd)
 * [codeMappings](https://github.com/feldob/InPUT/blob/master/CodeMappings.xsd)
-
-For instance, for those descriptors you want to use offline, change <code>schemaLocation="http://theInput.org/Design http://theInput.org/Design.xsd</code> in the root node to <code>schemaLocation="http://theInput.org/Design SCHEMA_PATH/Design.xsd"</code>, if Design.xsd resides in SCHEMA_PATH of your computer or local network. The *schemaPath* parameter of the InPUT4j\*.jar in file *src/se/miun/itm/input/config.xml* should then be set to SCHEMA_PATH too, so that all descriptors comply by default. Now, you can fully work offline, which further should boost the InPUT parsing performance.
 
 #License
 
