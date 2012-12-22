@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:DesignSpace id="poolInvestigation" mapping="poolInvestigationMapping.xml"
+	xmlns:i="http://TheInPUT.org/DesignSpace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://theinput.org/DesignSpace.xsd">
+	<i:NParam id="amountTasks" type="integer" />
+	<i:NParam id="executions" type="integer" />
+	<i:NParam id="poolSize" type="integer[]" inclMin="1" inclMax="20" />
+	<i:SParam id="task">
+		<i:SChoice id="someJob">
+			<i:NParam type="integer" id="firstValue" />
+			<i:NParam type="integer" id="secondValue" />
+			<i:SParam id="option">
+				<i:SChoice id="some" />
+			</i:SParam>
+		</i:SChoice>
+	</i:SParam>
+</i:DesignSpace>

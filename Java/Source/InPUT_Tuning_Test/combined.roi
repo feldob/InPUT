@@ -1,0 +1,6 @@
+name low high type
+SomeComplexStructural.2 1 2 INT
+SomeComplexStructural.3 1 2 INT
+SomeComplexStructural.FirstChoice.A 1.4E-45 1.0 FLOAT
+SomeStructuralParent 1 3 INT
+SomeStructuralParent.YetAnotherThirdChoice.SomeChoiceSpecificPrimitiveSub 1.4E-45 1.0 FLOAT

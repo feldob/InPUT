@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:DesignSpace id="numeric" xmlns:i="http://TheInPUT.org/DesignSpace"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://theinput.org/DesignSpace.xsd ">
+	<i:NParam id="SimpleBoolean" type="boolean"/>
+	<i:NParam id="SimpleFloat" type="decimal" inclMin="1" inclMax="50" />
+	<i:NParam id="SimpleInt" type="integer" inclMin="1" inclMax="50" />
+</i:DesignSpace>
