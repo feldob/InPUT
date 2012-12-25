@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<i:Design id="anotherTestDesign" ref="anotherTestSpace.xml" xmlns:i="http://TheInPUT.org/Design" xmlns:i1="http://TheInPUT.org/DesignSpace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://TheInPUT.org/Design http://TheInput.org/Design.xsd ">
-<i:NValue id="AnotherInteger" value="42"/>
-</i:Design>
