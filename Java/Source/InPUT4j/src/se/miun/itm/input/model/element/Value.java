@@ -20,6 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package se.miun.itm.input.model.element;
 
+import java.lang.reflect.Array;
 import java.util.List;
 import java.util.Map;
 
@@ -123,7 +124,23 @@ public abstract class Value<AParam extends Param<?>> extends InPUTElement {
 	}
 
 	public String valueToString() {
-		return getAttributeValue(Q.VALUE_ATTR);
+		String result;
+		if (isArrayType())
+			result = arrayStringValue();
+		else
+			result =  getAttributeValue(Q.VALUE_ATTR);
+		return result;
+	}
+
+	private String arrayStringValue() {
+		StringBuilder b = new StringBuilder();
+			b.append("an array of dimensions ");
+			for (int i = 0; i < dimensions.length; i++) {
+				b.append('[');
+				b.append(dimensions[i]);
+				b.append(']');
+			}
+		return b.toString();
 	}
 
 	public void setInputValue(Object value) throws InPUTException {

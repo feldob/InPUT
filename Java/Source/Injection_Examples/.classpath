@@ -2,8 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/InPUT4j"/>
-	<classpathentry kind="src" path="/InPUT4j_Injection">
+	<classpathentry combineaccessrules="false" kind="src" path="/InPUT_Java"/>
+	<classpathentry kind="src" path="/InPUT_Java_Injection">
 		<attributes>
 			<attribute name="org.eclipse.ajdt.aspectpath" value="org.eclipse.ajdt.aspectpath"/>
 		</attributes>

@@ -29,13 +29,11 @@ public class ExternalizeFixedParam {
 		IDesignSpace ds = new DesignSpace("externalizedSpace.xml");
 		IDesign design = ds.nextDesign("someOtherId");
 
-		// We get the values from the xml-file. 
 		double a = design.getValue("a");
 		double b = design.getValue("b");
 		double c = design.getValue("c");
-				
 		
-		System.out.println((a / b) - c); // Prints out the result according to the formula. 
+		System.out.println((a / b) - c);
 		
 		// export the design to an xml
 		design.export(new XMLFileExporter("randomDesign.xml"));

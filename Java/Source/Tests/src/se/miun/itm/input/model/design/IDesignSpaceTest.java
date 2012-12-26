@@ -70,7 +70,8 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 		String value;
 		try {
 			value = space.next("SomeStringCustomizedByTheUser");
-			assertEquals("The default String is expected.", "SomeStringCustomizedByTheUser", value);
+			assertEquals("The default String is expected.",
+					"SomeStringCustomizedByTheUser", value);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -86,15 +87,16 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 			e.printStackTrace();
 			fail("A problem instantiating the String occured.");
 		}
-		
 
 		try {
-			String[][] values = space.next("SomeStringArrayCustomizedByTheUser");
+			String[][] values = space
+					.next("SomeStringArrayCustomizedByTheUser");
 			assertEquals(10, values.length);
 			assertEquals(5, values[0].length);
 			for (int i = 0; i < values.length; i++) {
 				for (int j = 0; j < values[0].length; j++) {
-					assertEquals("SomeStringArrayCustomizedByTheUser",values[i][j]);
+					assertEquals("SomeStringArrayCustomizedByTheUser",
+							values[i][j]);
 				}
 			}
 		} catch (InPUTException e) {
@@ -121,7 +123,7 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 			assertNotNull(anotherStructural);
 			assertNotNull(someStructuralParent);
 			assertNotNull(deepStructuralParent);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail("The random structural type retrieval is not type safe.");
@@ -215,11 +217,20 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 	@Test
 	public void testNextRestriction() {
 		short restrictedValue;
+		double anotherRestrictedValue;
 		try {
 			for (int i = 0; i < 10; i++) {
 				restrictedValue = space.next("SomeRestrictedPrimitive");
 				if (restrictedValue > 42 || restrictedValue < -42)
-					assertTrue(false);
+					fail();
+
+				anotherRestrictedValue = space
+						.next("AnotherRestrictedPrimitive");
+				if (anotherRestrictedValue < .1d
+						|| (anotherRestrictedValue > .4 && anotherRestrictedValue < .8)
+						|| anotherRestrictedValue > .9)
+					fail();
+
 			}
 
 			BigDecimal exclMin = new BigDecimal(0.42222222222);
@@ -275,14 +286,15 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 			IDesign design = space.nextDesign("designId");
 
 			assertEquals("designId", design.getId());
-			
+
 			int[] array = design.getValue("SomeFixedArray");
 			for (int value : array)
 				assertEquals(42, value);
-				
+
 			for (String paramId : space.getSupportedParamIds()) {
 				if (!paramId.contains(".")) {
-					assertNotNull("No entry exists for parameter " + paramId,design.getValue(paramId));
+					assertNotNull("No entry exists for parameter " + paramId,
+							design.getValue(paramId));
 				}
 			}
 		} catch (InPUTException e) {
@@ -329,18 +341,33 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 	@Test
 	public void testNegativeNextWithDimensions() {
 		try {
-			int[][] dimensions = { { 1, 4, -3 }, { 0 } }; // all default values are 1 : no empty arrays are returned
-			boolean[][][] someBooleans = space.next("SomeBoolean", dimensions[0]);
-			
+			int[][] dimensions = { { 1, 4, -3 }, { 0 } }; // all default values
+															// are 1 : no empty
+															// arrays are
+															// returned
+			boolean[][][] someBooleans = space.next("SomeBoolean",
+					dimensions[0]);
+
 			assertEquals(dimensions[0][0], someBooleans.length);
 			assertEquals(dimensions[0][1], someBooleans[0].length);
 			assertEquals(1, someBooleans[0][0].length);
-			
-			boolean singleBoolean = space.next("SomeBoolean", dimensions[1]); // single entry is expected for 0 entries of higher dimension
 
-			SomeStructural[][][] someStructural = space.next("SomeStructural", dimensions[0]);
-			
-			SomeStructural singleStructural = space.next("SomeStructural", dimensions[1]);
+			boolean singleBoolean = space.next("SomeBoolean", dimensions[1]); // single
+																				// entry
+																				// is
+																				// expected
+																				// for
+																				// 0
+																				// entries
+																				// of
+																				// higher
+																				// dimension
+
+			SomeStructural[][][] someStructural = space.next("SomeStructural",
+					dimensions[0]);
+
+			SomeStructural singleStructural = space.next("SomeStructural",
+					dimensions[1]);
 			assertNotNull(someStructural);
 
 		} catch (InPUTException e) {
@@ -412,7 +439,8 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 						subParams);
 				for (int j = 0; j < parent.length; j++) {
 					for (int k = 0; k < parent[j].length; k++) {
-						assertEquals(subParams.get("AnotherSharedPrimitiveSub"),
+						assertEquals(
+								subParams.get("AnotherSharedPrimitiveSub"),
 								parent[j][k].getAnotherSharedPrimitiveSub());
 					}
 				}
@@ -459,7 +487,7 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 	@Test
 	public void testNegativeNextParameterConstructorOverride() {
 		Object[] actualParams = { "SomeWrongInput", 10f };
-		
+
 		SomeStructuralParent result = null;
 		try {
 			result = space.next("SomeStructuralParent", actualParams);
@@ -496,41 +524,43 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 		assertFalse(paramIds.contains("somedecimal"));
 		assertFalse(paramIds.contains(null));
 	}
-	
+
 	@Test
 	public void testRelativeNumericConsistency() throws InPUTException {
 		IDesign design;
 		long someLong, aBiggerLong, aSmallerLong, aStrangeLong;
-		
+
 		for (int i = 0; i < 10; i++) {
 			design = space.nextDesign("someId");
 			someLong = design.getValue("SomeLong");
 			aBiggerLong = design.getValue("ABiggerLong");
 			aSmallerLong = design.getValue("ASmallerLong");
 			aStrangeLong = design.getValue("AStrangeLong");
-			
+
 			assertTrue(aBiggerLong > someLong);
 			assertTrue(someLong >= aSmallerLong);
 			assertTrue(aStrangeLong >= someLong / aSmallerLong - aBiggerLong);
 		}
 	}
-	
+
 	@Test
 	public void testCustomizableInput() throws InPUTException {
 		// test setter getter customization
-		SomeCommonStructural structural = space.next("CustomizableInputDemonstrator");
+		SomeCommonStructural structural = space
+				.next("CustomizableInputDemonstrator");
 
 		// test wrapper
 		Wrapper wrapper = structural.getPrimitive();
 		assertNotNull(wrapper);
-		assertNotNull(wrapper.toValue());		
-		
+		assertNotNull(wrapper.toValue());
+
 	}
 
 	@Test
 	public void testComplexStructural() throws InPUTException {
-		SomeAbstractComplexStructural complex = space.next("SomeComplexStructural");
-		SomeComplexStructural str = ((SomeComplexStructural)complex);
+		SomeAbstractComplexStructural complex = space
+				.next("SomeComplexStructural");
+		SomeComplexStructural str = ((SomeComplexStructural) complex);
 		assertTrue(str.getEntry(0) instanceof SecondSingleComplexChoice);
 		assertFalse(str.getEntry(1) instanceof SecondSingleComplexChoice);
 		assertEquals(3, str.size());

@@ -90,7 +90,7 @@ public privileged aspect Injection {
 		File designFile = new File(outputAnn.file());
 		if (designFile.exists())
 			try {
-				design = new Design(outputAnn.file(),outputAnn.spaceFile());
+				design = new Design(outputAnn.file());
 			} catch (InPUTException e) {
 				// TODO remove for production
 				e.printStackTrace();

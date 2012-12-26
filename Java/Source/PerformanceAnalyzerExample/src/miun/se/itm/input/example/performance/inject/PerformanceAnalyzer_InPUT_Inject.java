@@ -47,11 +47,10 @@ public class PerformanceAnalyzer_InPUT_Inject extends
 	@Input(id = "poolInvestigation", file = "poolInvestigation.xml")
 	@Output(id = "performance", file = "performance.xml", spaceFile = "performanceSpace.xml")
 	public PerformanceAnalyzer_InPUT_Inject() {
-		// no programatic initialization necessary; descriptive via annotations
-		// instead.
+		// no boilerplate initialization necessary
 	}
 
-	@Set(value = "runtime", of = "performance", to = "runtime")
+	@Set(value = "performance", of = "performance", to = "runtime")
 	protected void analyze() throws InterruptedException, ExecutionException {
 
 		runtime = runExperiments(amountTasks, task, executions, poolSize);

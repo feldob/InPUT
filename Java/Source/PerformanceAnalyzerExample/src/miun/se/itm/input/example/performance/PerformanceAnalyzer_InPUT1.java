@@ -13,9 +13,9 @@ import se.miun.itm.input.model.design.IDesign;
  * @author Felix Dobslaw
  * 
  */
-public class PerformanceAnalyzer_InPUT1 extends PerformanceAnalyzerPlain {
+public class PerformanceAnalyzer_InPUT1 extends PerformanceAnalyzer{
 
-	public PerformanceAnalyzer_InPUT1() throws InPUTException, ExecutionException, InterruptedException {
+	public PerformanceAnalyzer_InPUT1() throws InPUTException{
 
 		IDesign poolInvestigation = new Design("poolInvestigation.xml");
 		amountTasks = poolInvestigation.getValue("amountTasks");

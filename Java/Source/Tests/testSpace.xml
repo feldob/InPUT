@@ -27,6 +27,8 @@
 		inclMax="42" />
 	<i:NParam type="decimal" id="SomeVeryRestrictedPrimitive"
 		exclMin="0.42222222222" exclMax="0.422222222221" />
+	<i:NParam type="double" id="AnotherRestrictedPrimitive"
+		exclMin="0.1,0.8" exclMax="0.4,0.9" />
 
 	<i:SParam id="SomeStructural">
 		<i:SChoice id="SomeFirstChoice" />

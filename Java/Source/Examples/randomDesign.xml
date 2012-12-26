@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<in:Design xmlns:in="http://TheInPUT.org/Design" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://TheInPUT.org/Design http://TheInPUT.org/Design.xsd" id="someId" ref="relativeParameterExample">
+  <in:NValue id="a" value="0.18955299748772225" />
+  <in:NValue id="b" value="0.03691759740535155" />
+</in:Design>

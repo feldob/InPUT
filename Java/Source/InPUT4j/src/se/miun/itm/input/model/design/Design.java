@@ -91,6 +91,9 @@ public class Design implements IDesign {
 		if (designSpace != null)
 			return designSpace;
 
+		if (!ref.contains(Q.XML))
+			ref += Q.XML;
+		
 		Document space = SAXUtil.build(ref,  InPUTConfig.isValidationActive());
 		return new DesignSpace(space);
 	}
@@ -187,9 +190,18 @@ public class Design implements IDesign {
 					value = ParamUtil.repackArrayForImport(value);
 				valueE.setInputValue(value);
 				// remove those parents that are effected from the cache.
-				elementCache.updateCache(valueE);
+				updateCacheForIndexedValue(valueE);
 			} else
 				throw new InPUTException("A parameter by name \"" + paramId + "\" does not exist.");
+		}
+	}
+
+	private void updateCacheForIndexedValue(Value<?> parentValue)
+			throws InPUTException {
+		Element parent = parentValue.getParentElement();
+		if (parent instanceof Value<?>) {
+			parentValue = (Value<?>) parent;
+			parentValue.getParam().init(parentValue, null, elementCache);
 		}
 	}
 

@@ -122,15 +122,6 @@ public class ElementCache {
 			neighbors.remove(cache);
 	}
 	
-	public void updateCache(Value<?> element) throws InPUTException {
-		Value<?> parentValue = element;
-		Element parent = parentValue.getParentElement();
-		if (parent instanceof Value<?>) {
-			parentValue = (Value<?>) parent;
-			parentValue.getParam().init(parentValue, null, this);
-		}
-	}
-	
 	public boolean same(Object obj) {
 		if (!(obj instanceof ElementCache))
 			return false;

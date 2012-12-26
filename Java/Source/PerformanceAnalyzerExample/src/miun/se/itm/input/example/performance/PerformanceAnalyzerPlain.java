@@ -13,8 +13,7 @@ import se.miun.itm.input.model.InPUTException;
  */
 public class PerformanceAnalyzerPlain extends PerformanceAnalyzer {
 
-	public PerformanceAnalyzerPlain() throws InterruptedException,
-			ExecutionException {
+	public PerformanceAnalyzerPlain(){
 
 		amountTasks = 10;
 		task = new SomeJob(100000000, 4000000, new SomeOption());
@@ -24,7 +23,7 @@ public class PerformanceAnalyzerPlain extends PerformanceAnalyzer {
 	}
 
 	public static void main(String[] args) throws InterruptedException,
-			ExecutionException, InPUTException {
+			ExecutionException {
 		new PerformanceAnalyzerPlain().analyze();
 	}
 }

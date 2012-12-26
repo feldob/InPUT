@@ -10,4 +10,12 @@ public class ListCreator {
 		this.sortDescending = sortDescending;
 		this.writer = writer;
 	}
+	
+	public boolean getSortDescending() {
+		return sortDescending;
+	}
+	
+	public TableWriter getTableWriter() {
+		return writer;
+	}
 }

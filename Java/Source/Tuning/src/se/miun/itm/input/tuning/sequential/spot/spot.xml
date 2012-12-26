@@ -5,7 +5,7 @@
 	<i:NValue id="spot.seed" value="125" />
 	<i:NValue id="alg.seed" value="4321" />
 	<i:SValue id="init.design.func" value="spotCreateDesignLhd" />
-	<i:NValue id="init.design.size" value="4"/>
+	<i:NValue id="init.design.size" value="20"/>
 	<i:NValue id="init.design.retries" value="5"/>
 	<i:NValue id="init.design.repeats" value="3"/>
 	<i:NValue id="seq.design.size" value="200"/>

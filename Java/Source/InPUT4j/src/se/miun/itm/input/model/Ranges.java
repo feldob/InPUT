@@ -20,6 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package se.miun.itm.input.model;
 
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,9 +55,9 @@ public class Ranges {
 
 	private String maxExpr = null;
 
-	private Comparable<?> max = null;
+	private Comparable<?>[] max = null;
 
-	private Comparable<?> min = null;
+	private Comparable<?>[] min = null;
 
 	private final Numeric type;
 
@@ -125,7 +126,7 @@ public class Ranges {
 		setStaticMax(true, inclMax);
 		setStaticMax(false, exclMax);
 		if (maxExpr == null)
-			max = type.getMax();
+			max = new Comparable<?>[] { type.getMax() };
 	}
 
 	private void initMin(Numeric type, String inclMin, String exclMin)
@@ -133,7 +134,7 @@ public class Ranges {
 		setStaticMin(true, inclMin);
 		setStaticMin(false, exclMin);
 		if (minExpr == null)
-			min = type.getMin();
+			min = new Comparable<?>[] { type.getMin() };
 	}
 
 	private void setStaticMin(boolean inclusive, String expr)
@@ -147,10 +148,14 @@ public class Ranges {
 
 				if (!isMinDependent()) {
 					min = initMin(expr);
-					if (max != null && compareTo(min, max) > 0) {
-						throw new InPUTException(
-								paramId
-										+ ": A minimum value has to be smaller than the maximum value.");
+
+					for (int i = 0; i < min.length; i++) {
+						if (max != null && compareTo(min[i], max[i]) > 0) {
+							throw new InPUTException(
+									paramId
+											+ ": Each minimum value has to be smaller than the maximum value.");
+						}
+
 					}
 				}
 			} else
@@ -185,16 +190,17 @@ public class Ranges {
 		return result;
 	}
 
-	private Comparable<?> initMin(String expression) {
-		Comparable<?> strongMin;
+	private Comparable<?>[] initMin(String expression) {
+		Comparable<?>[] strongMin;
 		if (expression == null)
-			strongMin = type.getMin();
+			strongMin = new Comparable<?>[] { type.getMin() };
 		else {
-			Comparable<?> entry = type.parse(expression);
+			Comparable<?>[] entry = type.parse(expression);
 			if (minIncl)
 				strongMin = entry;
 			else
-				strongMin = add(type, entry, type.getAtom());
+				strongMin = new Comparable<?>[] { add(type, entry[0],
+						type.getAtom()) };
 		}
 		return strongMin;
 	}
@@ -219,10 +225,12 @@ public class Ranges {
 
 				if (!isMaxDependent()) {
 					max = initMax(expr);
-					if (min != null && compareTo(min, max) > 0)
-						throw new InPUTException(
-								paramId
-										+ ": A maximum value has to be larger than the minimum value.");
+					for (int i = 0; i < min.length; i++) {
+						if (min != null && compareTo(min[i], max[i]) > 0)
+							throw new InPUTException(
+									paramId
+											+ ": Each maximum value has to be larger than the minimum value.");
+					}
 				}
 			} else
 				throw new InPUTException(
@@ -231,18 +239,19 @@ public class Ranges {
 		}
 	}
 
-	private Comparable<?> initMax(String expression) {
-		Comparable<?> strongMax;
+	private Comparable<?>[] initMax(String expression) {
+		Comparable<?>[] strongMax;
 
 		if (expression == null)
-			strongMax = type.getMax();
+			strongMax = new Comparable<?>[] { type.getMax() };
 		else {
-			Comparable<?> entry = type.parse(expression);
+			Comparable<?>[] entry = type.parse(expression);
 
 			if (maxIncl)
 				strongMax = entry;
 			else
-				strongMax = subtract(type, entry, type.getAtom());
+				strongMax = new Comparable<?>[] { subtract(type, entry[0],
+						type.getAtom()) };
 		}
 		return strongMax;
 	}
@@ -305,21 +314,21 @@ public class Ranges {
 		case LONG:
 		case SHORT:
 		case INTEGER:
-			comma = ", \\dots, "; 
+			comma = ", \\dots, ";
 			break;
 
 		default:
-			comma = ", "; 
+			comma = ", ";
 			break;
 		}
 		b.append(comma);
 	}
 
-	public Comparable<?> getStrongTypedMin() {
+	public Comparable<?>[] getStrongTypedMin() {
 		return min;
 	}
 
-	public Comparable<?> getStrongTypedMax() {
+	public Comparable<?>[] getStrongTypedMax() {
 		return max;
 	}
 
@@ -384,7 +393,9 @@ public class Ranges {
 		} else
 			throw new InPUTException("The value " + value.toString()
 					+ " is not of correct primitive type, it is of type \""
-					+ value.getClass().getName() + "\". Type \"" +type.getNumClass().getName() + "\" or \"" + type.getPrimitiveClass().getName() +"\" were expected.");
+					+ value.getClass().getName() + "\". Type \""
+					+ type.getNumClass().getName() + "\" or \""
+					+ type.getPrimitiveClass().getName() + "\" were expected.");
 
 	}
 
@@ -399,19 +410,58 @@ public class Ranges {
 		default:
 			Ranges evaluatedRanges = initEvaluatedRanges(elementCache);
 
-			if (theValue.compareTo(evaluatedRanges.getStrongTypedMin()) < 0)
-				throw new IllegalArgumentException(spaceId
-						+ ": The entered value \"" + value
-						+ "\" for the parameter with id \"" + paramId
-						+ "\" is out of range (below minimum threshold \""
-						+ min + "\").");
-			else if (theValue.compareTo(evaluatedRanges.getStrongTypedMax()) > 0)
-				throw new IllegalArgumentException(spaceId
-						+ ": The entered value \"" + value
-						+ "\" for the parameter with id \"" + paramId
-						+ "\" is out of range (above maximum threshold \""
-						+ max + "\").");
+			checkMinima(theValue, evaluatedRanges);
+			checkMaxima(theValue, evaluatedRanges);
+
 		}
+	}
+
+	private void checkMaxima(Comparable<Comparable<?>> theValue,
+			Ranges evaluatedRanges) {
+
+		Comparable<?>[] extremas = evaluatedRanges.getStrongTypedMax();
+
+		if (extremas.length == 0)
+			return;
+		
+		boolean violates = true;
+		for (Comparable<?> extrema : extremas) {
+			if (theValue.compareTo(extrema) <= 0) {
+				violates = false;
+				break;
+			}
+		}
+
+		if (violates)
+			throw new IllegalArgumentException(spaceId
+					+ ": The entered value \"" + theValue
+					+ "\" for the parameter with id \"" + paramId
+					+ "\" is out of range (above maximum threshold \"" + max[0]
+					+ "\").");
+	}
+
+	private void checkMinima(Comparable<Comparable<?>> theValue,
+			Ranges evaluatedRanges) {
+
+		Comparable<?>[] extremas = evaluatedRanges.getStrongTypedMin();
+
+		if (extremas.length == 0)
+			return;
+
+		boolean violates = true;
+		for (Comparable<?> extrema : extremas) {
+			if (theValue.compareTo(extrema) >= 0) {
+				violates = false;
+				break;
+			}
+		}
+
+		if (violates)
+			throw new IllegalArgumentException(spaceId
+					+ ": The entered value \"" + theValue
+					+ "\" for the parameter with id \"" + paramId
+					+ "\" is out of range (below minimum threshold \"" + min[0]
+					+ "\").");
 	}
 
 	private boolean checkValidArrayType(Object value) {
@@ -475,7 +525,7 @@ public class Ranges {
 	}
 
 	public Object parse(String valueString) {
-		return type.parse(valueString);
+		return type.parseSingle(valueString);
 	}
 
 	public Object next(Random rng, Map<String, Object> vars)
@@ -512,10 +562,10 @@ public class Ranges {
 				&& !type.getNumClass().isInstance(value)) {
 			if (value.getClass().isArray()) {
 				Class<?> componentType = getComponentType(value);
-				value.getClass().getComponentType();
-				if (!type.equals(Numeric.DECIMAL) && (!componentType.equals(type.getPrimitiveClass())
-						&& (!componentType.equals(type.getNumClass())) && !type
-						.getNumClass().isInstance(value)))
+				if (!type.equals(Numeric.DECIMAL)
+						&& (!componentType.equals(type.getPrimitiveClass())
+								&& (!componentType.equals(type.getNumClass())) && !type
+								.getNumClass().isInstance(value)))
 					throw new InPUTException("The value \"" + value.toString()
 							+ "\" is of the wrong type. \""
 							+ type.getPrimitiveClass().getName() + "\" or \""
@@ -527,6 +577,11 @@ public class Ranges {
 	}
 
 	private Class<?> getComponentType(Object value) {
-		return value.getClass().getComponentType();
+		Class<?> type = null;
+		while (value.getClass().isArray()){
+			type = value.getClass().getComponentType();
+			value = Array.get(value, 0);
+		}
+		return type;
 	}
 }

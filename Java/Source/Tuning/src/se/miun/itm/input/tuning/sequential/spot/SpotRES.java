@@ -13,6 +13,8 @@ public class SpotRES implements SpotExportable<InputStream> {
 
 	private final List<SpotResult> results;
 
+	private SpotROI output;
+
 	private SpotROI input;
 
 	private final List<String> header;
@@ -20,6 +22,7 @@ public class SpotRES implements SpotExportable<InputStream> {
 	public SpotRES(List<IExperiment> results, SpotDES currentDES,
 			SpotROI input, SpotROI output) throws InPUTException {
 		this.input = input;
+		this.output = output;
 		header = initHeader();
 		this.results = initResults(results, currentDES);
 	}

@@ -22,6 +22,7 @@ package se.miun.itm.input.model;
 
 import java.math.BigDecimal;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 import se.miun.itm.input.model.param.NParam;
 import se.miun.itm.input.util.Q;
@@ -92,53 +93,59 @@ public enum Numeric {
 	}
 
 	public Object random(Ranges ranges, Random rng) {
-		switch (this) {
-		case DECIMAL:
-			return randomdecimal(ranges, rng);
-		case INTEGER:
-			return randominteger((Integer) ranges.getStrongTypedMin(),
-					(Integer) ranges.getStrongTypedMax(), rng);
-		case LONG:
-			return randomlong((Long) ranges.getStrongTypedMin(),
-					(Long) ranges.getStrongTypedMax(), rng);
-		case FLOAT:
-			return randomfloat((Float) ranges.getStrongTypedMin(),
-					(Float) ranges.getStrongTypedMax(), rng);
-		case DOUBLE:
-			return randomdouble((Double) ranges.getStrongTypedMin(),
-					(Double) ranges.getStrongTypedMax(), rng);
-		case BOOLEAN:
-			return rng.nextBoolean();
-		case SHORT:
-			return randomshort((Short) ranges.getStrongTypedMin(),
-					(Short) ranges.getStrongTypedMax(), rng);
+		
+		Comparable<?>[] min = ranges.getStrongTypedMin();
+		Comparable<?>[] max = ranges.getStrongTypedMax();
+		
+		int i = rng.nextInt(min.length);
+		
+			switch (this) {
+			case DECIMAL:
+				return randomdecimal(ranges, (BigDecimal) min[i], (BigDecimal) max[i], rng);
+			case INTEGER:
+				return randominteger((Integer) min[i],
+						(Integer) max[i], rng);
+			case LONG:
+				return randomlong((Long) min[i],
+						(Long) max[i], rng);
+			case FLOAT:
+				return randomfloat((Float) min[i],
+						(Float) max[i], rng);
+			case DOUBLE:
+				return randomdouble((Double) min[i],
+						(Double) max[i], rng);
+			case BOOLEAN:
+				return rng.nextBoolean();
+			case SHORT:
+				return randomshort((Short) min[i],
+						(Short) max[i], rng);
 		}
 		return null;
 
 	}
 
-	private BigDecimal randomdecimal(Ranges ranges, Random rng) {
-		BigDecimal min, max;
-
-		if (ranges.getMinExpression() == null)
-			min = (BigDecimal) getMin();
-		else {
-			BigDecimal entry = (BigDecimal) ranges.getStrongTypedMin();
-			if (ranges.includesMinimum())
-				min = entry;
-			else
-				min = entry.add((BigDecimal) getAtom());
-		}
-
-		if (ranges.getMaxExpression() == null)
-			max = (BigDecimal) getMax();
-		else {
-			BigDecimal entry = (BigDecimal) ranges.getStrongTypedMax();
-			if (ranges.includesMaximum())
-				max = entry;
-			else
-				max = entry.subtract((BigDecimal) getAtom());
-		}
+	private BigDecimal randomdecimal(Ranges ranges, BigDecimal min, BigDecimal max, Random rng) {
+//		BigDecimal min, max;
+//
+//		if (ranges.getMinExpression() == null)
+//			min = (BigDecimal) getMin();
+//		else {
+//			BigDecimal entry = (BigDecimal) ranges.getStrongTypedMin();
+//			if (ranges.includesMinimum())
+//				min = entry;
+//			else
+//				min = entry.add((BigDecimal) getAtom());
+//		}
+//
+//		if (ranges.getMaxExpression() == null)
+//			max = (BigDecimal) getMax();
+//		else {
+//			BigDecimal entry = (BigDecimal) ranges.getStrongTypedMax();
+//			if (ranges.includesMaximum())
+//				max = entry;
+//			else
+//				max = entry.subtract((BigDecimal) getAtom());
+//		}
 
 		return min.add(new BigDecimal(rng.nextDouble()).multiply(max
 				.subtract(min)));
@@ -177,7 +184,18 @@ public enum Numeric {
 			return min + (int) (rng.nextDouble() * diff);
 	}
 
-	public Comparable<?> parse(String expression) {
+	public Comparable<?>[] parse(String expression) {
+		String[] values = expression.split(Pattern.quote(","));
+		
+		Comparable<?>[] results = new Comparable<?>[values.length];
+			for (int i = 0; i < values.length; i++) {
+				results[i] = parseSingle(values[i]);
+			}
+		
+		return results;
+	}
+
+	public Comparable<?> parseSingle(String expression) {
 		Comparable<?> result = null;
 		switch (this) {
 		case DECIMAL:

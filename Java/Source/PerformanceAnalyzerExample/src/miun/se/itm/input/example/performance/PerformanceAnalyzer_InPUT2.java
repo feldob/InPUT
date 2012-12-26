@@ -18,8 +18,7 @@ import se.miun.itm.input.model.design.IDesign;
  */
 public class PerformanceAnalyzer_InPUT2 extends PerformanceAnalyzer_InPUT1 {
 
-	public PerformanceAnalyzer_InPUT2() throws InPUTException,
-			ExecutionException, InterruptedException {
+	public PerformanceAnalyzer_InPUT2() throws InPUTException{
 		super();
 	}
 
