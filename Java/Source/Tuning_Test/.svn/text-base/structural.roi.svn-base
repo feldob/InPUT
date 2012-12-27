@@ -1,3 +1,0 @@
-name low high type
-SomeStructural 1 3 INT
-SomeStructuralParent.YetAnotherThirdChoice.SomeChoiceSpecificPrimitiveSub 1.4E-45 1.0 FLOAT

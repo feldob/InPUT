@@ -24,17 +24,16 @@ public aspect DesignSpaceLogger {
 	
 
 	after(DesignSpace space, String designId) : nextEmptyDesign(designId) && target(space) {
-		log.info("An empty design of design space '" + space.getId()
-				+ "' with id '" + designId
-				+ "' is getting created.");	}
+		log.info("Creating empty design '" + designId + "' for space '" + space.getId()
+				+ ".");
+	}
 	
 	after(DesignSpace space, String designId) : nextDesign(designId) && target(space) {
-		log.info("A random design of design space '" + space.getId()
-				+ "' with id '" + designId
-				+ "' is getting created.");
+		log.info("Creating random design '" + designId + "' for space '" + space.getId()
+				+ ".");
 	}
 	
 	after(DesignSpace space) : finalConstructor() && this(space){
-		log.info("A new design space with id '" + space.getId() + "' and "+ space.getSupportedParamIds().size() + " parameters is getting imported.");
+		log.info("Importing design space '" + space.getId() + "' defining "+ space.getSupportedParamIds().size() + " parameters.");
 	}
 }

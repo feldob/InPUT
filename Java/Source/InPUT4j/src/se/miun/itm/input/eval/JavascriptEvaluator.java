@@ -44,14 +44,12 @@ public class JavascriptEvaluator extends AbstractEvaluator {
 
 	private static final String DOTS = Pattern.quote(".");
 
-	private static final ScriptEngineManager manager = new ScriptEngineManager();
-
 	private final ScriptEngine engine;
 
 	private final Map<String, String> vars = new HashMap<String, String>();
 
 	public JavascriptEvaluator() {
-		engine = manager.getEngineByName(JAVA_SCRIPT);
+		engine = new ScriptEngineManager().getEngineByName(JAVA_SCRIPT);
 	}
 
 	@Override

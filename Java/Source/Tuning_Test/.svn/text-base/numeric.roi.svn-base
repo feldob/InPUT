@@ -1,4 +1,0 @@
-name low high type
-SimpleBoolean 0 1 INT
-SimpleFloat 1 50 FLOAT
-SimpleInt 1 50 INT

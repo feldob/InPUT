@@ -6,9 +6,6 @@
 	<classpathentry kind="lib" path="lib/logback-core-1.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.6.4.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/InPUT_LoggingTest/lib/InPUT4j-0.3.1.jar"/>
-	<classpathentry kind="lib" path="/InPUT_LoggingTest/lib/jaxen.jar"/>
-	<classpathentry kind="lib" path="/InPUT_LoggingTest/lib/jdom-2.0.3.jar"/>
-	<classpathentry kind="lib" path="/InPUT_LoggingTest/lib/xercesImpl.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/InPUT4j"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -88,12 +88,14 @@ public abstract class NumericGenerator extends ValueGenerator<NumericMapping, NP
 		return ranges.isCountable();
 	}
 
+	//TODO only returns the single first min, therefore is a simplification.
 	public String getMinValue() {
-		return ranges.getStrongTypedMin().toString();
+		return ranges.getStrongTypedMin()[0].toString();
 	}
 
+	//TODO only returns the single first min, therefore is a simplification.
 	public String getMaxValue() {
-		return ranges.getStrongTypedMax().toString();
+		return ranges.getStrongTypedMax()[0].toString();
 	}
 
 	@Override

@@ -134,7 +134,6 @@ public abstract class Value<AParam extends Param<?>> extends InPUTElement {
 
 	private String arrayStringValue() {
 		StringBuilder b = new StringBuilder();
-			b.append("an array of dimensions ");
 			for (int i = 0; i < dimensions.length; i++) {
 				b.append('[');
 				b.append(dimensions[i]);

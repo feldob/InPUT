@@ -21,14 +21,12 @@ public aspect DesignLogger {
 	pointcut setValue(Value<?> value) : (execution(private void Design.updateCacheForIndexedValue(Value<?>)) || execution(private void Design.updateElementCache(Value<?>))) && args(value) && if(InPUTConfig.isLoggingActive());
 
 	before(Design design, Value<?> value) : setValue(value) && target(design){
-		log.info("Set parameter '" + value.getId() + "' of instance '" + design.getId()
-				+ "' over design space '" + design.getSpace().getId() + "' to '"
-				+ value.valueToString() + "'.");
+		log.info(design.getId() + "." + value.getId() + "=" + value.valueToString());
 	}
 
 	after(Design design) returning() : target(design) && (designImport()) {
-		log.info("A design for design space '" + design.getSpace().getId()
-				+ "' with id '" + design.getId()
-				+ "' is being imported.");
+		log.info("Importing design '" + design.getId()
+				+ "' for space '" + design.getSpace().getId()
+				+ "'.");
 	}
 }
