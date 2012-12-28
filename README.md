@@ -4,7 +4,7 @@ InPUT offers a descriptive and programming language independent format and API f
 
 It allows you to repeat experiments from third parties by importing descriptors into your algorithm implementation and language of choice, thus increases reproducibility and simplifies documentation, as well as the collaboration between researchers and/or practitioners.
 InPUT offers adapters for different programming languages, induces clean coding, and reduces coding to a minimum.
-In that sense, InPUT realizes the distinction between the specification ( *design spaces*, *design*), implementation ( *code mappings*), and use (InPUT API) of experimental or experimental configuration, similar to how the [web service architecture](http://en.wikipedia.org/wiki/Web_service) differentiates between specification (WSDL), implementation (programming language of choice), and consumption (REST, SOAP) of services.
+In that sense, InPUT realizes the distinction between the specification ( *design spaces*, *design*), implementation ( *code mappings*), and use (InPUT API) of configuration, similar to how the [web service architecture](http://en.wikipedia.org/wiki/Web_service) differentiates between specification (WSDL), implementation (programming language of choice), and consumption (REST, SOAP) of services.
 For more info, see [wiki](https://github.com/feldob/InPUT/wiki), [scientific publication](http://dl.acm.org/citation.cfm?id=2330784.2330807), and [presentation slides](http://theinput.org/InPUT/input_gecco2012.pdf).
 
 # Example (Java):
