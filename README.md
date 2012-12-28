@@ -1,6 +1,10 @@
 # What is InPUT?
 
-InPUT offers a descriptive and programming language independent format and API for a customizable configuration of software and design of computer experiments. It allows for the definition of well defined, complex, input and output parameter ranges. The code mapping concept allows you to repeat experiments from third parties by importing descriptors into your algorithm implementation of choice, thus increases reproducibility and simplifies documentation, as well as the collaboration between researchers and/or practitioners. Descriptors are written in XML. We offer adapters for different programming languages to further simplify the software development aspects of experimental and algorithm design all together. In that sense, InPUT realizes the distinction between the specification ( *design spaces*, *design*), implementation ( *code mappings*), and use (InPUT API) of experimental or software configurations, similar to how the [web service architecture](http://en.wikipedia.org/wiki/Web_service) differentiates between specification (WSDL), implementation (programming language of choice), and consumption (REST, SOAP) of services.
+InPUT offers a descriptive and programming language independent format and API for the configuration and design of computer experiments.
+
+The code mapping concept allows you to repeat experiments from third parties by importing descriptors into your algorithm implementation of choice, thus increases reproducibility and simplifies documentation, as well as the collaboration between researchers and/or practitioners.
+InPUT offers adapters for different programming languages, induces clean coding, and reduces coding to a minimum.
+In that sense, InPUT realizes the distinction between the specification ( *design spaces*, *design*), implementation ( *code mappings*), and use (InPUT API) of experimental or experimental configuration, similar to how the [web service architecture](http://en.wikipedia.org/wiki/Web_service) differentiates between specification (WSDL), implementation (programming language of choice), and consumption (REST, SOAP) of services.
 For more info, see [wiki](https://github.com/feldob/InPUT/wiki), [scientific publication](http://dl.acm.org/citation.cfm?id=2330784.2330807), and [presentation slides](http://theinput.org/InPUT/input_gecco2012.pdf).
 
 # Example (Java):
