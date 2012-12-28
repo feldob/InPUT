@@ -1,11 +1,14 @@
 # What is InPUT?
 
-InPUT offers a descriptive and programming language independent format and API for the configuration and design of computer experiments.
+InPUT offers a descriptive and programming language independent format and API for the **configuration and design of computer experiments**.
 
-It allows you to repeat experiments from third parties by importing descriptors into your algorithm implementation and language of choice, thus increases reproducibility and simplifies documentation, as well as the collaboration between researchers and/or practitioners.
+It allows you to repeat experiments from third parties by importing descriptors into your and programming language amd algorithm implementation of choice, thus increases reproducibility and simplifies documentation, as well as the collaboration between researchers and/or practitioners.
 InPUT offers adapters for different programming languages, induces clean coding, and reduces coding to a minimum.
 In that sense, InPUT realizes the distinction between the specification ( *design spaces*, *design*), implementation ( *code mappings*), and use (InPUT API) of configuration, similar to how the [web service architecture](http://en.wikipedia.org/wiki/Web_service) differentiates between specification (WSDL), implementation (programming language of choice), and consumption (REST, SOAP) of services.
 For more info, see [wiki](https://github.com/feldob/InPUT/wiki), [scientific publication](http://dl.acm.org/citation.cfm?id=2330784.2330807), and [presentation slides](http://theinput.org/InPUT/input_gecco2012.pdf).
+
+# Who benefits from InPUT?
+Software developers that have to make many (complex) choices for their algorithms and like clean code. This includes practitioners and researchers in operational research or computational intelligence as well as practitioners who are keen on finding well performing configurations for their systems (database pools, multi-threaded application, etc.  ).
 
 # Example (Java):
 InPUT induces clean code. Lets assume you want to run an algorithm and collect some data about its performance. Instead of 
