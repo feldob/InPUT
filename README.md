@@ -8,7 +8,7 @@ In that sense, InPUT realizes the distinction between the specification ( *desig
 For more info, see [wiki](https://github.com/feldob/InPUT/wiki), [scientific publication](http://dl.acm.org/citation.cfm?id=2330784.2330807), and [presentation slides](http://theinput.org/InPUT/input_gecco2012.pdf).
 
 # Who benefits from InPUT?
-Software developers that have to make many (complex) choices for their algorithms and like clean code. This includes practitioners and researchers in operational research or computational intelligence as well as practitioners who are keen on finding well performing configurations for their systems (database pools, multi-threaded application, etc.  ).
+Software developers that have to make many (complex) choices for their algorithms and who like clean code. This includes practitioners and researchers in operational research or computational intelligence as well as practitioners who are keen on finding well performing configurations for their systems (database pools, multi-threaded application, etc.  ).
 
 # Example (Java):
 InPUT induces clean code. Lets assume you want to run an algorithm and collect some data about its performance. Instead of 
