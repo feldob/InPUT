@@ -63,7 +63,7 @@ You can also treat output, and entire experimental investigations, randomly inst
 
 # How to use InPUT?
 
-Each programming language offers a language specific Readme in the respective folder. Currently, only Java is supported. C++ is coming soon. A first tutorial on how to use InPUT4j can be viewed [here](http://mutubehd.miun.se/video/742/InPUT+Tutorial+%28Step+1%29).
+Each programming language offers a language specific Readme in the respective folder. Currently, only Java is supported. C++ is coming soon. Take a look into [the tutorial page](https://github.com/feldob/InPUT/wiki/Tutorials) or view a screen cast [here](http://mutubehd.miun.se/video/742/InPUT+Tutorial+%28Step+1%29).
 
 # Good to know...
 
