@@ -1,6 +1,6 @@
 # What is InPUT?
 
-InPUT offers a descriptive and programming language independent format and IoC (Inversion of Control) container for the **configuration and design of computer experiments**.
+InPUT offers a descriptive and programming language independent format and IoC ([Inversion of Control](http://en.wikipedia.org/wiki/Inversion_of_control)) container for the **configuration and design of computer experiments**.
 
 It allows you to reproduce third party results by running experiments based on their descriptors; you choose programming language and the implementation of the algorithm. Thus, describing experiments using InPUT simplifies documentation as well as the collaboration between researchers and/or practitioners.
 InPUT offers adapters for different programming languages, reduces coding to a minimum, and induces clean code.
