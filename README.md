@@ -1,7 +1,14 @@
 # What is InPUT?
 
-InPUT offers a descriptive and programming language independent format and API for a customizable configuration of software and design of computer experiments. It allows for the definition of well defined, complex, input and output parameter ranges. The code mapping concept allows you to repeat experiments from third parties by importing descriptors into your algorithm implementation of choice, thus increases reproducibility and simplifies documentation, as well as the collaboration between researchers and/or practitioners. Descriptors are written in XML. We offer adapters for different programming languages to further simplify the software development aspects of experimental and algorithm design all together. In that sense, InPUT realizes the distinction between the specification ( *design spaces*, *design*), implementation ( *code mappings*), and use (InPUT API) of experimental or software configurations, similar to how the [web service architecture](http://en.wikipedia.org/wiki/Web_service) differentiates between specification (WSDL), implementation (programming language of choice), and consumption (REST, SOAP) of services.
+InPUT offers a descriptive and programming language independent format and IoC ([Inversion of Control](http://en.wikipedia.org/wiki/Inversion_of_control)) container for the simplified **configuration, documentation, and design of computer experiments**.
+
+It allows you to reproduce third party results by running experiments based on their descriptors; you choose programming language and the implementation of the algorithm. Thus, describing experiments using InPUT simplifies documentation as well as the collaboration between researchers and/or practitioners.
+InPUT offers adapters for different programming languages, reduces coding to a minimum, and induces clean code.
+In that sense, InPUT realizes the distinction between the specification ( *design spaces*, *design*), implementation ( *code mappings*), and use (InPUT IoC containers) of configuration, similar to how the [web service architecture](http://en.wikipedia.org/wiki/Web_service) differentiates between specification (WSDL), implementation (programming language of choice), and consumption (REST, SOAP) of services.
 For more info, see [wiki](https://github.com/feldob/InPUT/wiki), [scientific publication](http://dl.acm.org/citation.cfm?id=2330784.2330807), and [presentation slides](http://theinput.org/InPUT/input_gecco2012.pdf).
+
+# Who benefits from InPUT?
+Software developers that have to make many (complex) choices for their algorithms and who like clean code. This includes practitioners and researchers in operational research or computational intelligence as well as practitioners who are keen on finding well performing configurations for their systems (database pools, multi-threaded application, etc.  ).
 
 # Example (Java):
 InPUT induces clean code. Lets assume you want to run an algorithm and collect some data about its performance. Instead of 
@@ -56,7 +63,7 @@ You can also treat output, and entire experimental investigations, randomly inst
 
 # How to use InPUT?
 
-Each programming language offers a language specific Readme in the respective folder. Currently, only Java is supported. C++ is coming soon. A first tutorial on how to use InPUT4j can be viewed [here](http://mutubehd.miun.se/video/742/InPUT+Tutorial+%28Step+1%29).
+Each programming language offers a language specific Readme in the respective folder. Currently, only Java is supported. C++ is coming soon. Take a look into [the tutorial page](https://github.com/feldob/InPUT/wiki/Tutorials) or view a screen cast [here](http://mutubehd.miun.se/video/742/InPUT+Tutorial+%28Step+1%29).
 
 # Good to know...
 
