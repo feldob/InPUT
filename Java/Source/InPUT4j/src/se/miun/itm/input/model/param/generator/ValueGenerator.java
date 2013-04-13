@@ -238,7 +238,7 @@ public abstract class ValueGenerator<AMapping extends IMapping, AParam extends P
 	}
 	
 	@Override
-	public void validateInPUT(Object value, ElementCache elementCache)
+	public void validateInPUT(String paramId, Object value, ElementCache elementCache)
 			throws InPUTException {
 		checkConstructorInit();
 	}

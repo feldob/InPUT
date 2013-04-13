@@ -80,10 +80,7 @@ public abstract class StructuralGenerator extends
 		return complexValue;
 	}
 
-	@Override
-	protected StructuralMapping init(Element element) throws InPUTException {
-		return new StructuralMapping(element);
-	}
+
 
 	public String getComponentType() throws InPUTException {
 		return getMapping().getComponentType();
@@ -149,7 +146,7 @@ public abstract class StructuralGenerator extends
 	}
 
 	public boolean hasMapping() throws InPUTException {
-		return getMapping() != null;
+		return mapping != null;
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
@@ -176,7 +173,7 @@ public abstract class StructuralGenerator extends
 	}
 
 	@Override
-	public Method initSetMethod(Object parentValue) throws InPUTException {
+	protected Method initSetMethod(Object parentValue) throws InPUTException {
 		Method handle;
 		try {
 			handle = parentValue.getClass().getMethod(getSetter(),
@@ -240,8 +237,8 @@ public abstract class StructuralGenerator extends
 	public abstract String getValueForIndex(int index) throws InPUTException;
 
 	@Override
-	public void validateInPUT(Object value, ElementCache elementCache) throws InPUTException {
-		super.validateInPUT(value, elementCache);
+	public void validateInPUT(String paramId, Object value, ElementCache elementCache) throws InPUTException {
+		super.validateInPUT(paramId, value, elementCache);
 		checkType(value);
 	}
 
@@ -252,6 +249,11 @@ public abstract class StructuralGenerator extends
 					+ "\" is of the wrong type. \""
 					+ cLass.getName() + "\" was expected, but was \""
 					+ value.getClass().getName() + "\".");
+	}
+
+	@Override
+	protected StructuralMapping init(Element element) throws InPUTException {
+		return new StructuralMapping(element);
 	}
 
 	@Override

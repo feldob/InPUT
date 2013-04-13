@@ -26,10 +26,11 @@ import java.util.List;
 import org.jdom2.Element;
 
 import se.miun.itm.input.model.InPUTException;
-import se.miun.itm.input.model.element.ElementCache;
+import se.miun.itm.input.model.element.SValue;
 import se.miun.itm.input.model.element.Value;
 import se.miun.itm.input.model.param.generator.FixedStructuralGenerator;
 import se.miun.itm.input.model.param.generator.StructuralGenerator;
+import se.miun.itm.input.util.Q;
 
 /**
  * A structural choice element can in principle be seen as a new root to a new
@@ -53,12 +54,12 @@ public class SChoice extends AStruct {
 	public SChoice(Element original, String designId, ParamStore ps)
 			throws InPUTException {
 		super(original, designId, ps);
-		((SParam)getParent()).addChoice(this);
+		((SParam)getParent()).addChildParam(this);
 		structChildren = initStructChildren();
 	}
 
 	@Override
-	protected StructuralGenerator initGenerator() throws InPUTException {
+	protected StructuralGenerator initGenerator(boolean initRanges) throws InPUTException {
 			return new FixedStructuralGenerator(this, getLocalId());
 	}
 
@@ -113,12 +114,6 @@ public class SChoice extends AStruct {
 	public boolean isStringType() {
 			return ((SParam)getParent()).isStringType();
 	}
-
-	@Override
-	public void initValue(Value<?> value, Object[] actualParams, ElementCache elementCache)
-			throws InPUTException {
-		((SParam)getParent()).initValue(value, actualParams, elementCache);
-	}
 	
 	@Override
 	public Object getValueForString(String stringValue) throws InPUTException {
@@ -138,5 +133,44 @@ public class SChoice extends AStruct {
 	@Override
 	public boolean isFixed() {
 		return false;
+	}
+
+	@Override
+	public AStruct getChoiceById(String localChoiceId) {
+		return this;
+	}
+
+	public Object getFixedChoice(Object value) throws InPUTException {
+			return generator.next(null);
+	}
+
+	@Override
+	public boolean isComplex() throws InPUTException {
+		return false;
+	}
+
+	@Override
+	public void initIfNotConstructorInit(SValue sValue, Value<?> subValue, Object value) throws InPUTException {
+		if (!isInitByConstructor(subValue.getLocalId()) && subValue.getParam().hasSetHandle())
+			subValue.getParam().injectOnParent(subValue, value);
+	}
+
+	@Override
+	public String getLocalChildIdByComponentId(String className) throws InPUTException {
+		return getLocalId();
+	}
+	
+	public void setFixed(String value) throws InPUTException {
+		if (value != null) {
+			setAttribute(Q.FIXED_ATTR, value);
+		}else{
+			removeAttribute(Q.FIXED_ATTR);
+		}
+		generator = initGenerator(true);
+	}
+
+	@Override
+	public String getFixedValue() {
+		return getLocalId();
 	}
 }

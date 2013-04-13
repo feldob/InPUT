@@ -20,17 +20,14 @@ public aspect DesignSpaceLogger {
 	
 	pointcut finalConstructor() : ( execution(public DesignSpace.new(InputStream, InputStream)) || execution(DesignSpace.new(Document, String)) || execution(private DesignSpace.new(String, InputStream))) && if(InPUTConfig.isLoggingActive());
 
-	pointcut spaceCreation(String designId) : execution(public IDesign DesignSpace.nextDesign(String)) && args(designId) && if(InPUTConfig.isLoggingActive());
-	
-
 	after(DesignSpace space, String designId) : nextEmptyDesign(designId) && target(space) {
 		log.info("Creating empty design '" + designId + "' for space '" + space.getId()
-				+ ".");
+				+ "'.");
 	}
-	
+
 	after(DesignSpace space, String designId) : nextDesign(designId) && target(space) {
-		log.info("Creating random design '" + designId + "' for space '" + space.getId()
-				+ ".");
+		log.info("Creating design '" + designId + "' for space '" + space.getId()
+				+ "'.");
 	}
 	
 	after(DesignSpace space) : finalConstructor() && this(space){

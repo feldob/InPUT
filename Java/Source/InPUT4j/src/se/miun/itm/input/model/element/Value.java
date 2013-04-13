@@ -20,7 +20,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package se.miun.itm.input.model.element;
 
-import java.lang.reflect.Array;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +29,7 @@ import org.jdom2.Element;
 
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.param.Param;
+import se.miun.itm.input.model.param.SChoice;
 import se.miun.itm.input.util.ParamUtil;
 import se.miun.itm.input.util.Q;
 
@@ -77,7 +77,11 @@ public abstract class Value<AParam extends Param<?>> extends InPUTElement {
 		if (original != null && ParamUtil.isIntegerString(original.getAttributeValue(Q.ID_ATTR))) {
 			localId = original.getAttributeValue(Q.ID_ATTR);
 		} else {
-			localId = param.getAttributeValue(Q.ID_ATTR);
+			if (param instanceof SChoice) {
+				localId = param.getParentElement().getAttributeValue(Q.ID_ATTR);
+			} else {
+				localId = param.getAttributeValue(Q.ID_ATTR);
+			}
 		}
 		setAttribute(Q.ID_ATTR, localId);
 	}
@@ -128,17 +132,17 @@ public abstract class Value<AParam extends Param<?>> extends InPUTElement {
 		if (isArrayType())
 			result = arrayStringValue();
 		else
-			result =  getAttributeValue(Q.VALUE_ATTR);
+			result = getAttributeValue(Q.VALUE_ATTR);
 		return result;
 	}
 
 	private String arrayStringValue() {
 		StringBuilder b = new StringBuilder();
-			for (int i = 0; i < dimensions.length; i++) {
-				b.append('[');
-				b.append(dimensions[i]);
-				b.append(']');
-			}
+		for (int i = 0; i < dimensions.length; i++) {
+			b.append('[');
+			b.append(dimensions[i]);
+			b.append(']');
+		}
 		return b.toString();
 	}
 
@@ -171,7 +175,7 @@ public abstract class Value<AParam extends Param<?>> extends InPUTElement {
 
 	public void renewId() {
 		if (param.isArrayType())
-			setFullId(ParamUtil.deriveInputParamId(this));
+			setFullId(ParamUtil.deriveInputParamId(param.getParamStore(), this));
 		for (Element child : getChildren())
 			((Value<?>) child).renewId();
 	}
@@ -180,32 +184,32 @@ public abstract class Value<AParam extends Param<?>> extends InPUTElement {
 	public boolean same(Object obj) {
 		if (!(obj instanceof Value))
 			return false;
-		
-		Value<? extends Param<?>> foreigner = (Value<?>)obj;
+
+		Value<? extends Param<?>> foreigner = (Value<?>) obj;
 		Attribute forAttr;
 		for (Attribute attr : getAttributes()) {
 			forAttr = foreigner.getAttribute(attr.getName());
 			if (forAttr == null || !forAttr.getValue().equals(attr.getValue()))
 				return false;
 		}
-		
-		List<Value<?>> myChildren = (List<Value<?>>)(List<?>)getChildren();
-		List<Value<?>> foreignerChildren = (List<Value<?>>)(List<?>)foreigner.getChildren();
+
+		List<Value<?>> myChildren = (List<Value<?>>) (List<?>) getChildren();
+		List<Value<?>> foreignerChildren = (List<Value<?>>) (List<?>) foreigner.getChildren();
 		if (myChildren.size() != foreignerChildren.size())
 			return false;
-		
+
 		Value<?> foreignerValue;
 		for (Value<?> value : myChildren) {
 			foreignerValue = getSame(value, foreignerChildren);
 			if (foreignerValue == null || !value.same(foreignerValue))
 				return false;
 		}
-		
+
 		return true;
 	}
 
 	private Value<?> getSame(Value<?> value, List<Value<?>> foreignerChildren) {
-		for (Value<?> foreignerValue  : foreignerChildren)
+		for (Value<?> foreignerValue : foreignerChildren)
 			if (value.getId().equals(foreignerValue.getId()))
 				return foreignerValue;
 		return null;
@@ -214,5 +218,14 @@ public abstract class Value<AParam extends Param<?>> extends InPUTElement {
 	public boolean isPlainType() {
 		return dimensions.length == 1 && dimensions[0] == 0;
 	}
-	
+
+	public boolean isParentInitialized() {
+		Element parent = getParentElement();
+		if (parent != null && parent instanceof Value<?>) {
+			Value<?> parentValue = (Value<?>) parent;
+			return parentValue.getInputValue() != null;
+		}
+		return true;
+	}
+
 }

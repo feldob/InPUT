@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -15,6 +14,7 @@ import org.rosuda.JRI.Rengine;
 
 import se.miun.itm.input.IExperiment;
 import se.miun.itm.input.IInPUT;
+import se.miun.itm.input.export.PropertiesExporter;
 import se.miun.itm.input.export.XMLFileExporter;
 import se.miun.itm.input.export.ZipFileExporter;
 import se.miun.itm.input.model.InPUTException;
@@ -35,21 +35,19 @@ public class SpotHelper {
 
 	private SpotDES currentDES;
 
-	private SpotRES currentRES;
+	private final SpotRES currentRES;
 
 	private String[] paramIds;
 
-	private String investigationId;
+	private final String investigationId;
 
-	private String experimentalFolder;
+	private final File experimentalFolder;
 
 	private final IDesign config;
 
 	private final IInPUT input;
 
-	private String studyId;
-
-	// TODO does not work for more than one SPOT at a time! Maybe this engine
+	private String studyId;	// TODO does not work for more than one SPOT at a time! Maybe this engine
 	// can simply be shared in a meaningful way, using intrinsic locking among
 	// all SPOT instances.
 	private static Rengine engine;
@@ -62,34 +60,70 @@ public class SpotHelper {
 		engine.eval(SPOTQ.COMMAND_LOAD_SPOT, false);
 	}
 
-	public SpotHelper(IInPUT input, IDesign config, String studyId)
-			throws InPUTException {
+	public SpotHelper(IInPUT input, IDesign config, String studyId) throws InPUTException {
 		this.studyId = studyId;
-		this.config = config;
+		experimentalFolder = initExperimentalFolder(studyId, config);
+		investigationId = initExperimentId(studyId, config, experimentalFolder);
+		this.config = initConfig(investigationId, config);
 		this.input = input;
 		initInverseFunction();
 		inputROI = new SpotROI(input);
 		outputROI = new SpotROI(input.getOutputSpace());
+		currentRES = new SpotRES(inputROI, outputROI);
+		initExperimentalFolder();
+	}
+
+	private static IDesign initConfig(String investigationId, IDesign config) throws InPUTException {
+		Properties properties = updateProperties(config);
+		String filePath = fileId(investigationId, SPOTQ.FILE_CONFIG_ENDING);
+		try {
+			properties.store(new FileOutputStream(filePath), null);
+		} catch (FileNotFoundException e) {
+			throw new InPUTException("There is no such file: " + filePath);
+		} catch (IOException e) {
+			throw new InPUTException("Something went wrong, writing to the file: " + filePath);
+		}
+		return config;
+	}
+
+	public static Properties updateProperties(IDesign config) throws InPUTException {
+		Properties prop = config.export(new PropertiesExporter());
+		String value;
+		for (String key : prop.stringPropertyNames()) {
+			value = prop.getProperty(key);
+			Object valueO = config.getValue(key);
+			if (valueO instanceof Boolean) {
+				value = value.toUpperCase();
+			} else if (valueO instanceof String && !standardRFunction(key)) {
+				value = '\"' + value + '\"';
+			}
+			prop.setProperty(key, value);
+		}
+		return prop;
+	}
+
+	private static boolean standardRFunction(String key) {
+		return key.equals(SPOTQ.CONF_SEQ_TRANSFORMATION) || key.equals(SPOTQ.CONF_SEQ_MERGE_FUNCTION);
 	}
 
 	private void initInverseFunction() {
 		engine.eval("source(textConnection(\"inverse<-function(x){v<-x\n if(x>0)v<-1/x\n return(v)}\"))", false);
 	}
 
-	public String initRelativeFileString(String fileName)
-			throws InPUTException {
+	public static String initRelativeFileString(String studyId, IDesign config, String fileName) throws InPUTException {
 
-		String folderId = adjustExpFolderId();
+		String folderId = adjustExpFolderId(studyId, config);
 
 		if (folderId == null || folderId.equals(""))
 			return fileName;
 		return folderId + repetitionCounter + File.separator + fileName;
 	}
 
-	private String prepareAndCreateId() throws InPUTException {
+	private static File initExperimentalFolder(String studyId, IDesign config) throws InPUTException {
 
-		String expFolderId = adjustExpFolderId();
-		String expId = config.getValue(SPOTQ.ATTR_INPUT_EXPERIMENT_ID);
+		File experimentalFolder = null;
+
+		String expFolderId = adjustExpFolderId(studyId, config);
 
 		if (expFolderId != null) {
 			File expFolder;
@@ -98,34 +132,35 @@ public class SpotHelper {
 				// consistent
 				expFolder = new File(expFolderId);
 				while (expFolder.exists()) {
-					repetitionCounter = globalExperimentCounter
-							.incrementAndGet();
+					repetitionCounter = globalExperimentCounter.incrementAndGet();
 					expFolder = new File(initExperimentalFolder(expFolderId));
 				}
 				repetitionCounter = globalExperimentCounter.intValue();
 			}
 			expFolder.mkdirs();
-			experimentalFolder = expFolder.getPath();
-			expId = initExperimentalId(expFolderId, expId);
+			experimentalFolder = expFolder;
 		}
+		return experimentalFolder;
+	}
+
+	private static String initExperimentId(String studyId, IDesign config, File experimentalFolder) throws InPUTException {
+
+		String expId = config.getValue(SPOTQ.ATTR_INPUT_EXPERIMENT_ID);
+
+		if (experimentalFolder != null)
+			expId = experimentalFolder.getPath() + File.separator + expId;
 		return expId;
 	}
 
-	private String adjustExpFolderId() throws InPUTException {
-		String expFolderId = config
-				.getValue(SPOTQ.ATTR_INPUT_EXPERIMENTAL_FOLDER);
+	private static String adjustExpFolderId(String studyId, IDesign config) throws InPUTException {
+		String expFolderId = config.getValue(SPOTQ.ATTR_INPUT_EXPERIMENTAL_FOLDER);
 		if (studyId != null)
 			expFolderId = expFolderId + "_" + studyId;
 
 		return expFolderId;
 	}
 
-	private String initExperimentalId(String expFolderId, String expId) {
-		expFolderId = initExperimentalFolder(expFolderId);
-		return expFolderId + File.separator + expId;
-	}
-
-	private String initExperimentalFolder(String expFolderId) {
+	private static String initExperimentalFolder(String expFolderId) {
 		if (repetitionCounter > 0)
 			return expFolderId + "(" + repetitionCounter + ")";
 		return expFolderId;
@@ -135,23 +170,18 @@ public class SpotHelper {
 		createFile(SPOTQ.FILE_ROI_ENDING, inputROI, investigationId);
 	}
 
-	private static void createFile(String ending,
-			SpotExportable<InputStream> exportable, String investigationId)
-			throws InPUTException {
+	private static void createFile(String ending, SpotExportable<InputStream> exportable, String investigationId) throws InPUTException {
 		String fileId = fileId(investigationId, ending);
 		try {
 			OutputStream fileOut = new FileOutputStream(fileId);
 
-			InputStreamWrapper.fromInputStreamToOutputStream(
-					exportable.export(), fileOut);
+			InputStreamWrapper.fromInputStreamToOutputStream(exportable.export(), fileOut);
 			fileOut.flush();
 			fileOut.close();
 		} catch (FileNotFoundException e) {
-			throw new InPUTException("The file " + fileId
-					+ " could not be found.", e);
+			throw new InPUTException("The file " + fileId + " could not be found.", e);
 		} catch (IOException e) {
-			throw new InPUTException("The file " + fileId
-					+ " could not be written.", e);
+			throw new InPUTException("The file " + fileId + " could not be written.", e);
 		}
 
 	}
@@ -160,41 +190,39 @@ public class SpotHelper {
 		File file = new File(investigationId + ending);
 
 		if (file.exists())
-			return new File("").getAbsolutePath() + File.separator
-					+ investigationId + ending;
+			return new File("").getAbsolutePath() + File.separator + investigationId + ending;
 		else
 			return file.getAbsolutePath();
 	}
 
 	public void initExperimentalFolder() throws InPUTException {
-		investigationId = prepareAndCreateId();
 		saveSPOTContext();
 		saveInPUTContext();
 	}
 
 	private void saveInPUTContext() throws InPUTException {
-		input.export(new ZipFileExporter(adjustExpFolderId() + File.separator + "expScope.inp"));
+		input.export(new ZipFileExporter(experimentalFolder.getPath() + File.separator + "expScope.inp"));
 	}
 
 	private void saveSPOTContext() throws InPUTException {
-		config.export(new XMLFileExporter(adjustExpFolderId() + File.separator + "spotConfig.xml"));
+		config.export(new XMLFileExporter(experimentalFolder.getPath() + File.separator + "spotConfig.xml"));
 	}
 
-	public List<IExperiment> getInitialDesign() throws InPUTException {
+	public int initInitialDesign() throws InPUTException {
 		createROIFile();
 		initSPOTConfFileName();
 		initSPOTinitialDesign();
 		retrieveNextDesign();
 		saveSPOTWorkspace();
-		return initializeDesign();
+		currentDES = initializeDesign();
+		return currentDES.size();
 	}
 
 	private void saveSPOTWorkspace() throws InPUTException {
 		// engine.eval("load(paste(getwd(), \"" + rData + "\", sep = \""
 		// + File.separator + "\"))", false);
-		String rData = initRelativeFileString(".RData");
-		engine.eval("save.image(paste(getwd(), \"" + rData + "\", sep = \""
-				+ File.separator + "\"))", false);
+		String rData = initRelativeFileString(studyId, config, ".RData");
+		engine.eval("save.image(paste(getwd(), \"" + rData + "\", sep = \"" + File.separator + "\"))", false);
 		saveSPOTHistory();
 	}
 
@@ -203,20 +231,19 @@ public class SpotHelper {
 		// engine.eval("loadhistory(file=paste(getwd(), \"" + rHistory +
 		// "\", sep = \""
 		// + File.separator + "\"))", false);
-		String rHistory = initRelativeFileString(".Rhistory");
-		engine.eval("savehistory(file=paste(getwd(), \"" + rHistory
-				+ "\", sep = \"" + File.separator + "\"))", false);
+		String rHistory = initRelativeFileString(studyId, config, ".Rhistory");
+		engine.eval("savehistory(file=paste(getwd(), \"" + rHistory + "\", sep = \"" + File.separator + "\"))", false);
 	}
 
-	public List<IExperiment> getSequentialDesign() throws InPUTException {
+	public int initSequentialDesign() throws InPUTException {
 		initSPOTSequentialDesign();
 		saveSPOTWorkspace();
-		return initializeDesign();
+		currentDES = initializeDesign();
+		return currentDES.size();
 	}
 
 	public void retrieveNextDesign() {
-		paramIds = engine.eval("colnames(inputConfig$alg.currentDesign)")
-				.asStringArray();
+		paramIds = engine.eval("colnames(inputConfig$alg.currentDesign)").asStringArray();
 	}
 
 	public void initSPOTinitialDesign() {
@@ -225,52 +252,29 @@ public class SpotHelper {
 	}
 
 	public void initSPOTConfFileName() {
-		engine.eval("inputFile=paste(getwd(), \"" + investigationId
-				+ ".conf\", sep = \"" + File.separator + "\")", false);
+		engine.eval("inputFile=paste(getwd(), \"" + investigationId + ".conf\", sep = \"" + File.separator + "\")", false);
 	}
 
-	public List<IExperiment> initializeDesign() throws InPUTException {
+	public SpotDES initializeDesign() throws InPUTException {
 		REXP designs = engine.eval("inputConfig$alg.currentDesign");
-
-		currentDES = new SpotDES(designs.asVector(), paramIds, inputROI);
-		return converter.toExperiments(input.getId(), currentDES);
+		return new SpotDES(designs.asVector(), paramIds, inputROI);
 	}
 
 	public void initSPOTSequentialDesign() {
-		engine.eval(
-				"inputConfig=spot(inputFile,\"seq\", spotConfig=inputConfig)",
-				false);
+		engine.eval("inputConfig=spot(inputFile,\"seq\", spotConfig=inputConfig)", false);
 	}
 
-	public void feedbackSpot(List<IExperiment> results) throws InPUTException {
-
-		if (currentRES == null)
-			currentRES = new SpotRES(results, currentDES, inputROI, outputROI);
-		else
-			currentRES.append(results, currentDES);
+	public void feedbackSpot(IDesign result) throws InPUTException {
 		feedbackSpotInMemory();
 		saveSPOTWorkspace();
+		currentRES.append(result, currentDES);
 	}
 
 	private void feedbackSpotInMemory() throws InPUTException {
-		StringBuilder res = currentRES.toSpot();
 		engine.eval("inputConfig$alg.currentResult <- rbind(inputConfig$alg.currentResult, read.table(textConnection(\""
-				+ res.toString() + "\"), header=TRUE))");
+				+ currentRES.toString() + "\"), header=TRUE))");
 		if (config.getValue(SPOTQ.CONF_IS_FILE_MODE))
 			createFile(SPOTQ.FILE_RES_ENDING, currentRES, investigationId);
-	}
-
-	public void updateConfigurationFile(Properties properties)
-			throws InPUTException {
-		String filePath = fileId(investigationId, SPOTQ.FILE_CONFIG_ENDING);
-		try {
-			properties.store(new FileOutputStream(filePath), null);
-		} catch (FileNotFoundException e) {
-			throw new InPUTException("There is no such file: " + filePath);
-		} catch (IOException e) {
-			throw new InPUTException(
-					"Something went wrong, writing to the file: " + filePath);
-		}
 	}
 
 	public void reset(String studyId) throws InPUTException {
@@ -279,6 +283,10 @@ public class SpotHelper {
 	}
 
 	public String getExperimentalFolderPath() {
-		return experimentalFolder;
+		return experimentalFolder.getPath();
+	}
+
+	public IExperiment nextExperiment(int position) throws InPUTException {
+		return converter.toExperiment(input.getId(), currentDES, position);
 	}
 }

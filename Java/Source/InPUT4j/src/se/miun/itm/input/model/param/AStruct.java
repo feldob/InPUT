@@ -31,6 +31,7 @@ import org.jdom2.Element;
 
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.element.ElementCache;
+import se.miun.itm.input.model.element.SValue;
 import se.miun.itm.input.model.element.Value;
 import se.miun.itm.input.model.param.generator.StructuralGenerator;
 import se.miun.itm.input.util.ParamUtil;
@@ -48,9 +49,9 @@ public abstract class AStruct extends Param<StructuralGenerator> {
 
 	private static final long serialVersionUID = 5891445520352579733L;
 
-	private final List<Param<?>> inputChildren = new ArrayList<Param<?>>();
+	private final List<Param<?>> inputChildrenList = new ArrayList<Param<?>>();
 
-	private final Map<String, Param<?>> inputChildrenM = new HashMap<String, Param<?>>();
+	private final Map<String, Param<?>> inputChildrenMap = new HashMap<String, Param<?>>();
 
 	public AStruct(Element original, String designId, ParamStore ps)
 			throws InPUTException {
@@ -64,8 +65,8 @@ public abstract class AStruct extends Param<StructuralGenerator> {
 			if (childElement instanceof NParam
 					|| childElement instanceof SParam) {
 				elem = (Param<?>) childElement;
-				inputChildren.add(elem);
-				inputChildrenM.put(elem.getLocalId(), elem);
+				inputChildrenList.add(elem);
+				inputChildrenMap.put(elem.getLocalId(), elem);
 			}
 	}
 
@@ -74,15 +75,57 @@ public abstract class AStruct extends Param<StructuralGenerator> {
 	}
 
 	public List<Param<?>> getParamChildren() {
-		return inputChildren;
+		return inputChildrenList;
 	}
 
 	public Param<?> getChildParamElement(String localChildId) {
-		return inputChildrenM.get(localChildId);
+		return inputChildrenMap.get(localChildId);
 	}
 
 	protected void addChildParam(Param<?> child) {
-		inputChildrenM.put(child.getLocalId(), child);
+		inputChildrenMap.put(child.getLocalId(), child);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void initValue(Value<?> value, Object[] actualParams, ElementCache elementCache) throws InPUTException {
+
+		List<Value<Param<?>>> children = (List<Value<Param<?>>>) (List<?>) value.getChildren();
+		// set the subParams and all the peers that are of type numeric.
+		List<Value<? extends Param<?>>> subParamValueElements = Arrays.asList(children.toArray(new Value<?>[0]));
+
+		String localChoiceId = value.getAttributeValue(Q.VALUE_ATTR);
+		AStruct choice = getChoiceById(localChoiceId);
+		if (choice == null) {
+			throw new InPUTException(value.getId() + ": There is no choice element '" + localChoiceId + "' for parameter '" + getId()
+					+ "'.");
+		}
+
+		// making available possible customizable input
+		if (isImplicit() && localChoiceId != null && !localChoiceId.equals(getLocalId()))
+			actualParams = SParam.extendActualParams(actualParams, localChoiceId);
+
+		actualParams = choice.enhanceActualParams(actualParams, subParamValueElements, elementCache);
+
+		if (isStringType()) {
+			Object valueString = value.getAttributeValue(Q.VALUE_ATTR);
+			if (valueString == null)
+				valueString = actualParams[0];
+			value.setInputValue(valueString);
+		} else
+			reflectObject((SValue) value, actualParams, choice);
+
+		for (Value<?> subValueE : subParamValueElements)
+			// inject the child values into the members
+			initIfNotConstructorInit((SValue) value, subValueE, value.getInputValue(null));
+
+	}
+
+	public void reflectObject(SValue sValue, Object[] actualParams, AStruct choice) throws InPUTException {
+		if (isEnum())
+			sValue.setPlainInputValue(((SChoice) choice).getEnumValue());
+		else
+			sValue.setPlainInputValue(choice.newInstance(actualParams));
 	}
 
 	//TODO extract an enhancer class
@@ -275,4 +318,14 @@ public abstract class AStruct extends Param<StructuralGenerator> {
 	public String getValueTypeString() {
 		return Q.SVALUE;
 	}
+
+	public abstract AStruct getChoiceById(String choiceLocalId);
+
+	public abstract Object getFixedChoice(Object value) throws InPUTException;
+
+	public abstract boolean isComplex() throws InPUTException;
+
+	public abstract void initIfNotConstructorInit(SValue sValue, Value<?> subValue, Object value) throws InPUTException;
+
+	public abstract String getLocalChildIdByComponentId(String className) throws InPUTException;
 }

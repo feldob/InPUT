@@ -66,8 +66,6 @@ public abstract class Param<AGenerator extends IValueGenerator> extends InPUTEle
 
 	private final int[] dimensions;
 
-	private final String localId;
-
 	protected final ParamStore ps;
 
 	protected AGenerator generator;
@@ -75,11 +73,10 @@ public abstract class Param<AGenerator extends IValueGenerator> extends InPUTEle
 	public Param(Element original, String designId, ParamStore ps)
 			throws InPUTException {
 		super(original);
-		localId = original.getAttributeValue(Q.ID_ATTR);
 		this.ps = ps;
 		dimensions = DimensionHelper.derive(original);
 		initFromOriginal(original);
-		generator = initGenerator();
+		generator = initGenerator(false);
 	}
 
 	public int[] getDimensions() {
@@ -209,7 +206,7 @@ public abstract class Param<AGenerator extends IValueGenerator> extends InPUTEle
 	}
 
 	public String getLocalId() {
-		return localId;
+		return getAttributeValue(Q.ID_ATTR);
 	}
 
 	public String getDimsToString() {
@@ -241,13 +238,13 @@ public abstract class Param<AGenerator extends IValueGenerator> extends InPUTEle
 		return isArrayType(dimensions);
 	}
 
-	public void validateInPUT(Object value, ElementCache elementCache) throws InPUTException {
+	public void validateInPUT(String paramId, Object value, ElementCache elementCache) throws InPUTException {
 		if (value == null)
 			throw new InPUTException(getId() + ": Null value setting is not supported.");
-		generator.validateInPUT(value, elementCache);
+		generator.validateInPUT(paramId, value, elementCache);
 	}
 
-	protected abstract AGenerator initGenerator() throws InPUTException;
+	protected abstract AGenerator initGenerator(boolean initRanges) throws InPUTException;
 
 	public void invokeSetter(Object parentValue, Object value)
 			throws InPUTException {
@@ -323,12 +320,10 @@ public abstract class Param<AGenerator extends IValueGenerator> extends InPUTEle
 	}
 
 	public abstract String getValueTypeString();
+	
+	public abstract void setFixed(String value) throws InPUTException;
 
-	public boolean isFixed() {
-		return getFixedValue() != null;
-	}
+	public abstract boolean isFixed();
 
-	public String getFixedValue(){
-		return getAttributeValue(Q.FIXED_ATTR);
-	}
+	public abstract String getFixedValue() throws InPUTException;
 }

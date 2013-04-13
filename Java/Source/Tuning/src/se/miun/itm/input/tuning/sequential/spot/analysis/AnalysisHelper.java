@@ -123,7 +123,7 @@ public class AnalysisHelper {
 	}
 
 	private static boolean isRelevantComplexChoice(SChoice choice, Map<String, String> sample, SParam complex, String compl,
-			String choiceNumber) {
+			String choiceNumber) throws NumberFormatException, InPUTException {
 		return isFixedComplexChoice(choice, complex)
 				|| (sample.containsKey(compl) && complex.getChoiceByPosition((int) Double.parseDouble(choiceNumber)).equals(choice));
 	}

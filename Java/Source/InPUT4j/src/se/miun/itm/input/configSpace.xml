@@ -13,4 +13,5 @@
   </i:SParam>
   <i:NParam id="runtimeValidation" type="boolean"/>
   <i:SParam id="schemaPath" type="String"/>
+  <i:NParam id="cacheDesigns" type="boolean"/>
 </i:DesignSpace>

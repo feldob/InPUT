@@ -28,10 +28,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import se.miun.itm.input.aspects.FileNameAssigner;
-import se.miun.itm.input.model.Document;
 import se.miun.itm.input.model.InPUTException;
+import se.miun.itm.input.util.InputStreamWrapper;
 import se.miun.itm.input.util.Q;
-import se.miun.itm.input.util.xml.SAXUtil;
 /**
  * An importer of experiments, with zip files as sources.
  * 
@@ -40,7 +39,7 @@ import se.miun.itm.input.util.xml.SAXUtil;
  * @NotThreadSafe
  */
 public class ExperimentArchiveImporter extends FileNameAssigner
-implements InPUTImporter<Map<String, Document>> {
+implements InPUTImporter<Map<String, InputStreamWrapper>> {
 
 	public ExperimentArchiveImporter() {
 		super("");
@@ -51,19 +50,15 @@ implements InPUTImporter<Map<String, Document>> {
 	}
 	
 	@Override
-	public Map<String, Document> impOrt() throws InPUTException {
-		Map<String, Document> map = new HashMap<String, Document>();
+	public Map<String, InputStreamWrapper> impOrt() throws InPUTException {
+		Map<String, InputStreamWrapper> map = new HashMap<String, InputStreamWrapper>();
 		try {
 			Enumeration<? extends ZipEntry> entries;
 			ZipFile zipFile = new ZipFile(fileName);
 			entries = zipFile.entries();
 			while (entries.hasMoreElements()) {
 				ZipEntry entry = entries.nextElement();
-				if (!entry.isDirectory() && isExperimentalFile(entry.getName())){
-					
-					map.put(entry.getName(),
-							SAXUtil.build(zipFile.getInputStream(entry), false));
-				}
+				map.put(entry.getName(),new InputStreamWrapper(zipFile.getInputStream(entry)));
 			}
 			zipFile.close();
 		} catch (IOException ioe) {
@@ -72,7 +67,7 @@ implements InPUTImporter<Map<String, Document>> {
 		return map;
 	}
 
-	private boolean isExperimentalFile(String entry) {
+	public static boolean isExperimentalFile(String entry) {
 		
 		if (entry.startsWith(Q.OUTPUT) && entry.endsWith(Q.XML))
 			return true;

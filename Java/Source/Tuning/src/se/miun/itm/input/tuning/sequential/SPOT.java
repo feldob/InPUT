@@ -4,13 +4,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Properties;
 import java.util.Random;
 
 import se.miun.itm.input.IExperiment;
 import se.miun.itm.input.IInPUT;
 import se.miun.itm.input.InPUTConfig;
-import se.miun.itm.input.export.PropertiesExporter;
 import se.miun.itm.input.impOrt.InputStreamImporter;
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.design.DesignSpace;
@@ -34,15 +32,9 @@ import se.miun.itm.input.util.Q;
  */
 public class SPOT extends SequentialTuner {
 
-	enum TunerState {
-		INITIAL_DESIGN, AWAITING_INITIAL_RESULTS, SEQUENTIAL_DESIGN, FINISHED;
-	}
-
 	private final SpotHelper helper;
 
 	private final IDesign config;
-
-	private TunerState state;
 
 	/** 
 	 * TODO create a SPOT that is based on a former experimental image. So either have it as a constructor parameter
@@ -57,13 +49,13 @@ public class SPOT extends SequentialTuner {
 	 * @param input
 	 * @throws InPUTException
 	 */
-	public SPOT(IInPUT input, List<IDesign> problems, String spotConfigPath, String studyId)
+	public SPOT(IInPUT input, List<IDesign> problems, String spotConfigPath, String studyId, boolean minProblem)
 			throws InPUTException {
-		super(input, problems, studyId);
+		super(input, problems, studyId, minProblem);
 		config = initConfig(spotConfigPath);
 		helper = new SpotHelper(input, config, studyId);
-		state = TunerState.INITIAL_DESIGN;
 		initSeed();
+		currentDesignSize = getTotalAmountRunsInitialDesign();
 	}
 
 	private void initSeed() throws InPUTException {
@@ -83,8 +75,8 @@ public class SPOT extends SequentialTuner {
 	 * @param input
 	 * @throws InPUTException
 	 */
-	public SPOT(IInPUT input, List<IDesign> problems) throws InPUTException {
-		this(input, problems, null, null);
+	public SPOT(IInPUT input, List<IDesign> problems, boolean minProblem) throws InPUTException {
+		this(input, problems, null, null, minProblem);
 	}
 
 	private IDesign initConfig(String spotConfigPath) throws InPUTException {
@@ -109,6 +101,7 @@ public class SPOT extends SequentialTuner {
 		return importer;
 	}
 
+	@SuppressWarnings("resource")
 	private InputStream getCorrectSpotSetup(String spotConfigPath) throws InPUTException {
 		InputStream is;
 		if (spotConfigPath != null)
@@ -134,86 +127,45 @@ public class SPOT extends SequentialTuner {
 		return config.getValue(key);
 	}
 
-	public Properties getProperties() throws InPUTException {
-		Properties prop = config.export(new PropertiesExporter());
-		String value;
-		for (String key : prop.stringPropertyNames()) {
-			value = prop.getProperty(key);
-			Object valueO = config.getValue(key);
-			if (valueO instanceof Boolean) {
-				value = value.toUpperCase();
-			} else if (valueO instanceof String && !standardRFunction(key)) {
-				value = '\"' + value + '\"';
-			}
-			prop.setProperty(key, value);
-		}
-		return prop;
-	}
-
-	private boolean standardRFunction(String key) {
-		return key.equals(SPOTQ.CONF_SEQ_TRANSFORMATION)
-				|| key.equals(SPOTQ.CONF_SEQ_MERGE_FUNCTION);
-	}
-
 	@Override
-	public boolean hasNextIteration() {
-		boolean hasNext = false;
-		switch (state) {
-		case INITIAL_DESIGN:
-		case AWAITING_INITIAL_RESULTS:
-		case SEQUENTIAL_DESIGN:
-			hasNext = true;
-			break;
-		}
-		return hasNext;
-	}
-
-	@Override
-	protected void internalFeedback(List<IExperiment> results)
+	protected void feedback(IExperiment experiment, IDesign newResult)
 			throws InPUTException {
-		helper.feedbackSpot(results);
-		switch (state) {
-		case AWAITING_INITIAL_RESULTS:
-			state = TunerState.SEQUENTIAL_DESIGN;
-			break;
-		}
+		experiment.addOutput(newResult);
+		helper.feedbackSpot(newResult);
 	}
 
 	@Override
-	protected List<IExperiment> nextInternalIteration() throws InPUTException {
-
-		if (state == TunerState.INITIAL_DESIGN)
-			helper.initExperimentalFolder();
-		
-		helper.updateConfigurationFile(getProperties());
-
-		if (!hasNextIteration())
-			throw new InPUTException(
-					"The SPOT experimenter has no designs left for this investigation.");
-
-		List<IExperiment> experiments = null;
-		switch (state) {
-		case INITIAL_DESIGN:
-		case AWAITING_INITIAL_RESULTS:
-			experiments = helper.getInitialDesign();
-			state = TunerState.AWAITING_INITIAL_RESULTS;
-			break;
-		case SEQUENTIAL_DESIGN:
-			experiments = helper.getSequentialDesign();
-			break;
-		}
-
-		return experiments;
+	protected IExperiment nextExperiment(int position) throws InPUTException {
+		return helper.nextExperiment(position);
 	}
 
 	@Override
 	public void resetStudy(List<IDesign> problems, String studyId) throws InPUTException {
 		super.resetStudy(problems, studyId);
-		state = TunerState.INITIAL_DESIGN;
 		helper.reset(studyId);
 	}
 	
-	public String getExperimentalFolderPath() {
+
+	/**
+	 * retrieves the folder in which the experimental data is stored. Returns null if no data is stored.
+	 * @return
+	 */
+	public String getExperimentalFolderPath(){
 		return helper.getExperimentalFolderPath();
+	}
+
+	@Override
+	int initNextDesign() throws InPUTException {
+		if (getAmountEvaluatedRuns() == 0)
+			return helper.initInitialDesign();
+		else
+			return helper.initSequentialDesign();
+	}
+
+	@Override
+	public int getTotalAmountRunsInitialDesign() throws InPUTException {
+		int first = (Integer) config.getValue(SPOTQ.CONF_INIT_AMOUNT_INVESTIGATED_DESIGNS);
+		int second = (Integer) config.getValue(SPOTQ.CONF_INIT_REPEATS_PER_DESIGN);
+		return first * second;
 	}
 }

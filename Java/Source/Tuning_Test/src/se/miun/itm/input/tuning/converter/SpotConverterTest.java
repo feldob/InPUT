@@ -111,10 +111,9 @@ public class SpotConverterTest extends
 		List<IExperiment> designs = testTo(TUtil.DES_COMBINED,
 				TUtil.COMBINED_SPACE_ID);
 
-		for (int i = 0; i < designs.size(); i++) {
+		for (int i = 0; i < designs.size(); i++)
 			TUtil.assertExpectedParameter(designs.get(i),
 					TUtil.SHARED_PRIMITIVE_PARAM, 3);
-		}
 
 		TUtil.assertExpectedType(designs.get(0), TUtil.STRUCTURAL_PARENT_PARAM,
 				YetAnotherFirstChoice.class);

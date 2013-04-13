@@ -125,6 +125,7 @@ public class StructuralMapping extends Mapping {
 		return new StructuralMapping(id, this);
 	}
 
+	//TODO reusing same code, could be packaged into one function setAttribute for Element.
 	@Override
 	public IMapping clone(String id, Element mergedPriority) throws InPUTException {
 		String constructor = mergedPriority.getAttributeValue(Q.CONSTR_ATTR);

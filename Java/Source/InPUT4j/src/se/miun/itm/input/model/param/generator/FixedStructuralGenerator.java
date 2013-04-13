@@ -8,6 +8,7 @@ import se.miun.itm.input.model.element.ElementCache;
 import se.miun.itm.input.model.param.AStruct;
 import se.miun.itm.input.model.param.SChoice;
 import se.miun.itm.input.model.param.SParam;
+import se.miun.itm.input.util.Q;
 
 /**
  * 
@@ -16,8 +17,6 @@ import se.miun.itm.input.model.param.SParam;
  * @NotThreadSafe
  */
 public class FixedStructuralGenerator extends StructuralGenerator {
-
-	private AStruct choice;
 
 	private String fixedValue;
 
@@ -43,21 +42,16 @@ public class FixedStructuralGenerator extends StructuralGenerator {
 		}
 	}
 
-	private AStruct initChoice() {
-		if (param instanceof SChoice) {
-			return param;
-		} else
-			return ((SParam) param).getChoiceById(fixedValue);
-	}
-
 	@Override
 	public Object handleComplex(Map<String, Object> vars,
 			Object[] actualParams, Object[] array) throws InPUTException {
 		Object value;
-		adjustToFixed(array);
 		
 		if (isComplex())
+		{
+			adjustToFixed(array);
 			value = makeComplex(array, vars, actualParams);
+		}
 		else
 			value = array;
 		return value;
@@ -65,7 +59,7 @@ public class FixedStructuralGenerator extends StructuralGenerator {
 	
 	private void adjustToFixed(Object[] array) throws InPUTException {
 		for (int i = 0; i < fixedIds.length; i++) {
-			if (!fixedIds[i].equals("...")) {
+			if (!fixedIds[i].equals(Q.PLACEHOLDER)) {
 				array[i] = param.getValueForString(fixedIds[i]);
 			}
 		}
@@ -86,9 +80,10 @@ public class FixedStructuralGenerator extends StructuralGenerator {
 	}
 
 	public AStruct getChoice() {
-		if (choice == null)
-			choice = initChoice();
-		return choice;
+		if (param instanceof SChoice) {
+			return param;
+		} else
+			return ((SParam) param).getChoiceById(fixedValue);
 	}
 
 	@Override
@@ -99,18 +94,18 @@ public class FixedStructuralGenerator extends StructuralGenerator {
 	}
 
 	@Override
-	public void validateInPUT(Object value, ElementCache elementCache)
+	public void validateInPUT(String paramId, Object value, ElementCache elementCache)
 			throws InPUTException {
 		if (isComplex()) {
 			validateComplex(value);
 		} else {
-			super.validateInPUT(value, elementCache);
+			super.validateInPUT(paramId, value, elementCache);
 			if (isEnum()) {
 				validateEnum(value);
 			} else if (!getChoice().getSuperClass().isInstance(value))
 				throw new InPUTException("The object \"" + value.toString()
 						+ "\" is of the wrong type. \""
-						+ choice.getSuperClass().getName()
+						+ getChoice().getSuperClass().getName()
 						+ "\" was expected, but was "
 						+ value.getClass().getName() + ".");
 		}

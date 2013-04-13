@@ -1,6 +1,7 @@
 package se.miun.itm.input.tuning.sequential.spot;
 
 import java.io.BufferedReader;
+
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -8,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.rosuda.JRI.REXP;
@@ -22,23 +24,20 @@ import se.miun.itm.input.util.InputStreamWrapper;
 
 public class SpotDES {
 
-	private final SpotExporter exporter;
+	private final SpotExporter exporter = new SpotExporter();
 
 	private final List<SpotDesign> designs;
 
 	private final SpotROI roi;
-
-	private final InputStreamWrapper designStream;
-
+	
 	private SpotDES(Object helper, Object secondHelper, Object thirdHelper)
 			throws InPUTException {
-		exporter = new SpotExporter();
 		roi = initRoi(helper);
 		try {
-			designStream = initDESStream(helper, secondHelper, thirdHelper,
+			InputStreamWrapper designStream = initDESStream(helper, secondHelper, thirdHelper,
 					exporter);
 			designs = initSpotDesigns(designStream);
-		} catch (Exception e) {
+		} catch (IOException e) {
 			throw new InPUTException(e.getMessage(), e);
 		}
 	}
@@ -61,12 +60,12 @@ public class SpotDES {
 		List<SpotDesign> designs = new ArrayList<SpotDesign>();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(
 				wrapper.next()));
-		String[] params = reader.readLine().split(" ");
+		String[] params = reader.readLine().split(" "); // headlines
 		while (reader.ready())
 			designs.add(new SpotDesign(roi, params, reader.readLine()));
-		return designs;
+		return Collections.unmodifiableList(designs);
 	}
-	
+
 	public SpotDesign getDesign(int position) {
 		return designs.get(position);
 	}
@@ -77,16 +76,14 @@ public class SpotDES {
 			throws InPUTException, IOException {
 		InputStream is = null;
 		if (helper instanceof List<?>) {
-			 is = initDesigns(exporter,
-					(List<IDesign>) (List<?>) helper);
+			is = initDesigns(exporter, (List<IDesign>) (List<?>) helper);
 		} else if (helper instanceof SpotROI) {
 			if (secondHelper != null) {
 				if (secondHelper instanceof String[]) {
-					is = initDesigns(
-							(RVector) thirdHelper, (String[]) secondHelper);
+					is = initDesigns((RVector) thirdHelper,
+							(String[]) secondHelper);
 				} else {
-					is = new FileInputStream(
-							(String) secondHelper);
+					is = new FileInputStream((String) secondHelper);
 				}
 			}
 		}
@@ -125,12 +122,10 @@ public class SpotDES {
 	public SpotROI initRoi(Object helper) throws InPUTException {
 		SpotROI roi = null;
 		try {
-			if (designs instanceof List<?>)
-			{
-				IDesignSpace space = ((IDesign) designs.get(0)).getSpace(); 
+			if (designs instanceof List<?>) {
+				IDesignSpace space = ((IDesign) designs.get(0)).getSpace();
 				roi = new SpotROI(space.export(exporter), space.getId());
-			}
-			else if (helper instanceof SpotROI)
+			} else if (helper instanceof SpotROI)
 				roi = (SpotROI) helper;
 		} catch (FileNotFoundException e) {
 			throw new InPUTException("InPUT cannot find the helper file.", e);
@@ -195,18 +190,26 @@ public class SpotDES {
 
 	private static List<String[]> initValues(RVector designLines) {
 		List<String[]> params = new ArrayList<String[]>();
-		String cache;
+		REXP expr;
+		double[] values;
+		String[] valuesString;
 		for (int i = 0; i < designLines.size(); i++) {
-			cache = designLines.get(i).toString().split("\\(")[1].split("\\)")[0];
-			params.add(cache.split(", "));
+			expr = (REXP)designLines.get(i);
+			values = expr.asDoubleArray();
+			valuesString = doubleArrayToStringArray(values);
+			params.add(valuesString);
 		}
 		return params;
 	}
-
-	public InputStream toInputStream() {
-		return designStream.next();
-	}
 	
+
+	private static String[] doubleArrayToStringArray(double[] values) {
+		String[] results = new String[values.length];
+		for (int i = 0; i < results.length; i++)
+			results[i] = "" + values[i];
+		return results;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder b = new StringBuilder();
@@ -215,5 +218,21 @@ public class SpotDES {
 			b.append('\n');
 		}
 		return b.toString();
+	}
+	
+	public List<SpotDesign> getDesigns() {
+		return designs;
+	}
+//
+//	public String[] getParamIdsWithConfig() {
+//		return paramIds;
+//	}
+//	
+//	public String[] getParamIdsWithoutConfig() {
+//		return Arrays.copyOfRange(paramIds, 0, paramIds.length-4);
+//	}
+
+	public int size() {
+		return designs.size();
 	}
 }

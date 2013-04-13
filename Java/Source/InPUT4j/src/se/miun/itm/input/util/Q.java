@@ -229,6 +229,8 @@ public class Q {
 
 	public static final String NULL = "null";
 
+	public static final String CACHE_DESIGNS = "cacheDesigns";
+
 	public static String getSchemaLocation() throws InPUTException {
 		String result = DESIGN_NAMESPACE_ID + " " + InPUTConfig.getValue(SCHEMA_PATH) + DESIGN_ROOT
 				+ ".xsd";

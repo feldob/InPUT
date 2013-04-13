@@ -189,4 +189,12 @@ public class InPUTConfig {
 	public static void extendToConfigScope(IDesign design) {
 		design.extendScope(config);
 	}
+
+	public static void setValue(String paramId, Object value) throws InPUTException {
+		 config.setValue(paramId, value);
+	}
+
+	public static boolean cachesDesigns() {
+		return Boolean.parseBoolean(getProperty(Q.CACHE_DESIGNS));
+	}
 }

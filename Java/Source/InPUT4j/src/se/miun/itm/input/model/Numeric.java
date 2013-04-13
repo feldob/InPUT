@@ -43,8 +43,8 @@ public enum Numeric {
 			Integer.MIN_VALUE, Integer.MAX_VALUE, 1), LONG(Long.class,
 			Long.TYPE, "Long", Long.MIN_VALUE, Long.MAX_VALUE, 1L), FLOAT(
 			Float.class, Float.TYPE, "Float", Float.MIN_VALUE, 1f,
-			Float.MIN_VALUE), DOUBLE(Double.class, Double.TYPE, "Double",
-			Double.MIN_VALUE, 1d, Double.MIN_VALUE), DECIMAL(BigDecimal.class,
+			0f), DOUBLE(Double.class, Double.TYPE, "Double",
+			0d, 1d, Double.MIN_VALUE), DECIMAL(BigDecimal.class,
 			BigDecimal.class, "Decimal", new BigDecimal(Long.MIN_VALUE),
 			new BigDecimal(Long.MAX_VALUE), new BigDecimal(Double.MIN_VALUE)), SHORT(
 			Short.class, Short.TYPE, "Short", Short.MIN_VALUE, Short.MAX_VALUE,
@@ -239,6 +239,7 @@ public enum Numeric {
 				Q.ESCAPED_ARRAY_START)[0].toUpperCase());
 	}
 
+	@SuppressWarnings("incomplete-switch")
 	public boolean isCountable() {
 		boolean countable = false;
 		switch (this) {

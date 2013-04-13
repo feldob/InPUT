@@ -127,7 +127,7 @@ public class ZipFileExporter extends FileNameAssigner implements
 	}
 
 	private void preprocessName(String extension) {
-		if (!(fileName.contains(extension) || fileName.contains(Pattern.quote("."))))
+		if (!(fileName.endsWith(extension) || fileName.contains(Pattern.quote("."))))
 			fileName += extension;
 	}
 

@@ -13,9 +13,8 @@ public aspect DesignLogger {
 
 	private static Logger log = LoggerFactory.getLogger("design");
 	
-	pointcut designImport() : execution(public Design.new(..)) && if(InPUTConfig.isLoggingActive());
+	pointcut designInit() : execution(public Design.new(..)) && if(InPUTConfig.isLoggingActive());
 	
-	@SuppressWarnings("rawtypes")
 	pointcut export(Exporter<?> exporter) : execution(* Design.export(Exporter<?>)) && args(exporter) && if(InPUTConfig.isLoggingActive());
 
 	pointcut setValue(Value<?> value) : (execution(private void Design.updateCacheForIndexedValue(Value<?>)) || execution(private void Design.updateElementCache(Value<?>))) && args(value) && if(InPUTConfig.isLoggingActive());
@@ -24,8 +23,8 @@ public aspect DesignLogger {
 		log.info(design.getId() + "." + value.getId() + "=" + value.valueToString());
 	}
 
-	after(Design design) returning() : target(design) && (designImport()) {
-		log.info("Importing design '" + design.getId()
+	after(Design design) returning() : target(design) && (designInit()) {
+		log.info("Creating design '" + design.getId()
 				+ "' for space '" + design.getSpace().getId()
 				+ "'.");
 	}

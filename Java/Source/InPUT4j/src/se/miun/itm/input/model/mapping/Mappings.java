@@ -66,16 +66,14 @@ public class Mappings implements IMappings {
 
 	private final Document document;
 
-	private Mappings(String id, String codeMappingFilePath)
-			throws InPUTException {
+	private Mappings(String id, String codeMappingFilePath) throws InPUTException {
 		this.id = id;
 		hash = id.hashCode();
 		document = initTypes(codeMappingFilePath);
 		initDependencies();
 	}
 
-	private Mappings(String inputId, InputStream codeMappingStream)
-			throws InPUTException {
+	private Mappings(String inputId, InputStream codeMappingStream) throws InPUTException {
 		this.id = inputId;
 		hash = id.hashCode();
 		Document xml = SAXUtil.build(codeMappingStream, false);
@@ -98,18 +96,17 @@ public class Mappings implements IMappings {
 	}
 
 	private void initDependencies(IMapping mapping, IMapping mapping2) {
-		if (mapping instanceof StructuralMapping)
-			if (((StructuralMapping)mapping).containsInConstructorSignature(mapping2.getId()))
+		if (mapping instanceof StructuralMapping){
+			if (((StructuralMapping) mapping).containsInConstructorSignature(mapping2.getId()))
 				mapping.addDependee(mapping2);
-		else if (mapping2 instanceof StructuralMapping)
-			if (((StructuralMapping)mapping2).containsInConstructorSignature(mapping.getId()))
-				mapping2.addDependee(mapping);
+		} else if (mapping2 instanceof StructuralMapping)
+				if (((StructuralMapping) mapping2).containsInConstructorSignature(mapping.getId()))
+					mapping2.addDependee(mapping);
 	}
 
-	private Document initTypes(String codeMappingFilePath)
-			throws InPUTException {
+	private Document initTypes(String codeMappingFilePath) throws InPUTException {
 
-		Document document = SAXUtil.build(codeMappingFilePath,  InPUTConfig.isValidationActive());
+		Document document = SAXUtil.build(codeMappingFilePath, InPUTConfig.isValidationActive());
 
 		return initMappings(document);
 	}
@@ -139,17 +136,15 @@ public class Mappings implements IMappings {
 		mappings.put(mapping.getId(), mapping);
 	}
 
-	private IMapping createMapping(Element mappingElement, String type,
-			String id) throws InPUTException {
+	private IMapping createMapping(Element mappingElement, String type, String id) throws InPUTException {
 		IMapping mapping;
-		if (type != null && types.containsKey(type)){
+		if (type != null && types.containsKey(type)) {
 			mapping = types.get(type).clone(id, mappingElement);
-		}
-		else
+		} else
 			mapping = getInstance(mappingElement);
 		return mapping;
 	}
-	
+
 	private IMapping getInstance(Element mappingElement) throws InPUTException {
 		String mappingType = mappingElement.getAttributeValue(Q.TYPE_ATTR);
 
@@ -169,8 +164,7 @@ public class Mappings implements IMappings {
 
 	@Override
 	public String getComponentId(String paramId) {
-		return ((StructuralMapping) mappings.get(alias(paramId)))
-				.getComponentType();
+		return ((StructuralMapping) mappings.get(alias(paramId))).getComponentType();
 	}
 
 	private String alias(String paramId) {
@@ -185,18 +179,15 @@ public class Mappings implements IMappings {
 		this.alias.put(alias, paramId);
 	}
 
-	public static String initMapping(String codeMappingFilePath)
-			throws InPUTException {
+	public static String initMapping(String codeMappingFilePath) throws InPUTException {
 		String inputId = ParamUtil.extractDescriptorId(codeMappingFilePath);
 		IMappings mappings = new Mappings(inputId, codeMappingFilePath);
 		initMapping(inputId, mappings);
 		return inputId;
 	}
 
-	public static String initMapping(InputStream codeMappingStream)
-			throws InPUTException, IOException {
-		InputStreamWrapper inputStream = new InputStreamWrapper(
-				codeMappingStream);
+	public static String initMapping(InputStream codeMappingStream) throws InPUTException, IOException {
+		InputStreamWrapper inputStream = new InputStreamWrapper(codeMappingStream);
 		String inputId = ParamUtil.extractDescriptorId(inputStream.next());
 		IMappings mappings = new Mappings(inputId, inputStream.next());
 		initMapping(inputId, mappings);
@@ -204,14 +195,12 @@ public class Mappings implements IMappings {
 	}
 
 	public static void initMapping(Document mapping) throws InPUTException {
-		String mappingId = mapping.getRootElement()
-				.getAttributeValue(Q.ID_ATTR);
+		String mappingId = mapping.getRootElement().getAttributeValue(Q.ID_ATTR);
 		IMappings mappings = new Mappings(mappingId, mapping);
 		initMapping(mappingId, mappings);
 	}
 
-	private static void initMapping(String inputId, IMappings mappings)
-			throws InPUTException {
+	private static void initMapping(String inputId, IMappings mappings) throws InPUTException {
 		if (!inputs.containsKey(inputId)) {
 			inputs.put(inputId, mappings);
 			references.put(inputId, new HashSet<String>());
@@ -259,13 +248,13 @@ public class Mappings implements IMappings {
 	private IMapping merge(IMapping abstractMapping, IMapping concreteMapping) {
 		if (abstractMapping == null)
 			return concreteMapping;
-		
+
 		IMapping mapping = abstractMapping.clone(id, concreteMapping);
 
 		// now, substitute the mapping; the alias is not needed anymore!
 		mappings.put(mapping.getId(), mapping);
 		alias.remove(mapping.getId());
-		
+
 		return mapping;
 	}
 

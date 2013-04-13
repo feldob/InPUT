@@ -22,6 +22,7 @@ package se.miun.itm.input;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,11 +30,11 @@ import java.util.Map;
 import se.miun.itm.input.export.ExportHelper;
 import se.miun.itm.input.export.Exporter;
 import se.miun.itm.input.impOrt.InPUTImporter;
-import se.miun.itm.input.model.Document;
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.design.DesignSpace;
 import se.miun.itm.input.model.design.IDesign;
 import se.miun.itm.input.model.design.IDesignSpace;
+import se.miun.itm.input.util.InputStreamWrapper;
 
 /**
  * The default implementation of the IInPUT interface for InPUT4j.
@@ -145,8 +146,8 @@ public class InPUT implements IInPUT {
 
 	@Override
 	public IExperiment impOrt(String id,
-			InPUTImporter<Map<String, Document>> importer)
-			throws InPUTException {
+			InPUTImporter<Map<String, InputStreamWrapper>> importer)
+			throws InPUTException, IOException {
 		Experiment experiment = new Experiment(id, this);
 		experiment.impOrt(importer);
 		return experiment;
@@ -171,7 +172,8 @@ public class InPUT implements IInPUT {
 		//set problem
 		exp.setProblemFeatures(problemFeatures);
 		//set random algorithm
-		exp.setAlgorithmDesign(algorithmSpace.nextDesign(expId));
+		if (algorithmSpace != null)
+			exp.setAlgorithmDesign(algorithmSpace.nextDesign(expId));
 
 		// set preferences
 		if (propertySpace != null)

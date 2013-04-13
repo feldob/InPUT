@@ -26,7 +26,7 @@ public class SPOTTest extends ISequentialTunerTest {
 	@Before
 	public void setUp() throws InPUTException {
 		super.setUp();
-		tuner = new SPOT(input, null);
+		tuner = new SPOT(input, null, false);
 	}
 
 	@After

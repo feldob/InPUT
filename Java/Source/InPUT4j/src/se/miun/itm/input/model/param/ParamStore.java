@@ -36,6 +36,7 @@ import java.util.Set;
 
 import org.jdom2.Element;
 
+import se.miun.itm.input.IInPUT;
 import se.miun.itm.input.InPUTConfig;
 import se.miun.itm.input.aspects.Identifiable;
 import se.miun.itm.input.eval.ParamEvaluationOrderComparator;
@@ -66,9 +67,6 @@ public class ParamStore implements Identifiable {
 	private final Map<String, Param<?>> inputParamElements = new HashMap<String, Param<?>>();
 
 	private final Map<Param<?>, String> paramsInv = new HashMap<Param<?>, String>();
-
-	// @Lazy
-	private List<Param<?>> fixed;
 
 	private final String id;
 
@@ -353,17 +351,28 @@ public class ParamStore implements Identifiable {
 		stores.clear();
 	}
 
-	private void initFixed() {
-		fixed = new ArrayList<Param<?>>();
+	public List<Param<?>> getFixed() {
+		List<Param<?>> fixed = new ArrayList<Param<?>>();
 		for (Param<?> param : paramsInv.keySet())
 			if (param.isFixed())
 				fixed.add(param);
-		fixed = Collections.unmodifiableList(fixed);
+		return Collections.unmodifiableList(fixed);
 	}
 
-	public List<Param<?>> getFixed() {
-		if (fixed == null)
-			initFixed();
+	public static List<Param<?>> getFixed(IInPUT input) {
+		List<Param<?>> fixed = new ArrayList<Param<?>>();
+		appendFixed(fixed, input.getAlgorithmDesignSpace());
+		appendFixed(fixed, input.getPropertySpace());
 		return fixed;
+
+	}
+
+	private static void appendFixed(List<Param<?>> fixed, IDesignSpace aSpace) {
+		if (aSpace == null)
+			return;
+
+		ParamStore store = ParamStore.getInstance(aSpace.getId());
+
+		fixed.addAll(store.getFixed());
 	}
 }

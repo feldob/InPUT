@@ -1,6 +1,7 @@
 package se.miun.itm.input.tuning.sequential.spot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -11,11 +12,13 @@ public class SpotDesign {
 	private final List<String> values;
 	private final Map<String, Integer> map;
 	private final SpotROI roi;
+	private String[] paramIdsNoConfig;
 	
-	public SpotDesign(SpotROI roi , String[] params, String desLine) {
+	public SpotDesign(SpotROI roi , String[] paramIds, String desLine) {
 		this.roi = roi;
+		paramIdsNoConfig = Arrays.copyOfRange(paramIds, 0, paramIds.length-4);
 		map = new HashMap<String, Integer>();
-		values = initValues(params, desLine);
+		values = initValues(paramIds, desLine);
 	}
 	
 	private List<String> initValues(String[] params, String desLine) {
@@ -57,6 +60,10 @@ public class SpotDesign {
 			b.append(' ');
 		}
 		return b.toString();
+	}
+
+	public String[] getParamIds() {
+		return paramIdsNoConfig;
 	}
 	
 }
