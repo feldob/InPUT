@@ -5,28 +5,28 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.miun.itm.input.IExperiment;
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.design.IDesign;
 
 public class SpotRES implements SpotExportable<InputStream> {
 
-	private final List<SpotResult> results;
+	private final List<SpotResult> results = new ArrayList<SpotResult>();
 
 	private SpotROI input;
 
 	private final List<String> header;
 
-	public SpotRES(List<IExperiment> results, SpotDES currentDES,
-			SpotROI input, SpotROI output) throws InPUTException {
+	private SpotDES currentDES;
+	
+	private List<SpotResult> allResults = new ArrayList<SpotResult>();
+
+	public SpotRES(SpotROI input, SpotROI output) throws InPUTException {
 		this.input = input;
 		header = initHeader();
-		this.results = initResults(results, currentDES);
 	}
 
 	private List<String> initHeader() {
 		List<String> entries = new ArrayList<String>();
-//		appendParamIds(output, entries);
 		entries.add(SPOTQ.Y);
 		appendParamIds(input, entries);
 		appendSpotSpecificIds(entries);
@@ -46,48 +46,37 @@ public class SpotRES implements SpotExportable<InputStream> {
 		entries.add(SPOTQ.ATTR_ITERATION);
 	}
 
-	private List<SpotResult> initResults(List<IExperiment> inputResults,
-			SpotDES currentDES) throws InPUTException {
-		List<SpotResult> results = new ArrayList<SpotResult>();
-		append(inputResults, currentDES, results);
-		return results;
-	}
-
-	private void append(List<IExperiment> from, SpotDES currentDES,
-			List<SpotResult> to) throws InPUTException {
-		SpotResult result;
-		SpotDesign design;
-		int designCounter = 0;
-		for (IExperiment experiment : from) {
-			design = currentDES.getDesign(designCounter);
-			for (IDesign output : experiment.getOutput()) {
-				result = new SpotResult(output, header, design);
-				to.add(result);
-				designCounter++;
-			}
+	private void append(IDesign output, SpotDES currentDES, List<SpotResult> to) throws InPUTException {
+		if (this.currentDES == null || !currentDES.equals(this.currentDES)){
+			to.clear();
+			this.currentDES = currentDES;
 		}
+			
+		SpotDesign design = currentDES.getDesign(to.size());
+		SpotResult result = new SpotResult(output, header, design);
+		allResults.add(result);
+		to.add(result);
 	}
 
-	public void append(List<IExperiment> inputResults, SpotDES currentDES)
-			throws InPUTException {
-		append(inputResults, currentDES, results);
+	public void append(IDesign result, SpotDES currentDES) throws InPUTException {
+		append(result, currentDES, results);
 	}
 
-	public StringBuilder toSpot() {
+	public String toSpot() {
 		StringBuilder spotb = new StringBuilder();
 		String spotHeader = headerToSpot();
 		spotb.append(spotHeader);
 		spotb.append('\n');
-		for (SpotResult result : results) {
+		for (SpotResult result : allResults) {
 			spotb.append(result.toSpot());
 			spotb.append('\n');
 		}
-		return spotb;
+		return spotb.toString();
 	}
 
 	@Override
 	public String toString() {
-		return toSpot().toString();
+		return toSpot();
 	}
 
 	private String headerToSpot() {
@@ -101,7 +90,7 @@ public class SpotRES implements SpotExportable<InputStream> {
 
 	@Override
 	public InputStream export() {
-		return new ByteArrayInputStream(toSpot().toString().getBytes());
+		return new ByteArrayInputStream(toSpot().getBytes());
 	}
 
 }

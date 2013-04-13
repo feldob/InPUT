@@ -20,15 +20,16 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package se.miun.itm.input;
 
+import java.io.IOException;
 import java.util.Map;
 
 import se.miun.itm.input.aspects.Exportable;
 import se.miun.itm.input.aspects.Identifiable;
 import se.miun.itm.input.impOrt.InPUTImporter;
-import se.miun.itm.input.model.Document;
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.design.IDesign;
 import se.miun.itm.input.model.design.IDesignSpace;
+import se.miun.itm.input.util.InputStreamWrapper;
 
 /**
  * The InPUT object is a descriptor for whole experimental investigations. It
@@ -84,9 +85,10 @@ public interface IInPUT extends Identifiable, Exportable {
 	 * @param importer
 	 * @return
 	 * @throws InPUTException
+	 * @throws IOException 
 	 */
-	IExperiment impOrt(String id, InPUTImporter<Map<String, Document>> importer)
-			throws InPUTException;
+	IExperiment impOrt(String id, InPUTImporter<Map<String, InputStreamWrapper>> importer)
+			throws InPUTException, IOException;
 
 	IExperiment nextExperiment(String expId, IDesign problemFeatures)
 			throws InPUTException;

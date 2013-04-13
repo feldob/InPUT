@@ -3,8 +3,9 @@
   <i:SValue id="evaluator" value="javascript"/>
   <i:SValue id="random" value="standard"/>
   <i:NValue id="threadSafe" value="false"/><!-- not supported yet -->
-  <i:NValue id="logging" value="true"/>
+  <i:NValue id="logging" value="false"/>
   <i:NValue id="injection" value="true"/>
   <i:NValue id="runtimeValidation" value="false"/>
   <i:SValue id="schemaPath" value="http://TheInPUT.org/"/>
+  <i:NValue id="cacheDesigns" value="false"/>
 </i:Design>

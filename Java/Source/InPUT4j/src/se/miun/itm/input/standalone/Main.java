@@ -116,7 +116,10 @@ public class Main {
 	}
 
 	String convertStreamToString(InputStream is) {
-		return new Scanner(is).useDelimiter("\\A").next();
+		Scanner sc = new Scanner(is);
+		String value = sc.useDelimiter("\\A").next();
+		sc.close();
+		return value;
 	}
 
 	private String[] getArgs(String[] args) {

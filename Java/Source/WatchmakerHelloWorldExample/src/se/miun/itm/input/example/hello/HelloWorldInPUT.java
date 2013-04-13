@@ -1,6 +1,6 @@
 package se.miun.itm.input.example.hello;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Random;
 
 import org.uncommons.watchmaker.framework.EvolutionEngine;
@@ -26,7 +26,7 @@ import se.miun.itm.input.util.Q;
 public class HelloWorldInPUT {
 
 	public static void main(String[] args) throws InPUTException,
-			FileNotFoundException {
+			IOException {
 
 		IInPUT input = InPUT.getInPUT(new InPUTArchiveImporter(
 				"StringIdentification", "StringIdentification.inp"));

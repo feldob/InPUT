@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.util.Arrays;
 
@@ -29,6 +30,8 @@ import org.junit.Test;
 
 import se.miun.itm.input.AbstractInPUTTest;
 import se.miun.itm.input.export.ByteArrayExporter;
+import se.miun.itm.input.export.XMLFileExporter;
+import se.miun.itm.input.impOrt.XMLFileImporter;
 import se.miun.itm.input.model.InPUTException;
 
 public abstract class IDesignTest extends AbstractInPUTTest {
@@ -313,7 +316,7 @@ public abstract class IDesignTest extends AbstractInPUTTest {
 
 	@Test
 	public void testSetArray() throws InPUTException {
-		long value = 13;
+		final long value = 13;
 		design.setValue("SomeLargePrimitiveArray.1.1.1.1", value);
 		long current = design.getValue("SomeLargePrimitiveArray.1.1.1.1");
 		
@@ -324,21 +327,32 @@ public abstract class IDesignTest extends AbstractInPUTTest {
 		design.setValue("SomeLargePrimitiveArray.1.1.42", values);
 		long[] currentValues = design.getValue("SomeLargePrimitiveArray.1.1.42");
 		
+		try {
+			design.setValue("SomeLargePrimitiveArray.1.1.1.1", values);
+			fail();
+		} catch (Exception e) {}
+		
+		try {
+			design.setValue("SomeLargePrimitiveArray.1.1.42", value);
+			fail();
+		} catch (Exception e) {}
+		
 		assertTrue(Arrays.equals(values, currentValues));
 	}
 
 	@Test
 	public void testSetArrayNegative() throws InPUTException {
+		
 		try {
-			design.setValue("SomeFixedArray.1", 44);
-			fail("another value than the fixed one may not be set");
+			design.setValue("SomeFixedArray.43", 42);
+			fail("There is no such array position");
 		} catch (Exception e) {
 			
 		}
 		
 		try {
-			design.setValue("SomeFixedArray.43", 42);
-			fail("There is no such array position");
+			design.setValue("SomeFixedArray.1", 44);
+			fail("another value than the fixed one may not be set");
 		} catch (Exception e) {
 			
 		}
@@ -422,5 +436,19 @@ public abstract class IDesignTest extends AbstractInPUTTest {
 		//TODO should those fixed entries already be set in an EMPTY design?!
 //		int value = anotherDesign.getValue("SomeFixed");
 //		assertEquals(value, 42);
+	}
+	
+	@Test
+	public void testExport() throws InPUTException {
+		final String designName = "someOtherTestDesign.xml";
+		design.export(new XMLFileExporter(designName));
+		IDesign design2 = design.getSpace().impOrt(new XMLFileImporter(designName));
+		
+		if (!design.same(design2)) {
+			fail();
+		};
+		
+		
+		new File(designName).delete();
 	}
 }

@@ -45,37 +45,25 @@ import se.miun.itm.input.util.Q;
  * 
  * @NotThreadSafe
  */
-public class SValue extends Value<SParam> {
+public class SValue extends Value<AStruct> {
 
 	private static final long serialVersionUID = -3106504874487719602L;
-
-	private final SChoice fixedChoice;
-
-	public SValue(Object value, SParam param, int[] sizeArray, ElementCache elementCache) throws InPUTException {
+	
+	public SValue(Object value, AStruct param, int[] sizeArray, ElementCache elementCache) throws InPUTException {
 		this(param, sizeArray, elementCache);
 		setInputValue(value);
 	}
 
-	SValue(SParam param, int[] sizeArray, ElementCache elementCache) throws InPUTException {
-		this(param, sizeArray, elementCache, null);
-	}
-
-	private SValue(SParam param, int[] sizeArray, ElementCache elementCache, SChoice fixedChoice) throws InPUTException {
+	SValue(AStruct param, int[] sizeArray, ElementCache elementCache) throws InPUTException {
 		super(Q.SVALUE, param, sizeArray, elementCache);
-		this.fixedChoice = fixedChoice;
 	}
 
-	public SValue(SChoice choice, int[] dimensions, ElementCache elementCache) throws InPUTException {
-		this((SParam) choice.getParent(), dimensions, elementCache, choice);
-	}
-
-	public SValue(Element originalChoice, SParam param, int[] sizeArray, ElementCache elementCache) throws InPUTException {
+	public SValue(Element originalChoice, AStruct param, int[] sizeArray, ElementCache elementCache) throws InPUTException {
 		super(Q.SVALUE, param, originalChoice, sizeArray, elementCache);
-		fixedChoice = null;
 		setInputElement(originalChoice);
 	};
 
-	public SValue(Object value, SParam param, int[] dimensions) throws InPUTException {
+	public SValue(Object value, AStruct param, int[] dimensions) throws InPUTException {
 		this(param, dimensions, null);
 		setInputValue(value);
 	}
@@ -156,6 +144,9 @@ public class SValue extends Value<SParam> {
 		setAttribute(Q.VALUE_ATTR, valueType);
 		// init all sub-params
 
+		AStruct param = this.param;
+		if (this.param instanceof SChoice)
+			param = (SParam)param.getParent();
 		initSubParams(param, param.getParamChildren(), vars); // peers
 
 		if (choice instanceof SChoice) {
@@ -191,9 +182,6 @@ public class SValue extends Value<SParam> {
 	protected void initRandom(Map<String, Object> vars, Object[] actualParams, boolean lazy) throws InPUTException {
 		// the result is either structChoice or an array of struct-choice!
 		Object value = param.next(dimensions, vars);
-		if (fixedChoice != null) {
-			value = initFixedChoice(value);
-		}
 
 		if (value.getClass().isArray()) {
 			// in that case, extract and add the whole array/matrix...
@@ -208,17 +196,6 @@ public class SValue extends Value<SParam> {
 
 		if (!lazy)
 			param.init(this, actualParams, elementCache);
-	}
-
-	private Object initFixedChoice(Object value) {
-		if (!value.getClass().isArray())
-			return fixedChoice;
-
-		Object[] current = (Object[]) value;
-		for (int i = 0; i < current.length; i++) {
-			initFixedChoice(current[i]);
-		}
-		return current;
 	}
 
 	private void addArrayChild(int index, Object value, Map<String, Object> vars) throws InPUTException {
@@ -286,7 +263,9 @@ public class SValue extends Value<SParam> {
 
 	private void setValueString(Object value) throws InPUTException {
 		String valueString = null;
-		if (param.isStringType() || param.isEnum())
+		if (param.isEnum()) {
+			valueString = param.getLocalChildIdByComponentId(value.toString());
+		} else if (param.isStringType())
 			valueString = value.toString();
 		else if (value != null && !value.getClass().isArray() && !(param instanceof SParam && param.isComplex()))
 			valueString = param.getLocalChildIdByComponentId(value.getClass().getName());

@@ -20,6 +20,8 @@ import model.SomeAbstractComplexStructural;
 import model.SomeChoiceSpecificStructuralSub;
 import model.SomeCommonStructural;
 import model.SomeComplexStructural;
+import model.SomeFirstChoice;
+import model.SomeSecondChoice;
 import model.SomeStructural;
 import model.SomeStructuralParent;
 import model.Wrapper;
@@ -30,6 +32,7 @@ import org.junit.Test;
 
 import se.miun.itm.input.AbstractInPUTTest;
 import se.miun.itm.input.model.InPUTException;
+import se.miun.itm.input.model.param.ParamStore;
 import se.miun.itm.input.util.Q;
 
 public abstract class IDesignSpaceTest extends AbstractInPUTTest {
@@ -152,6 +155,7 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 			assertEquals(1, structuralArray.length);
 			assertEquals(1, structuralArray[0].length);
 			assertEquals(1, structuralArray[0][0].length);
+			
 
 		} catch (InPUTException e) {
 			e.printStackTrace();
@@ -210,6 +214,7 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 					.next("AnotherStructuralParent.AndYetAnotherSecondChoice");
 			assertNotNull(choice);
 		} catch (InPUTException e) {
+			e.printStackTrace();
 			fail("Something went wrong with the random creation of a choice");
 		}
 	}
@@ -564,5 +569,103 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 		assertTrue(str.getEntry(0) instanceof SecondSingleComplexChoice);
 		assertFalse(str.getEntry(1) instanceof SecondSingleComplexChoice);
 		assertEquals(3, str.size());
+	}
+
+	@Test
+	public void testSetFixedNegative() throws InPUTException {
+		try {
+			space.setFixed("whatever", "2");
+			space.setFixed("SomeBoolean", "whatever");
+			space.setFixed("SomeInteger", "whatever");
+			space.setFixed("SomeStructural", "whatever");
+			fail();
+
+		} catch (InPUTException e) {
+			// the values should not be possible to get set
+		}
+	}
+
+	@Test
+	public void testSetFixedNumerical() throws InPUTException {
+		space.setFixed("SomeInteger", "2");
+		space.setFixed("SomeBoolean", "true");
+		int integer;
+		boolean b;
+		for (int i = 0; i < 10; i++) {
+			integer = space.next("SomeInteger");
+			b = space.next("SomeBoolean");
+			assertEquals(2, integer);
+			assertEquals(true, b);
+		}
+
+		space.setFixed("SomeInteger", null);
+		int counter = 0;
+		for (int i = 0; i < 100; i++) {
+			integer = space.next("SomeInteger");
+			if (integer == 2)
+				counter++;
+			assertTrue(counter < 10);
+		}
+	}
+
+	@Test
+	public void testSetFixedStructural() throws InPUTException {
+		ParamStore store = ParamStore.getInstance(space.getId());
+
+		space.setFixed("SomeStructural", "SomeFirstChoice");
+		assertTrue(store.getParam("SomeStructural").isFixed());
+
+		SomeStructural value;
+		for (int i = 0; i < 10; i++) {
+			value = space.next("SomeStructural");
+			assertTrue(value instanceof SomeFirstChoice);
+		}
+
+		space.setFixed("SomeStructural", "SomeSecondChoice");
+		assertTrue(store.getParam("SomeStructural").isFixed());
+
+		for (int i = 0; i < 10; i++) {
+			value = space.next("SomeStructural");
+			assertTrue(value instanceof SomeSecondChoice);
+		}
+
+		space.setFixed("SomeStructural", null);
+		assertFalse(store.getParam("SomeStructural").isFixed());
+
+		SomeStructural[][][] values = space.next("SomeStructuralArrayOfUnspecifiedSize");
+		space.setFixed("SomeStructuralArrayOfUnspecifiedSize", "FirstChoice");
+		assertTrue(store.getParam("SomeStructuralArrayOfUnspecifiedSize").isFixed());
+		for (int k = 0; k < 10; k++) {
+			values = space.next("SomeStructuralArrayOfUnspecifiedSize");
+			for (int i = 0; i < values.length; i++) {
+				for (int j = 0; j < values[i].length; j++) {
+					for (int l = 0; l < values[i][j].length; l++) {
+						assertTrue(values[i][j][l] instanceof SomeFirstChoice);
+					}
+				}
+			}
+		}
+		
+		space.setFixed("SomeStructuralArrayOfUnspecifiedSize", null);
+		assertFalse(store.getParam("SomeStructuralArrayOfUnspecifiedSize").isFixed());
+		
+		space.setFixed("SomeStructuralArrayOfUnspecifiedSize", "SecondChoice");
+		assertTrue(store.getParam("SomeStructuralArrayOfUnspecifiedSize").isFixed());
+		for (int k = 0; k < 10; k++) {
+			values = space.next("SomeStructuralArrayOfUnspecifiedSize");
+			for (int i = 0; i < values.length; i++) {
+				for (int j = 0; j < values[i].length; j++) {
+					for (int l = 0; l < values[i][j].length; l++) {
+						assertTrue(values[i][j][l] instanceof SomeSecondChoice);
+					}
+				}
+			}
+		}
+	}
+
+	@Test
+	public void testSetFixedComplex() throws InPUTException {
+		// /TODO
+		fail();
 	}
 }

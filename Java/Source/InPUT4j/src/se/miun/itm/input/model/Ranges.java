@@ -30,6 +30,7 @@ import java.util.Set;
 import se.miun.itm.input.InPUTConfig;
 import se.miun.itm.input.eval.InputEvaluator;
 import se.miun.itm.input.model.element.ElementCache;
+import se.miun.itm.input.model.element.Value;
 import se.miun.itm.input.model.param.NParam;
 import se.miun.itm.input.model.param.Param;
 import se.miun.itm.input.util.Q;
@@ -165,6 +166,7 @@ public class Ranges {
 		}
 	}
 
+	@SuppressWarnings("incomplete-switch")
 	private int compareTo(Comparable<?> min, Comparable<?> max) {
 		int result = 0;
 		switch (type) {
@@ -225,7 +227,7 @@ public class Ranges {
 
 				if (!isMaxDependent()) {
 					max = initMax(expr);
-					for (int i = 0; i < min.length; i++) {
+					for (int i = 0; i < max.length; i++) {
 						if (min != null && compareTo(min[i], max[i]) > 0)
 							throw new InPUTException(
 									paramId
@@ -332,6 +334,7 @@ public class Ranges {
 		return max;
 	}
 
+	@SuppressWarnings("incomplete-switch")
 	private static Comparable<?> add(Numeric type, Comparable<?> summand1,
 			Comparable<?> summand2) {
 		Comparable<?> result = null;
@@ -358,6 +361,7 @@ public class Ranges {
 		return result;
 	}
 
+	@SuppressWarnings("incomplete-switch")
 	private static Comparable<?> subtract(Numeric type, Comparable<?> summand1,
 			Comparable<?> summand2) {
 		Comparable<?> result = null;
@@ -384,12 +388,12 @@ public class Ranges {
 		return result;
 	}
 
-	public void checkValidity(Object value, ElementCache elementCache)
+	public void checkValidity(String paramId, Object value, ElementCache elementCache)
 			throws InPUTException {
 		if (isOfValidPlainType(value)) {
-			checkValidPlainValidity(value, elementCache);
+			checkValidPlainValidity(paramId, value, elementCache);
 		} else if (value.getClass().isArray()) {
-			checkValidArrayType(value);
+			checkValidArrayType(paramId, value, elementCache);
 		} else
 			throw new InPUTException("The value " + value.toString()
 					+ " is not of correct primitive type, it is of type \""
@@ -400,10 +404,16 @@ public class Ranges {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void checkValidPlainValidity(Object value, ElementCache elementCache)
+	private void checkValidPlainValidity(String paramId, Object value, ElementCache elementCache)
 			throws InPUTException {
 		Comparable<Comparable<?>> theValue = (Comparable<Comparable<?>>) value;
-
+		
+		Value<?> current = elementCache.get(paramId);
+		
+		if (current!= null && current.isArrayType()) {
+			throw new InPUTException("You entered the plain value '"+ value +"' for '" + paramId + "', but an array was expected.");
+		}
+		
 		switch (type) {
 		case BOOLEAN:
 			break;
@@ -464,12 +474,29 @@ public class Ranges {
 					+ "\").");
 	}
 
-	private boolean checkValidArrayType(Object value) {
-		Class<?> compType = value.getClass().getComponentType();
-		if (compType.isAssignableFrom(type.getPrimitiveClass())
-				|| compType.isAssignableFrom(type.getNumClass()))
-			return true;
-		return false;
+	private void checkValidArrayType(String paramId, Object value, ElementCache elementCache) throws InPUTException {
+		Value<?> current = elementCache.get(paramId);
+		Object flag = value;
+		if (current != null && current.getValue() != null) {
+			Object currentValue = current.getInputValue(null);
+			//TODO must be turned around to flag too!
+			while(currentValue.getClass().isArray())
+			{
+				currentValue = Array.get(currentValue, 0);
+				if (!flag.getClass().isArray())
+					throw new InPUTException("The dimension for the set value in " + paramId + " is wrong.");
+				flag = Array.get(flag, 0);
+			}
+			
+			if (flag.getClass().isArray())
+				throw new InPUTException("The dimension for the set value in " + paramId + " is wrong.");
+		}
+		
+//		Class<?> compType = value.getClass().getComponentType();
+//		if (compType.isAssignableFrom(type.getPrimitiveClass())
+//				|| compType.isAssignableFrom(type.getNumClass()))
+//			return;
+//		throw new InPUTException("The datatype for the set value for parameter '" + paramId + "' is wrong. '"+ type.getPrimitiveClass().getName() + "' expected, but was '" + compType  + "'.");
 	}
 
 	private boolean isOfValidPlainType(Object value) {
@@ -534,6 +561,7 @@ public class Ranges {
 		return type.random(ranges, rng);
 	}
 
+	@SuppressWarnings("incomplete-switch")
 	public String ensureType(String expression) {
 		switch (type) {
 		case INTEGER:
@@ -562,18 +590,23 @@ public class Ranges {
 				&& !type.getNumClass().isInstance(value)) {
 			if (value.getClass().isArray()) {
 				Class<?> componentType = getComponentType(value);
-				if (!type.equals(Numeric.DECIMAL)
-						&& (!componentType.equals(type.getPrimitiveClass())
-								&& (!componentType.equals(type.getNumClass())) && !type
-								.getNumClass().isInstance(value)))
+				if (isNotCorrectNumericType(value, componentType))
 					throw new InPUTException("The value \"" + value.toString()
-							+ "\" is of the wrong type. \""
+							+ "\" for parameter '" + paramId +"' is of the wrong type. \""
 							+ type.getPrimitiveClass().getName() + "\" or \""
 							+ type.getNumClass()
 							+ "\" was expected, but was \""
 							+ value.getClass().getName() + "\".");
 			}
 		}
+	}
+
+	public boolean isNotCorrectNumericType(Object value, Class<?> componentType) {
+		return !type.equals(Numeric.DECIMAL)
+				&& (!componentType.equals(type.getPrimitiveClass())
+						&&
+						(!componentType.equals(type.getNumClass())) && !type
+						.getNumClass().isInstance(value));
 	}
 
 	private Class<?> getComponentType(Object value) {

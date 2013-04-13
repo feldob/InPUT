@@ -7,7 +7,6 @@ import se.miun.itm.input.model.design.IDesignSpace;
 public class RandomValueCreation {
 
 	public static void main(String[] args) throws InPUTException {
-		
 		IDesignSpace ds = new DesignSpace("someSpace.xml");
 
 		int[] values = ds.next("paramId");

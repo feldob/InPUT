@@ -28,9 +28,9 @@ import se.miun.itm.input.aspects.Identifiable;
 import se.miun.itm.input.aspects.Importable;
 import se.miun.itm.input.aspects.Outable;
 import se.miun.itm.input.aspects.Valuable;
-import se.miun.itm.input.model.Document;
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.design.IDesign;
+import se.miun.itm.input.util.InputStreamWrapper;
 
 /**
  * An experiment summarizes a computer experiment, and is always defined with
@@ -52,7 +52,7 @@ import se.miun.itm.input.model.design.IDesign;
  * 
  */
 public interface IExperiment extends Identifiable, Exportable, Extendable,
-		Valuable, Outable, Importable<Void, Map<String, Document>> {
+		Valuable, Outable, Importable<Void, Map<String, InputStreamWrapper>> {
 
 	/**
 	 * Returns the preferences design of this experiment.

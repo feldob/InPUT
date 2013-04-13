@@ -51,12 +51,19 @@ public class NParam extends Param<NumericGenerator>{
 	}
 
 	@Override
-	protected NumericGenerator initGenerator() throws InPUTException {
+	protected NumericGenerator initGenerator(boolean initRanges) throws InPUTException {
 		String fixedValue = getFixedValue();
+		NumericGenerator generator;
 		if (fixedValue != null)
-			return new FixedNumericGenerator(this, fixedValue);
+			generator = new FixedNumericGenerator(this, fixedValue);
+		else{
+			generator = new RandomNumericGenerator(this, initRandom(ps));
+		}
 		
-		return new RandomNumericGenerator(this, initRandom(ps));
+		if (initRanges) {
+			generator.initRanges();
+		}
+		return generator;
 	}
 
 	private Random initRandom(ParamStore ps) {
@@ -78,10 +85,10 @@ public class NParam extends Param<NumericGenerator>{
 		return generator.getPrimitiveClass();
 	}
 
-	public void isValid(Object value, ElementCache elementCache) throws InPUTException {
+	public void isValid(String paramId, Object value, ElementCache elementCache) throws InPUTException {
 		if (generator.hasWrapper())
 			value = invokeGetter(value);
-		generator.validateInPUT(value, elementCache);
+		generator.validateInPUT(paramId, value, elementCache);
 	}
 
 	@Override
@@ -140,11 +147,11 @@ public class NParam extends Param<NumericGenerator>{
 				|| (isArrayType() && !getId().equals(getId()));
 	}
 
-	public String getMaxValue() {
+	public String getMaxValue() throws InPUTException {
 		return generator.getMaxValue();
 	}
 
-	public String getMinValue() {
+	public String getMinValue() throws InPUTException {
 		return generator.getMinValue();
 	}
 
@@ -171,15 +178,34 @@ public class NParam extends Param<NumericGenerator>{
 		return generator.toString();
 	}
 
-	public String getNumericMaxValue() {
+	public String getNumericMaxValue() throws InPUTException {
 		return generator.getNumericMaxValue();
 	}
 
-	public String getNumericMinValue() {
+	public String getNumericMinValue() throws InPUTException {
 		return generator.getNumericMinValue();
 	}
 
 	public boolean isBoolean() {
 		return generator.isBoolean();
+	}
+	
+	public void setFixed(String value) throws InPUTException {
+		if (value != null) {
+			setAttribute(Q.FIXED_ATTR, value);
+		}else{
+			removeAttribute(Q.FIXED_ATTR);
+		}
+		generator = initGenerator(true);
+	}
+
+	@Override
+	public boolean isFixed() {
+		return getAttributeValue(Q.FIXED_ATTR) != null;
+	}
+
+	@Override
+	public String getFixedValue() {
+		return getAttributeValue(Q.FIXED_ATTR);
 	}
 }

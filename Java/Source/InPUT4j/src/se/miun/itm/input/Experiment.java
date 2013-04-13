@@ -21,6 +21,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package se.miun.itm.input;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,13 +32,17 @@ import java.util.Set;
 import se.miun.itm.input.export.ExportHelper;
 import se.miun.itm.input.export.Exporter;
 import se.miun.itm.input.impOrt.DocumentImporter;
+import se.miun.itm.input.impOrt.ExperimentArchiveImporter;
 import se.miun.itm.input.impOrt.InPUTImporter;
 import se.miun.itm.input.impOrt.XMLFileImporter;
 import se.miun.itm.input.model.Document;
 import se.miun.itm.input.model.InPUTException;
+import se.miun.itm.input.model.design.Design;
 import se.miun.itm.input.model.design.IDesign;
 import se.miun.itm.input.model.design.IDesignSpace;
+import se.miun.itm.input.util.InputStreamWrapper;
 import se.miun.itm.input.util.Q;
+import se.miun.itm.input.util.xml.SAXUtil;
 
 /**
  * The default implementation of the IExperiment interface for InPUT4j.
@@ -69,6 +74,40 @@ public class Experiment implements IExperiment {
 	public Experiment(String id, IInPUT input) {
 		this.id = id;
 		this.input = input;
+	}
+
+	/**
+	 * TODO unchecked cast for Design has to be fixed at some stage.
+	 * @param id
+	 * @param experiment
+	 * @throws InPUTException
+	 */
+	public Experiment(String id, IExperiment experiment) throws InPUTException {
+		this.id = id;
+		this.input = experiment.getInPUT();
+		
+		IDesign design = experiment.getProblemFeatures();
+		if (design != null){
+			setProblemFeatures(new Design((Design)design));
+		}
+		
+		design = experiment.getPreferences();
+		if (design != null) {
+			setPreferences(new Design((Design)design));
+		}
+		
+		design = experiment.getAlgorithmDesign();
+		if (design != null) {
+			setAlgorithmDesign(new Design((Design)design));
+		}
+		
+		addAllContent(experiment);
+	}
+
+	private void addAllContent(IExperiment experiment) throws InPUTException {
+		for (String contentName : experiment.getContentNames()) {
+			addContent(contentName, experiment.getContentFor(contentName));
+		}
 	}
 
 	@Override
@@ -233,9 +272,20 @@ public class Experiment implements IExperiment {
 	}
 
 	@Override
-	public Void impOrt(InPUTImporter<Map<String, Document>> importer) throws InPUTException {
-		Map<String, Document> designs = importer.impOrt();
+	public Void impOrt(InPUTImporter<Map<String, InputStreamWrapper>> importer) throws InPUTException, IOException {
+		Map<String, InputStreamWrapper> documents = importer.impOrt();
 
+		Map<String, Document> designs = new HashMap<String, Document>();
+		
+		for (String id : documents.keySet())
+			if (ExperimentArchiveImporter.isExperimentalFile(id))
+				designs.put(id,SAXUtil.build(documents.get(id).next(), false));
+			else{
+				ByteArrayOutputStream out = new ByteArrayOutputStream();
+				InputStreamWrapper.fromInputStreamToOutputStream(documents.get(id).next(), out);
+				addContent(id, out);
+			}
+		
 		initDesigns(designs);
 
 		int i = 1;
@@ -295,11 +345,19 @@ public class Experiment implements IExperiment {
 	}
 
 	public boolean sameExists(IDesign first, IDesign second) {
-		return (first == null && second == null) || first.same(second);
+
+		if (first == null || second == null)
+			return (first == null && second == null); // True if both are null, false if any are null.
+
+		// We know neither are null.
+		return first.same(second);
 	}
 
 	@Override
 	public boolean same(IExperiment foreigner) {
+		if (foreigner == null)
+			return false;
+		
 		if ((algorithmDesign != null && !algorithmDesign.same(foreigner.getAlgorithmDesign()))
 				|| (preferences != null && !preferences.same(foreigner.getPreferences()))
 				|| (features != null && !features.same(foreigner.getProblemFeatures())))

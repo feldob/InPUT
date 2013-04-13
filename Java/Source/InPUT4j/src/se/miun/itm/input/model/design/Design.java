@@ -51,8 +51,8 @@ import se.miun.itm.input.util.xml.SAXUtil;
  * @NotThreadSafe
  */
 public class Design implements IDesign {
-	
-	private static final Map<String, IDesign> designs = new HashMap<String, IDesign>();
+
+    private static final Map<String, IDesign> designs = new HashMap<String, IDesign>();
 
 	private Document design;
 
@@ -65,7 +65,8 @@ public class Design implements IDesign {
 		this.ps = ps;
 		design = initEmptyDesign(expId);
 		design.getRootElement().setAttribute(Q.REF_ATTR, ps.getId());
-		designs.put(ps.getId()+ "." + expId, this); // store globally
+		if (InPUTConfig.cachesDesigns())
+			designs.put(ps.getId() + "." + expId, this); // store globally
 		InPUTConfig.extendToConfigScope(this);
 	}
 
@@ -77,24 +78,31 @@ public class Design implements IDesign {
 	}
 
 	public Design(String filePath) throws InPUTException {
-		design = SAXUtil.build(filePath,  InPUTConfig.isValidationActive());
+		design = SAXUtil.build(filePath, InPUTConfig.isValidationActive());
 		String ref = design.getRootElement().getAttributeValue(Q.REF_ATTR);
-		
-		DesignSpace space = initDesignSpace(ref);
+
+		DesignSpace space = initDesignSpace(filePath, ref);
 		ps = space.getParamStore();
 		initValues();
 		InPUTConfig.extendToConfigScope(this);
 	}
 
-	private DesignSpace initDesignSpace(String ref) throws InPUTException {
+	public Design(Design design) throws InPUTException {
+		this(design.getParamStore(), design.getXML());
+	}
+
+	private DesignSpace initDesignSpace(String filePath, String ref) throws InPUTException {
+		if (ref == null) {
+			throw new InPUTException("The 'ref' argument of the design by id '"+getId()+"' from file '"+filePath+"' has to be set to the id of the respective design space.");
+		}
 		DesignSpace designSpace = DesignSpace.lookup(ref);
 		if (designSpace != null)
 			return designSpace;
 
 		if (!ref.contains(Q.XML))
 			ref += Q.XML;
-		
-		Document space = SAXUtil.build(ref,  InPUTConfig.isValidationActive());
+
+		Document space = SAXUtil.build(ref, InPUTConfig.isValidationActive());
 		return new DesignSpace(space);
 	}
 
@@ -155,7 +163,7 @@ public class Design implements IDesign {
 
 	@Override
 	public <T> T getValue(final String paramId) throws InPUTException {
-		return getValue(paramId, null);
+			return getValue(paramId, null);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -176,7 +184,7 @@ public class Design implements IDesign {
 		Value<?> valueE;
 		Param<?> param = ps.getParam(paramId);
 		if (param != null) {
-			param.validateInPUT(value, elementCache);
+			param.validateInPUT(paramId, value, elementCache);
 			if (param.isArrayType())
 				value = ParamUtil.repackArrayForImport(value);
 			// create new element
@@ -185,7 +193,8 @@ public class Design implements IDesign {
 		} else {
 			valueE = elementCache.get(paramId);
 			if (valueE != null) {
-				valueE.getParam().validateInPUT(value, elementCache);
+				if (valueE.isParentInitialized()) // for configuration, the params should be settable beforehand
+					valueE.getParam().validateInPUT(paramId, value, elementCache);
 				if (valueE.isArrayType())
 					value = ParamUtil.repackArrayForImport(value);
 				valueE.setInputValue(value);
@@ -196,12 +205,12 @@ public class Design implements IDesign {
 		}
 	}
 
-	private void updateCacheForIndexedValue(Value<?> parentValue)
-			throws InPUTException {
+	private void updateCacheForIndexedValue(Value<?> parentValue) throws InPUTException {
 		Element parent = parentValue.getParentElement();
 		if (parent instanceof Value<?>) {
 			parentValue = (Value<?>) parent;
 			parentValue.getParam().init(parentValue, null, elementCache);
+			updateElementCache(parentValue);
 		}
 	}
 
@@ -289,10 +298,9 @@ public class Design implements IDesign {
 
 	@Override
 	public String getValueToString(String paramId) throws InPUTException {
-		System.out.println(paramId);
-		Value<?> valueElement = getValue(paramId);
-		if (valueElement != null)
-			return valueElement.valueToString();
+		Object value = getValue(paramId);
+		if (value != null)
+			return value.toString();
 		return null;
 	}
 
@@ -359,5 +367,13 @@ public class Design implements IDesign {
 		if (!(obj instanceof Design))
 			return false;
 		return elementCache.same(((Design) obj).elementCache);
+	}
+
+	protected ParamStore getParamStore() {
+		return ps;
+	}
+
+	protected Document getXML() {
+		return design;
 	}
 }

@@ -8,6 +8,7 @@ import se.miun.itm.input.aspects.Exportable;
 import se.miun.itm.input.model.Document;
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.param.Param;
+import se.miun.itm.input.model.param.ParamStore;
 import se.miun.itm.input.model.param.SChoice;
 import se.miun.itm.input.util.ParamUtil;
 import se.miun.itm.input.util.Q;
@@ -29,13 +30,19 @@ public class PropertiesExporter implements Exporter<Properties> {
 	}
 
 	private void initProperties(Properties prop, Element parent) {
+		String spaceID = parent.getDocument().getRootElement().getAttributeValue(Q.REF_ATTR);
+		ParamStore store = ParamStore.getInstance(spaceID); 
+		initProperties(prop,store, parent);
+	}
+
+	private void initProperties(Properties prop, ParamStore store, Element parent) {
 		String paramId, value;
 		for (Element child : parent.getChildren()) {
-			paramId = ParamUtil.deriveInputParamId(child);
+			paramId = ParamUtil.deriveInputParamId(store, child);
 			value = getValue(child);
 			if (value != null && !(child instanceof SChoice))
 				prop.put(paramId, value);
-			initProperties(prop, child);
+			initProperties(prop,store, child);
 		}
 	}
 

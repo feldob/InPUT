@@ -239,8 +239,22 @@ public interface IDesignSpace extends Identifiable, Exportable,
 	<T> T next(String paramId, int[] dimensions, Map<String, Object> vars,
 			Object[] objects) throws InPUTException;
 
+	/**
+	 * Checks if the given design space is backed up or imported from a file.
+	 * @return
+	 */
 	boolean isFile();
 
+	/**
+	 * returns the file name of the design space file if present, otherwise null.
+	 * @return
+	 */
 	String getFileName();
 
+	/**
+	 * sets a parameter decision as fixed to the given value. Can be revoked by setting null.
+	 * @param string
+	 * @param caSe
+	 */
+	void setFixed(String paramId, String valueString) throws InPUTException;
 }

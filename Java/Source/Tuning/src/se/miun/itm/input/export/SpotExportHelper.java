@@ -67,7 +67,7 @@ public class SpotExportHelper {
 
 	private boolean isEligible(String[] fixed, int i) {
 		if (fixed == null)
-			return false;
+			return true;
 		
 		if (i < fixed.length && !fixed[i].equals(Q.PLACEHOLDER))
 			return false;
@@ -84,7 +84,7 @@ public class SpotExportHelper {
 	}
 
 	private void appendComplexPositionHigh(StringBuilder builder, SParam complex) {
-		builder.append(complex.getChoices().size());
+		builder.append(complex.getAmountChoices());
 		builder.append(" ");
 	}
 
@@ -130,13 +130,13 @@ public class SpotExportHelper {
 	}
 
 	private void appendHigh(StringBuilder builder, SParam param) {
-		int high = param.getChoices().size();
+		int high = param.getAmountChoices();
 		if (high == 0)
 			high = 1;
 		builder.append(high + " ");
 	}
 
-	private void appendNumeric(StringBuilder builder, NParam param) {
+	private void appendNumeric(StringBuilder builder, NParam param) throws InPUTException {
 		appendName(builder, param);
 		appendLow(builder, param);
 		appendHigh(builder, param);
@@ -151,11 +151,11 @@ public class SpotExportHelper {
 		builder.append(value + " ");
 	}
 
-	private void appendHigh(StringBuilder builder, NParam param) {
+	private void appendHigh(StringBuilder builder, NParam param) throws InPUTException {
 		append(builder, param.getNumericMaxValue());
 	}
 
-	private void appendLow(StringBuilder builder, NParam param) {
+	private void appendLow(StringBuilder builder, NParam param) throws InPUTException {
 		append(builder, param.getNumericMinValue());
 	}
 

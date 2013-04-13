@@ -3,7 +3,7 @@
   <appender name="FILE" class="ch.qos.logback.core.FileAppender">
     <file>input.log</file>
     <encoder>
-      <pattern>%d{dd/MM/YY HH:mm} %-5level %logger{36} - %msg%n</pattern>
+      <pattern>%d{dd/MM/yy HH:mm} %-5level %logger{36} - %msg%n</pattern>
     </encoder>
   </appender>
 

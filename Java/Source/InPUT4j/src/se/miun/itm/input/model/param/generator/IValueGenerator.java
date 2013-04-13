@@ -23,7 +23,7 @@ public interface IValueGenerator {
 
 	boolean hasSetHandle();
 
-	void validateInPUT(Object value, ElementCache elementCache) throws InPUTException;
+	void validateInPUT(String paramId, Object value, ElementCache elementCache) throws InPUTException;
 	
 	boolean initByConstructor(String paramId);
 	

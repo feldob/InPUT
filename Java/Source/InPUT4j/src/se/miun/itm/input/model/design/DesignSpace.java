@@ -21,7 +21,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package se.miun.itm.input.model.design;
 
 import java.io.File;
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -105,9 +104,9 @@ public class DesignSpace implements IDesignSpace {
 	DesignSpace(Document space) throws InPUTException {
 		this(space, null);
 	}
-	
+
 	DesignSpace(Document space, String spaceFileName) throws InPUTException {
-		this.isFile = true;
+		this.isFile = spaceFileName != null;
 		this.fileName = spaceFileName;
 		this.space = space;
 		id = space.getRootElement().getAttributeValue(Q.ID_ATTR);
@@ -144,10 +143,8 @@ public class DesignSpace implements IDesignSpace {
 			// reorganize the tree so that parameters are initialized in the
 			// right dependency order
 			TreeSorter.reorganizeTree(space.getRootElement(), comparator);
-			ps = ParamStore.getInstance(id);
-		} else {
-			ps = ParamStore.getInstance(id);
 		}
+		ps = ParamStore.getInstance(id);
 		return ps;
 	}
 
@@ -173,8 +170,8 @@ public class DesignSpace implements IDesignSpace {
 
 		Design design = new Design(expId, ps);
 
-		List<Param<?>> children = (List<Param<?>>) (List<?>) space.getRootElement()
-				.getChildren();
+		List<Param<?>> children = (List<Param<?>>) (List<?>) space
+				.getRootElement().getChildren();
 
 		Map<String, Object> vars = new HashMap<String, Object>();
 		Value<? extends Param<?>> value;
@@ -286,6 +283,16 @@ public class DesignSpace implements IDesignSpace {
 
 	ParamStore getParamStore() {
 		return ps;
+	}
+
+	@Override
+	public void setFixed(String paramId, String value) throws InPUTException {
+		Param<?> param = ps.getParam(paramId);
+		if (param == null)
+			throw new InPUTException("A parameter with id '" + paramId
+					+ "' does not exist in design space '" + getId() + "'.");
+
+		param.setFixed(value);
 	}
 
 	@Override

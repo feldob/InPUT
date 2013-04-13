@@ -12,6 +12,8 @@ public interface InputConverter<ExternalDesign, ExternalSpace, ExternalResult> {
 
 	ExternalSpace fromDesignSpace(IDesignSpace inputSpace) throws InPUTException;
 
+	IExperiment toExperiment(String spaceId, ExternalDesign design, int position) throws InPUTException;
+	
 	List<IExperiment> toExperiments(String spaceId, ExternalDesign design) throws InPUTException;
 
 	IDesignSpace toDesignSpace(ExternalSpace designSpace) throws InPUTException;

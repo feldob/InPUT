@@ -21,7 +21,7 @@ import se.miun.itm.input.model.param.NParam;
  * @NotThreadSafe
  */
 public abstract class NumericGenerator extends ValueGenerator<NumericMapping, NParam> {
-
+	
 	private static final String BOOLEAN_0 = "0";
 	private static final String BOOLEAN_1 = "1";
 	protected Ranges ranges;
@@ -30,8 +30,9 @@ public abstract class NumericGenerator extends ValueGenerator<NumericMapping, NP
 		super(param, rng);
 	}
 
-	public void initRanges() throws InPUTException {
+	public NumericGenerator initRanges() throws InPUTException {
 		ranges = new Ranges(param);
+		return this;
 	}
 
 	@Override
@@ -89,12 +90,18 @@ public abstract class NumericGenerator extends ValueGenerator<NumericMapping, NP
 	}
 
 	//TODO only returns the single first min, therefore is a simplification.
-	public String getMinValue() {
+	public String getMinValue() throws InPUTException {
+		if (ranges.getStrongTypedMin() == null)
+			throw new InPUTException("Parameter '"+ param.getId() + "' of design space '" +param.getSpaceId() + "' has no explicit minimum value set.");
+		
 		return ranges.getStrongTypedMin()[0].toString();
 	}
 
 	//TODO only returns the single first min, therefore is a simplification.
-	public String getMaxValue() {
+	public String getMaxValue() throws InPUTException {
+		if (ranges.getStrongTypedMax() == null)
+			throw new InPUTException("Parameter '"+ param.getId() + "' of design space '" +param.getSpaceId() + "' has no explicit maximum value set.");
+		
 		return ranges.getStrongTypedMax()[0].toString();
 	}
 
@@ -169,13 +176,13 @@ public abstract class NumericGenerator extends ValueGenerator<NumericMapping, NP
 	}
 
 	@Override
-	public void validateInPUT(Object value, ElementCache elementCache) throws InPUTException {
+	public void validateInPUT(String paramId, Object value, ElementCache elementCache) throws InPUTException {
 		if (hasWrapper())
 			mapping.getWrapper().checkTypeSafety(value);
 		else
 		{
 			ranges.checkTypeSafety(value);
-			ranges.checkValidity(value, elementCache);
+			ranges.checkValidity(paramId, value, elementCache);
 		}
 	}
 
@@ -189,13 +196,13 @@ public abstract class NumericGenerator extends ValueGenerator<NumericMapping, NP
 		return ranges.toString();
 	}
 
-	public String getNumericMaxValue() {
+	public String getNumericMaxValue() throws InPUTException {
 		if (ranges.getType() == Numeric.BOOLEAN)
 			return BOOLEAN_1;
 		return getMaxValue();
 	}
 	
-	public String getNumericMinValue() {
+	public String getNumericMinValue() throws InPUTException {
 		if (ranges.getType() == Numeric.BOOLEAN)
 			return BOOLEAN_0;
 		return getMinValue();

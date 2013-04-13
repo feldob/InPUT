@@ -20,6 +20,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package se.miun.itm.input.aspects;
 
+import java.io.IOException;
+
 import se.miun.itm.input.impOrt.InPUTImporter;
 import se.miun.itm.input.model.InPUTException;
 
@@ -40,6 +42,7 @@ public interface Importable<T, G> {
 	 * @param importer
 	 * @return
 	 * @throws InPUTException
+	 * @throws IOException 
 	 */
-	T impOrt(InPUTImporter<G> importer) throws InPUTException;
+	T impOrt(InPUTImporter<G> importer) throws InPUTException, IOException;
 }
