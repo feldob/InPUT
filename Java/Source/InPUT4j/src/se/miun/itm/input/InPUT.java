@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import se.miun.itm.input.export.ExportHelper;
-import se.miun.itm.input.export.Exporter;
+import se.miun.itm.input.export.InPUTExporter;
 import se.miun.itm.input.impOrt.InPUTImporter;
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.design.DesignSpace;
@@ -125,7 +125,7 @@ public class InPUT implements IInPUT {
 	}
 
 	@Override
-	public <T> T export(Exporter<T> exporter) throws InPUTException {
+	public <T> T export(InPUTExporter<T> exporter) throws InPUTException {
 		return exporter.export(this);
 	}
 

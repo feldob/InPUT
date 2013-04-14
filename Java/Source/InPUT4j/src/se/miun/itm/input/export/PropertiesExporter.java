@@ -20,7 +20,7 @@ import se.miun.itm.input.util.Q;
  * @ThreadSafe
  *
  */
-public class PropertiesExporter implements Exporter<Properties> {
+public class PropertiesExporter implements InPUTExporter<Properties> {
 
 	@Override
 	public Properties export(Document xml) throws InPUTException {

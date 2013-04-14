@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Set;
 
 import se.miun.itm.input.export.ExportHelper;
-import se.miun.itm.input.export.Exporter;
+import se.miun.itm.input.export.InPUTExporter;
 import se.miun.itm.input.impOrt.DocumentImporter;
 import se.miun.itm.input.impOrt.ExperimentArchiveImporter;
 import se.miun.itm.input.impOrt.InPUTImporter;
@@ -323,7 +323,7 @@ public class Experiment implements IExperiment {
 	}
 
 	@Override
-	public <O> O export(Exporter<O> exporter) throws InPUTException {
+	public <O> O export(InPUTExporter<O> exporter) throws InPUTException {
 		return exporter.export(this);
 	}
 

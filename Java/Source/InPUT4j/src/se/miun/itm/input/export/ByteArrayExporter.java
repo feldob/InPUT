@@ -38,7 +38,7 @@ import se.miun.itm.input.model.InPUTException;
  * @throws InputException
  */
 
-public class ByteArrayExporter implements Exporter<ByteArrayOutputStream> {
+public class ByteArrayExporter implements InPUTExporter<ByteArrayOutputStream> {
 
 	private final XMLOutputter outputter = new XMLOutputter(
 			Format.getPrettyFormat());

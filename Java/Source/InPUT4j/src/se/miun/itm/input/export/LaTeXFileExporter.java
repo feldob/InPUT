@@ -43,7 +43,7 @@ import se.miun.itm.input.util.Q;
  * @NotThreadSafe
  * 
  */
-public class LaTeXFileExporter extends FileNameAssigner implements Exporter<Void> {
+public class LaTeXFileExporter extends FileNameAssigner implements InPUTExporter<Void> {
 
 	private final static String LINEBREAK = System.getProperty("line.separator");
 

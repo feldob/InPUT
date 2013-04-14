@@ -41,16 +41,16 @@ import se.miun.itm.input.model.InPUTException;
  * 
  * @throws InputException
  */
-public class XMLFileExporter extends FileNameAssigner implements Exporter<Void> {
+public class XMLArchiveExporter extends FileNameAssigner implements InPUTExporter<Void> {
 
 	private final XMLOutputter outputter = new XMLOutputter(
 			Format.getPrettyFormat());
 
-	public XMLFileExporter() {
+	public XMLArchiveExporter() {
 		this("");
 	}
 	
-	public XMLFileExporter(String fileName) {
+	public XMLArchiveExporter(String fileName) {
 		super(fileName);
 	}
 

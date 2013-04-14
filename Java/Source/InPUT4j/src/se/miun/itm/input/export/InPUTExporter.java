@@ -31,7 +31,7 @@ import se.miun.itm.input.model.InPUTException;
  *
  * @param <T>
  */
-public interface Exporter<T> {
+public interface InPUTExporter<T> {
 
 	/**
 	 * export a given xml document, expected to be of InPUT type (CodeMapping, Design, or Design Space).

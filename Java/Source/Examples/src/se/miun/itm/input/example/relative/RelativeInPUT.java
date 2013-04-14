@@ -1,6 +1,6 @@
 package se.miun.itm.input.example.relative;
 
-import se.miun.itm.input.export.XMLFileExporter;
+import se.miun.itm.input.export.XMLArchiveExporter;
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.design.DesignSpace;
 import se.miun.itm.input.model.design.IDesign;
@@ -23,6 +23,6 @@ public class RelativeInPUT {
 		System.out.println((a / b) - 1);
 		
 		// export the design to an xml
-		design.export(new XMLFileExporter("randomDesign.xml"));
+		design.export(new XMLArchiveExporter("randomDesign.xml"));
 	}
 }

@@ -30,7 +30,7 @@ import org.junit.Test;
 
 import se.miun.itm.input.AbstractInPUTTest;
 import se.miun.itm.input.export.ByteArrayExporter;
-import se.miun.itm.input.export.XMLFileExporter;
+import se.miun.itm.input.export.XMLArchiveExporter;
 import se.miun.itm.input.impOrt.XMLFileImporter;
 import se.miun.itm.input.model.InPUTException;
 
@@ -441,7 +441,7 @@ public abstract class IDesignTest extends AbstractInPUTTest {
 	@Test
 	public void testExport() throws InPUTException {
 		final String designName = "someOtherTestDesign.xml";
-		design.export(new XMLFileExporter(designName));
+		design.export(new XMLArchiveExporter(designName));
 		IDesign design2 = design.getSpace().impOrt(new XMLFileImporter(designName));
 		
 		if (!design.same(design2)) {

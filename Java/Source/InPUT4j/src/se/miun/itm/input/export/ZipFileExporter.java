@@ -49,7 +49,7 @@ import se.miun.itm.input.util.Q;
  * @NotThreadSafe (name and exporter are related!)
  */
 public class ZipFileExporter extends FileNameAssigner implements
-		Exporter<Void> {
+		InPUTExporter<Void> {
 
 	private ByteArrayExporter byteExporter;
 

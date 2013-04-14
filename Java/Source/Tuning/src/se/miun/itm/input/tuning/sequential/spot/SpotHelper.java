@@ -15,7 +15,7 @@ import org.rosuda.JRI.Rengine;
 import se.miun.itm.input.IExperiment;
 import se.miun.itm.input.IInPUT;
 import se.miun.itm.input.export.PropertiesExporter;
-import se.miun.itm.input.export.XMLFileExporter;
+import se.miun.itm.input.export.XMLArchiveExporter;
 import se.miun.itm.input.export.ZipFileExporter;
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.design.IDesign;
@@ -205,7 +205,7 @@ public class SpotHelper {
 	}
 
 	private void saveSPOTContext() throws InPUTException {
-		config.export(new XMLFileExporter(experimentalFolder.getPath() + File.separator + "spotConfig.xml"));
+		config.export(new XMLArchiveExporter(experimentalFolder.getPath() + File.separator + "spotConfig.xml"));
 	}
 
 	public int initInitialDesign() throws InPUTException {

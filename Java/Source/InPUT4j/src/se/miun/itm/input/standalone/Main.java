@@ -29,7 +29,7 @@ import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-import se.miun.itm.input.export.Exporter;
+import se.miun.itm.input.export.InPUTExporter;
 import se.miun.itm.input.export.LaTeXFileExporter;
 import se.miun.itm.input.impOrt.InPUTImporter;
 import se.miun.itm.input.impOrt.XMLFileImporter;
@@ -91,7 +91,7 @@ public class Main {
 	public void toLatex(String inputInput, String latexOutput)
 			throws InPUTException, FileNotFoundException {
 		IDesignSpace space = new DesignSpace(inputInput);
-		Exporter<Void> exporter = new LaTeXFileExporter(latexOutput);
+		InPUTExporter<Void> exporter = new LaTeXFileExporter(latexOutput);
 		space.export(exporter);
 	}
 
@@ -100,7 +100,7 @@ public class Main {
 		IDesignSpace space = new DesignSpace(inputInput);
 		InPUTImporter<Document> importer = new XMLFileImporter(designInput);
 		IDesign design = space.impOrt(importer);
-		Exporter<Void> exporter = new LaTeXFileExporter(latexOutput);
+		InPUTExporter<Void> exporter = new LaTeXFileExporter(latexOutput);
 		design.export(exporter);
 	}
 

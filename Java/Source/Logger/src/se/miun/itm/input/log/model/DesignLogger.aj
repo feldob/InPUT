@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import se.miun.itm.input.InPUTConfig;
-import se.miun.itm.input.export.Exporter;
+import se.miun.itm.input.export.InPUTExporter;
 import se.miun.itm.input.model.design.Design;
 import se.miun.itm.input.model.element.Value;
 
@@ -15,7 +15,7 @@ public aspect DesignLogger {
 	
 	pointcut designInit() : execution(public Design.new(..)) && if(InPUTConfig.isLoggingActive());
 	
-	pointcut export(Exporter<?> exporter) : execution(* Design.export(Exporter<?>)) && args(exporter) && if(InPUTConfig.isLoggingActive());
+	pointcut export(InPUTExporter<?> exporter) : execution(* Design.export(InPUTExporter<?>)) && args(exporter) && if(InPUTConfig.isLoggingActive());
 
 	pointcut setValue(Value<?> value) : (execution(private void Design.updateCacheForIndexedValue(Value<?>)) || execution(private void Design.updateElementCache(Value<?>))) && args(value) && if(InPUTConfig.isLoggingActive());
 

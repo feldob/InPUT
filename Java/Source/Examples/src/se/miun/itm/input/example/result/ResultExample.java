@@ -2,7 +2,7 @@ package se.miun.itm.input.example.result;
 
 import java.math.BigDecimal;
 
-import se.miun.itm.input.export.XMLFileExporter;
+import se.miun.itm.input.export.XMLArchiveExporter;
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.design.DesignSpace;
 import se.miun.itm.input.model.design.IDesign;
@@ -43,6 +43,6 @@ public class ResultExample {
 		resultDesign.setValue("y", results);
 
 		// export the output design to an xml
-		resultDesign.export(new XMLFileExporter("randomDesignResults.xml"));
+		resultDesign.export(new XMLArchiveExporter("randomDesignResults.xml"));
 	}
 }

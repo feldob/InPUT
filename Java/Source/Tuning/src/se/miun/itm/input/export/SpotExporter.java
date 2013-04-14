@@ -20,7 +20,7 @@ import se.miun.itm.input.model.param.Param;
 import se.miun.itm.input.model.param.ParamStore;
 import se.miun.itm.input.util.Q;
 
-public class SpotExporter implements Exporter<InputStream> {
+public class SpotExporter implements InPUTExporter<InputStream> {
 
 	private SpotExportHelper helper;
 

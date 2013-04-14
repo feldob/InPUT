@@ -20,7 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package se.miun.itm.input.aspects;
 
-import se.miun.itm.input.export.Exporter;
+import se.miun.itm.input.export.InPUTExporter;
 import se.miun.itm.input.model.InPUTException;
 
 /**
@@ -38,5 +38,5 @@ public interface Exportable {
 	 * @return
 	 * @throws InPUTException
 	 */
-	<O> O export(Exporter<O> exporter) throws InPUTException;
+	<O> O export(InPUTExporter<O> exporter) throws InPUTException;
 }

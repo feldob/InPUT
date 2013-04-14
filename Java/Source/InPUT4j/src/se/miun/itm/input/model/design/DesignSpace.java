@@ -33,7 +33,7 @@ import org.jdom2.Element;
 
 import se.miun.itm.input.eval.ParamEvaluationOrderComparator;
 import se.miun.itm.input.export.ExportHelper;
-import se.miun.itm.input.export.Exporter;
+import se.miun.itm.input.export.InPUTExporter;
 import se.miun.itm.input.impOrt.InPUTImporter;
 import se.miun.itm.input.model.Document;
 import se.miun.itm.input.model.InPUTException;
@@ -255,7 +255,7 @@ public class DesignSpace implements IDesignSpace {
 	}
 
 	@Override
-	public <O> O export(Exporter<O> exporter) throws InPUTException {
+	public <O> O export(InPUTExporter<O> exporter) throws InPUTException {
 		return exporter.export(space);
 	}
 

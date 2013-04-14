@@ -33,7 +33,7 @@ import java.util.Set;
 import org.jdom2.Element;
 
 import se.miun.itm.input.InPUTConfig;
-import se.miun.itm.input.export.Exporter;
+import se.miun.itm.input.export.InPUTExporter;
 import se.miun.itm.input.model.Document;
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.util.InputStreamWrapper;
@@ -264,7 +264,7 @@ public class Mappings implements IMappings {
 	}
 
 	@Override
-	public <O> O export(Exporter<O> exporter) throws InPUTException {
+	public <O> O export(InPUTExporter<O> exporter) throws InPUTException {
 		return exporter.export(document);
 	}
 
