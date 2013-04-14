@@ -2,7 +2,7 @@
 <i:DesignSpace id="structuredAdv" mapping="structuredMappingAdvanced.xml"
 	xmlns:i="http://TheInPUT.org/DesignSpace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://TheInPUT.org/DesignSpace.xsd ">
-	<i:SParam id="AnotherDecision">
+	<i:SParam id="Steak">
 		<i:NParam id="Temperature" type="decimal" inclMin="25" inclMax="80" />
 		<i:NParam type="double" id="ProportionBurned" />
 		<i:SChoice id="Raw">

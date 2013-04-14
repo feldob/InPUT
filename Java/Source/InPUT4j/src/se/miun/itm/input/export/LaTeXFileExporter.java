@@ -89,45 +89,23 @@ public class LaTeXFileExporter extends FileNameAssigner implements Exporter<Void
 			b.append(LINEBREAK);
 			b.append("\\hline");
 			b.append(LINEBREAK);
-			appendValueToTable(b, value);
+			appendValueToTable(b, value, 0);
 		}
 		appendDesignTableEnd(b, id);
 
 		writeFile(b);
 	}
 
-	private void appendDesignTableEnd(StringBuilder b, String id) {
-		b.append("\\end{tabular}");
-		b.append(LINEBREAK);
-		b.append("\\caption{The parameter values for design \\textit{");
-		b.append(id);
-		b.append("}.}");
-		b.append(LINEBREAK);
-		b.append("\\label{table:design-");
-		b.append(id);
-		b.append('}');
-		b.append(LINEBREAK);
-		b.append("\\end{table}");
-	}
-
-	private void appendValueToTable(StringBuilder b, Element value) {
-		b.append(value.getAttributeValue(Q.ID_ATTR));
-		b.append(" & ");
-		extractAndAppendValue(b, value);
-		b.append("\\\\");
-		b.append(LINEBREAK);
-		b.append("\\hline");
-		b.append(LINEBREAK);
-	}
-
-	private void extractAndAppendValue(StringBuilder b, Element value) {
+	private void appendValueToTable(StringBuilder b, Element value, int rootDistance) {
+		setId(b,value, rootDistance);
+		// always get the value and print the id to it simply, check for children then!
 		if (value.getAttribute(Q.VALUE_ATTR) != null) {
 			if (value.getName().equals(Q.NVALUE)) {
 				b.append('$');
 				b.append(value.getAttributeValue(Q.VALUE_ATTR));
 				b.append('$');
 			} else if (value.getName().equals(Q.SVALUE)) {
-				appendStructuralValue(b, value);
+				appendStructuralValue(b, value, rootDistance);
 			}
 		} else {
 			List<Element> children = value.getChildren();
@@ -139,7 +117,7 @@ public class LaTeXFileExporter extends FileNameAssigner implements Exporter<Void
 				appendCs(b, getAmountElements(children));
 				b.append('}');
 				b.append(LINEBREAK);
-				appendMatrixContent(b, children, depth);
+				appendMatrixContent(b, children, depth, rootDistance);
 				b.append("\\end{array}");
 				b.append(LINEBREAK);
 				b.append("\\right)$");
@@ -147,6 +125,29 @@ public class LaTeXFileExporter extends FileNameAssigner implements Exporter<Void
 				b.append("Too high dimensional to visualize.");
 			}
 		}
+		if (rootDistance == 1) {
+			b.append("\\\\");
+			b.append(LINEBREAK);
+		}
+	}
+
+	private void setId(StringBuilder b,Element value, int rootDistance) {
+		boolean close = false;
+		if (rootDistance > 0)
+		{
+			b.append("\\hspace{");
+			b.append(rootDistance*2);
+			b.append("mm}");
+			if (rootDistance % 2 == 1) {
+				close = true;
+				b.append("\\textit{");
+			}
+		}
+		
+		b.append(value.getAttributeValue(Q.ID_ATTR));
+		if (close)
+			b.append('}');	
+		b.append(" & ");
 	}
 
 	private int getAmountElements(List<Element> children) {
@@ -157,44 +158,38 @@ public class LaTeXFileExporter extends FileNameAssigner implements Exporter<Void
 		return newChildren.size();
 	}
 
-	private void appendStructuralValue(StringBuilder b, Element value) {
-		b.append(value.getAttributeValue(Q.VALUE_ATTR));
+	private void appendStructuralValue(StringBuilder b, Element value, int rootDistance) {
+		
+		String valueString = value.getAttributeValue(Q.VALUE_ATTR); 
+		b.append(valueString);
+		b.append("\\\\");
+		b.append(LINEBREAK);
 		List<Element> children = value.getChildren();
-		if (!children.isEmpty()) {
-			int count = 0;
-			b.append('(');
-			for (Element child : children) {
-				b.append(child.getAttributeValue(Q.ID_ATTR));
-				b.append('=');
-				extractAndAppendValue(b, child);
-				if (count < children.size() - 1)
-					b.append(", ");
-				count++;
-			}
-			b.append(')');
-		}
+		if (!children.isEmpty())
+			for (Element child : children)
+				appendValueToTable(b, child, rootDistance+1);
 	}
 
-	private void appendMatrixContent(StringBuilder b, List<Element> children, int depth) {
+	private void appendMatrixContent(StringBuilder b, List<Element> children, int depth, int rootDistance) {
 		int count = 0;
 		for (Element child : children) {
-			appendMatrixRow(b, child, depth);
+			appendMatrixRow(b, child, depth, rootDistance);
 			if (count < children.size() - 1)
 				b.append("\\\\");
 			count++;
 		}
 	}
 
-	private void appendMatrixRow(StringBuilder b, Element child, int depth) {
+	private void appendMatrixRow(StringBuilder b, Element child, int depth, int rootDistance) {
 		if (child.getAttributeValue(Q.VALUE_ATTR) == null)
-			appendMatrixRow(b, child.getChildren().get(0), depth);
+			appendMatrixRow(b, child.getChildren().get(0), depth, rootDistance);
 		else {
 			if (depth == 1)
-				extractAndAppendValue(b, child);
+				appendValueToTable(b, child, rootDistance);
 			else {
 				List<Element> values = child.getParentElement().getChildren();
 				for (int i = 0; i < values.size(); i++) {
-					extractAndAppendValue(b, values.get(i));
+					appendValueToTable(b, values.get(i), rootDistance);
 					if (i < values.size() - 1)
 						b.append('&');
 				}
@@ -224,7 +219,7 @@ public class LaTeXFileExporter extends FileNameAssigner implements Exporter<Void
 		b.append(LINEBREAK);
 		b.append("\\centering");
 		b.append(LINEBREAK);
-		b.append("\\begin{tabular}{|l|l|}");
+		b.append("\\begin{tabular}{|l|r|}");
 		b.append(LINEBREAK);
 		b.append("\\hline");
 		b.append(LINEBREAK);
@@ -233,6 +228,23 @@ public class LaTeXFileExporter extends FileNameAssigner implements Exporter<Void
 		b.append("\\hline");
 		b.append(LINEBREAK);
 	}
+
+	private void appendDesignTableEnd(StringBuilder b, String id) {
+		b.append("\\hline");
+		b.append(LINEBREAK);
+		b.append("\\end{tabular}");
+		b.append(LINEBREAK);
+		b.append("\\caption{The parameter values for design \\textit{");
+		b.append(id);
+		b.append("}.}");
+		b.append(LINEBREAK);
+		b.append("\\label{table:design-");
+		b.append(id);
+		b.append('}');
+		b.append(LINEBREAK);
+		b.append("\\end{table}");
+	}
+
 
 	private void exportDesignSpace(Document xml) throws InPUTException {
 		String id = xml.getRootElement().getAttributeValue(Q.ID_ATTR);
@@ -414,7 +426,7 @@ public class LaTeXFileExporter extends FileNameAssigner implements Exporter<Void
 		b.append(LINEBREAK);
 		b.append("\\caption{The parameter ranges for design space \\textit{");
 		b.append(id);
-		b.append("}(Constants in bold font).}");
+		b.append("} (Constants in bold font).}");
 		b.append(LINEBREAK);
 		b.append("\\label{table:paramranges-");
 		b.append(id);
