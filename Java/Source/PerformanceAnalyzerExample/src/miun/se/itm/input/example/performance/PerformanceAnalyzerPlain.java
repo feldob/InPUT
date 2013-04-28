@@ -18,8 +18,7 @@ public class PerformanceAnalyzerPlain extends PerformanceAnalyzer {
 		amountTasks = 10;
 		task = new SomeJob(100000000, 4000000, new SomeOption());
 		executions = 3;
-		int[] poolSize = {1,2,8,9,10};
-		this.poolSize = poolSize;
+		poolSize = new int[]{1,2,8,9,10};
 	}
 
 	public static void main(String[] args) throws InterruptedException,

@@ -1,6 +1,7 @@
 package se.miun.itm.input.example.tuning;
 
 import java.io.File;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +14,6 @@ import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.design.Design;
 import se.miun.itm.input.model.design.IDesign;
 import se.miun.itm.input.tuning.sequential.SPOT;
-import se.miun.itm.input.tuning.sequential.spot.SPOTQ;
 
 public class HelloWorldTuning {
 	

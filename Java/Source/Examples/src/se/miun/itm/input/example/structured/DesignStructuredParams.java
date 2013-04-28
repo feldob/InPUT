@@ -2,7 +2,7 @@ package se.miun.itm.input.example.structured;
 
 import se.miun.itm.input.example.structured.model.AnotherDecision;
 import se.miun.itm.input.example.structured.model.Decision;
-import se.miun.itm.input.export.XMLArchiveExporter;
+import se.miun.itm.input.export.XMLFileExporter;
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.design.DesignSpace;
 import se.miun.itm.input.model.design.IDesign;

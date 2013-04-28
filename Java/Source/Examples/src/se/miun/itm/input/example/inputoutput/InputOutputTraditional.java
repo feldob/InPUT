@@ -1,6 +1,6 @@
 package se.miun.itm.input.example.inputoutput;
 
-import se.miun.itm.input.export.XMLArchiveExporter;
+import se.miun.itm.input.export.XMLFileExporter;
 import se.miun.itm.input.impOrt.XMLFileImporter;
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.design.DesignSpace;
@@ -43,6 +43,6 @@ public class InputOutputTraditional {
 		outputDesign.setValue("paramId", output);
 		outputDesign.attachEnvironmentInfo();
 
-		outputDesign.export(new XMLArchiveExporter("output.xml"));
+		outputDesign.export(new XMLFileExporter("output.xml"));
 	}
 }

@@ -1,7 +1,7 @@
 package se.miun.itm.input.injection;
 
 import se.miun.itm.input.annotation.Output;
-import se.miun.itm.input.export.XMLArchiveExporter;
+import se.miun.itm.input.export.XMLFileExporter;
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.design.IDesign;
 
@@ -14,7 +14,7 @@ public aspect OtherInjection {
 		IDesign design = Injection.designs.get(outputAnn.id());
 		try {
 			design.attachEnvironmentInfo();
-			design.export(new XMLArchiveExporter(outputAnn.file()));
+			design.export(new XMLFileExporter(outputAnn.file()));
 		} catch (InPUTException e) {
 			// TODO remove for production
 			e.printStackTrace();

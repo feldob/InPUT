@@ -7,7 +7,7 @@ import org.junit.*;
 import se.miun.itm.input.IInPUT;
 import se.miun.itm.input.InPUT;
 import se.miun.itm.input.export.InPUTExporter;
-import se.miun.itm.input.export.XMLArchiveExporter;
+import se.miun.itm.input.export.XMLFileExporter;
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.design.DesignSpace;
 import se.miun.itm.input.model.design.IDesignSpace;
@@ -20,7 +20,7 @@ public class ITunerTest<SomeTuner extends ITuner> {
 
 	private static final String TEST_FILE_NAME = "test.xml";
 
-	protected InPUTExporter<?> exporter = new XMLArchiveExporter(TEST_FILE_NAME);
+	protected InPUTExporter<?> exporter = new XMLFileExporter(TEST_FILE_NAME);
 
 	@Before
 	public void setUp() throws InPUTException {

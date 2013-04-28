@@ -45,8 +45,10 @@ public abstract class ExperimentConductor<T> {
 	}
 
 	public IExperiment initExperiment(String id, String filePath) throws InPUTException, IOException {
-		experimentIds.put(id, filePath);
-		return initExperiment(input, id, filePath);
+		IExperiment result = initExperiment(input, id, filePath);
+		if (result != null)
+			experimentIds.put(id, filePath);
+		return result;
 	}
 
 	protected IDesign createNewSettableOutput(String id) throws InPUTException {

@@ -46,8 +46,8 @@ import se.miun.itm.input.util.xml.SAXUtil;
  * 
  * @NotThreadSafe
  */
-public class InPUTConfig {
-	
+public abstract class InPUTConfig {
+
 	private static IDesign config;
 
 	private static Document configDoc;
@@ -65,6 +65,8 @@ public class InPUTConfig {
 			// import the design
 			config = configSpace.impOrt(importer);
 			
+			System.out.println("### InPUTConfig initiated");
+
 		} catch (InPUTException e) {
 			System.out
 					.println("The InPUT configuration is broken. Please consult the InPUT team.");
@@ -93,7 +95,7 @@ public class InPUTConfig {
 	 * 
 	 * @param paramId
 	 * @return
-	 * @throws InPUTException 
+	 * @throws InPUTException
 	 */
 	public static String getValueToString(String paramId) throws InPUTException {
 		return config.getValueToString(paramId);
@@ -190,8 +192,9 @@ public class InPUTConfig {
 		design.extendScope(config);
 	}
 
-	public static void setValue(String paramId, Object value) throws InPUTException {
-		 config.setValue(paramId, value);
+	public static void setValue(String paramId, Object value)
+			throws InPUTException {
+		config.setValue(paramId, value);
 	}
 
 	public static boolean cachesDesigns() {

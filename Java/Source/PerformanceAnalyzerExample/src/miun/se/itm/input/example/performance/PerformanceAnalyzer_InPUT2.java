@@ -3,7 +3,7 @@ package miun.se.itm.input.example.performance;
 import java.util.concurrent.ExecutionException;
 
 import se.miun.itm.input.export.LaTeXFileExporter;
-import se.miun.itm.input.export.XMLArchiveExporter;
+import se.miun.itm.input.export.XMLFileExporter;
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.design.DesignSpace;
 import se.miun.itm.input.model.design.IDesign;
@@ -34,7 +34,7 @@ public class PerformanceAnalyzer_InPUT2 extends PerformanceAnalyzer_InPUT1 {
 				.nextEmptyDesign("" + now()); // create an empty configuration
 												// of type performanceSpace
 		results.setValue("performance", runtime); // add the performance results
-		results.export(new XMLArchiveExporter("performance.xml")); // export to XML
+		results.export(new XMLFileExporter("performance.xml")); // export to XML
 		results.export(new LaTeXFileExporter("performance.tex")); // export as
 																	// LaTeX
 																	// table
