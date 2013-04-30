@@ -1,6 +1,6 @@
 ### InPUT4j
 
-The *core module*, providing the API. Classes of main interest are : (I)DesignSpace, (I)Design, (I)InPUT, and (I)Experiment. All dependencies are included in the lib folder.
+The *core module*, providing the API. Classes of main interest are : (I)DesignSpace, (I)Design, (I)InPUT, and (I)Experiment. All dependencies are included in the lib folder. Find the javadoc [here](http://feldob.github.io/InPUT/javadoc/InPUT4j/index.html).
 
 ### Examples
 
