@@ -11,7 +11,7 @@ public class RelativeOriginal {
 
 		a = rng.nextDouble();
 		
-		// say, a constraint is that the result of a quotient a/b -1 is always
+		// Say, a constraint is that the result of a quotient a/b -1 is always
 		// positive, meaning that the second
 		// random value depends on the first:
 		b = rng.nextDouble() * (a);
