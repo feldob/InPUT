@@ -15,7 +15,7 @@ import se.miun.itm.input.model.design.IDesignSpace;
  * This, however, requires a third descriptor concept, on top of the design space, and design descriptors, namely, the code mappings.
  * The code mapping lets a user define the valid alternative choices for a parameter. Those are first conceptually defined in the
  * design space, and have to be enhanced in a code mapping xml descriptor, to match the implementation.
- * That code mapping descriptor is never actively refered to in the implementation, all references are handled internally, via InPUT, given
+ * That code mapping descriptor is never actively referred to in the implementation, all references are handled internally, via InPUT, given
  * that the descriptor reference attribute "mapping" points to the correct file.
  *  
  * @author Felix Dobslaw
