@@ -67,10 +67,17 @@ public class SpotHelper {
 		this.config = initConfig(investigationId, config);
 		this.input = input;
 		initInverseFunction();
+		checkSPOTIsInstalled();
 		inputROI = new SpotROI(input);
 		outputROI = new SpotROI(input.getOutputSpace());
 		currentRES = new SpotRES(inputROI, outputROI);
 		initExperimentalFolder();
+	}
+
+	private void checkSPOTIsInstalled() throws InPUTException {
+		REXP spotInstalled = engine.eval("is.element('SPOT', installed.packages()[,1])");
+		if (!spotInstalled.asBool().isTRUE())
+			throw new InPUTException("In order to use InPUT tuning extension, you have to install the SPOT package for R: \"install.packages('SPOT')\" in the R console.");
 	}
 
 	private static IDesign initConfig(String investigationId, IDesign config) throws InPUTException {
