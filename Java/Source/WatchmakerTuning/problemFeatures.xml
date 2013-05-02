@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<in:Design xmlns:in="http://TheInPUT.org/Design" xmlns:i1="http://TheInPUT.org/DesignSpace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="" xsi:schemaLocation="http://TheInPUT.org/Design http://TheInPUT.org/Design.xsd" ref="stringIdentification">
+  <in:SValue id="TargetString" value="HELLO WORLD" />
+  <in:SValue id="Alphabet" value="Latin" />
+</in:Design>

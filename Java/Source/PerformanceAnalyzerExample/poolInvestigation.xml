@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:Design id="investigation1" ref="poolInvestigationSpace.xml" xmlns:i="http://TheInPUT.org/Design"
+	xmlns:i1="http://TheInPUT.org/DesignSpace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://TheInPUT.org/Design http://theinput.org/Design.xsd ">
+	<i:NValue id="amountTasks" value="10" />
+	<i:NValue id="executions" value="3" />
+	<i:NValue id="poolSize">
+		<i:NValue id="1" value="1" />
+		<i:NValue id="2" value="2" />
+		<i:NValue id="3" value="8" />
+		<i:NValue id="4" value="9" />
+		<i:NValue id="5" value="10" />
+	</i:NValue>
+	<i:SValue id="task" value="someJob">
+		<i:NValue id="firstValue" value="100000000"/>
+		<i:NValue id="secondValue" value="4000000"/>
+		<i:SValue id="option" value="some"/>
+	</i:SValue>
+</i:Design>

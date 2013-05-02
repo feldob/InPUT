@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:DesignSpace id="testSpace" xmlns:i="http://TheInPUT.org/DesignSpace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://theinput.org/DesignSpace.xsd" mapping="testSpaceMapping.xml" >
+	<i:NParam type="boolean" id="SomeBoolean" />
+	<i:NParam type="integer" id="SomeInteger" />
+	<i:NParam type="double" id="SomeDouble" />
+	<i:NParam type="float" id="SomeFloat" />
+	<i:NParam type="decimal" id="SomeDecimal" />
+	<i:NParam type="short" id="SomeShort" />
+	<i:NParam type="long" id="SomeLong" exclMin="0" />
+
+	<i:NParam type="long" id="ABiggerLong" exclMin="SomeLong" />
+	<i:NParam type="long" id="ASmallerLong" inclMax="Math.log(SomeLong)" />
+	<i:NParam type="long" id="AStrangeLong"
+		inclMin="SomeLong / ASmallerLong - ABiggerLong" />
+
+	<i:NParam type="integer" id="SomeFixed" fixed="42" />
+
+	<i:NParam type="integer[42]" id="SomeFixedArray" fixed="42" />
+
+	<i:NParam type="integer[]" id="SomePrimitiveArrayOfUnspecifiedSize" />
+	<i:NParam type="double[42]" id="SomePrimitiveArrayOfSpecifiedSize" />
+
+	<i:NParam type="long[42][][42][]" id="SomeLargePrimitiveArray" />
+
+	<i:NParam type="short" id="SomeRestrictedPrimitive" inclMin="-42"
+		inclMax="42" />
+	<i:NParam type="decimal" id="SomeVeryRestrictedPrimitive"
+		exclMin="0.42222222222" exclMax="0.422222222221" />
+	<i:NParam type="double" id="AnotherRestrictedPrimitive"
+		exclMin="0.1,0.8" exclMax="0.4,0.9" />
+
+	<i:SParam id="SomeStructural">
+		<i:SChoice id="SomeFirstChoice" />
+		<i:SChoice id="SomeSecondChoice" />
+		<i:SChoice id="SomeThirdChoice" />
+	</i:SParam>
+
+	<i:SParam id="AnotherStructural">
+		<i:SChoice id="AnotherFirstChoice" />
+		<i:SChoice id="AnotherSecondChoice" />
+		<i:SChoice id="AnotherThirdChoice" />
+	</i:SParam>
+
+	<i:SParam id="SomeStructuralParent">
+		<i:NParam id="SomeSharedPrimitiveSub" type="integer" />
+		<i:NParam id="AnotherSharedPrimitiveSub" type="long" />
+		<i:SChoice id="YetAnotherFirstChoice" />
+		<i:SChoice id="YetAnotherSecondChoice" />
+		<i:SChoice id="YetAnotherThirdChoice">
+			<i:NParam id="SomeChoiceSpecificPrimitiveSub" type="float" />
+		</i:SChoice>
+		<i:SParam id="SomeSharedStructuralSub" type="String"/>
+	</i:SParam>
+
+	<i:SParam id="AnotherStructuralParent" fixed="AndYetAnotherFirstChoice">
+		<i:SParam id="SomeSharedStructuralSub">
+			<i:SChoice id="SomeSubChoice" />
+			<i:SChoice id="AnotherSubChoice" />
+		</i:SParam>
+		<i:SChoice id="AndYetAnotherFirstChoice" />
+		<i:SChoice id="AndYetAnotherSecondChoice">
+			<i:SParam id="SomeChoiceSpecificStructuralSub">
+				<i:SChoice id="AlsoSingleChoicesAreValid" />
+			</i:SParam>
+		</i:SChoice>
+	</i:SParam>
+
+	<i:SParam id="SomeStringCustomizedByTheUser" type="String" />
+	<i:SParam id="SomeStringArrayCustomizedByTheUser" type="String[10][5]" />
+
+	<i:SParam id="AnotherStringCustomizedByTheUser" type="String">
+		<i:SChoice id="someFile.xml" />
+		<i:SChoice id="someFile.txt" />
+		<i:SChoice id="anotherFile.xml" />
+	</i:SParam>
+
+	<i:SParam id="CustomizableInputDemonstrator">
+		<i:NParam type="double" id="WrappedPrimitive" />
+		<i:NParam type="double" id="CustomizableSetGetPrimitive" />
+		<i:SChoice id="FirstChoice" />
+		<i:SChoice id="SecondChoice" />
+	</i:SParam>
+
+	<i:SParam type="[][][]" id="SomeStructuralArrayOfUnspecifiedSize">
+		<i:SChoice id="FirstChoice" />
+		<i:SChoice id="SecondChoice" />
+	</i:SParam>
+
+	<i:SParam type="[3]" id="SomeComplexStructural" fixed="TheSecondSingleChoice TheSingleChoice">
+		<i:SChoice id="TheSingleChoice"/>
+		<i:SChoice id="TheSecondSingleChoice"/>
+	</i:SParam>
+
+</i:DesignSpace>

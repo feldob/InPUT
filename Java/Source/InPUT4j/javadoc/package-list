@@ -1,0 +1,14 @@
+se.miun.itm.input
+se.miun.itm.input.aspects
+se.miun.itm.input.eval
+se.miun.itm.input.export
+se.miun.itm.input.impOrt
+se.miun.itm.input.model
+se.miun.itm.input.model.design
+se.miun.itm.input.model.element
+se.miun.itm.input.model.mapping
+se.miun.itm.input.model.param
+se.miun.itm.input.model.param.generator
+se.miun.itm.input.standalone
+se.miun.itm.input.util
+se.miun.itm.input.util.xml
