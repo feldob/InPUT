@@ -19,7 +19,8 @@
           <a id="forkme_banner" href="https://github.com/feldob/InPUT">View on GitHub</a>
 
           <h1 id="project_title">InPUT</h1>
-          <h2 id="project_tagline">A descriptive and programming language independent format and API for the simplified configuration, documentation, and design of computer experiments. </h2>
+
+          <h3 id="project_tagline">A descriptive and programming language independent format and API for the simplified configuration, documentation, and design of computer experiments. </h3>
 
             <section id="downloads">
               <a class="zip_download_link" href="https://github.com/feldob/InPUT/zipball/master">Download this project as a .zip file</a>
@@ -31,33 +32,89 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <h3>Welcome to GitHub Pages.</h3>
+        <h2>Welcome to the InPUT Newsflow!</h2>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+<h3>InPUT v0.4 (02.05.2013)</h3>
+</p>
+The v0.4 release comes with new tutorials and concrete use cases. Here is a list of the latest inclusions:
+<ul>
+<li>Parameter tuning example (WatchmakerTuning)</li>
+<li>improved/simplified experimental structure for experimental design using SPOT</li>
+<li>improved wildcard setting for complex parameter types</li>
+<li>improved runtime validation of input values</li>
+<li>improved logging</li>
+<li>bugfixes for the setting of array types and enums</li>
+<li>bug fixes experimental import/export</li>
+<li>bug fixes LaTeX import/export</li>
+<li>new InPUT parameter "cacheDesigns" for optional design lookup</li>
+</ul>
+</p>
+Cheers,
+<div class="date">Felix</div>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
+<h3>InPUT4j v0.3: Parameter Tuning Extensions (08.11.2012)</h3>
+</p>
+InPUT4j has received a major feature update (v0.2), and v0.3 is already in the pipe. v0.3 extends InPUT by a tuning extension, and comes with the following features:
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+<ul>
+<li>restructured and substantially extended JUnit tests (all green now after some bug fixes).</li>
+<li>simple export to flat Java Properties file ( see se.miun.itm.input.export.PropertiesExporter.java).</li>
+<li>simple integration (import/export) of <a href="http://cran.r-project.org/web/packages/SPOT/index.html">Sequential Parameter Optimization tool (SPOT)</a> design and result descriptors.</li>
+<li>sequential parameter tuning support directly in Java code using the InPUT "IExperiment" concept.</li>
+<li>The "fixed value" concept that simplifies default parameter settings.</li>
+<li>loads of examples, including <a href="http://mutubehd.miun.se/video/742/InPUT+Tutorial+%28Step+1%29">a tutorial video</a> that shows live how to externalize parameters using InPUT.</li>
+</ul>
 
-<h3>Designer Templates</h3>
+InPUT extends the SPOT framework by wrapping an R runtime using  <a href="http://www.rforge.net/JRI/">JRI</a>. It can be customized by the user to store the wrapped R workspaces, containing all the data and history from the investigation, allowing for the external access from within R, providing full fledged statistical analysis of experiments executed in Java. SPOT configuration is internally translated to InPUT, and can from now on be treated the InPUT way (spotSpace.xml, spot.xml).
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+</p>
+Best always,
+<div class="date">Felix</div>
 
-<h3>Rather Drive Stick?</h3>
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
 
-<h3>Authors and Contributors</h3>
+<h3>Language Updates (20.10.2012)</h3>
+</p>
+I would like to announce that InPUT4c++ is approaching a beta state. In addition, the creation of InPUT4py (python) is in working progress. Another student project is involved with the creation of an SQL database import/export interface that can be reached and read publicly via a web interface.
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+</p>
+Cheers,
+<div class="date">Felix</div>
 
-<h3>Support or Contact</h3>
 
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
-      </section>
+
+<h3>InPUT4j v0.2: Feature Extensions (12.10.2012)</h3>
+</p>
+The focus for the Java v0.2 release has been on internal and structural improvements:
+
+<ul>
+<li>direct support for typed arrays for InPUT managed parameters (e.g MyFooClass[][] as an alternative to nested Object[]).</li>
+<li>registered design spaces and their parameter meta data can now be looked up by a static service in order to simplify meta data extraction from the API.</li>
+<li>InPUT uses itself for configuration (see configSpace.xml, config.xml in package se.miun.itm.input).</li>
+<li>Injection based reading and writing of InPUT descriptors.</li>
+</ul>
+
+</p>
+Best always,
+<div class="date">Felix</div>
+
+<h3>InPUT4j v0.1: InPUT beta available (08.07.2012)</h3>
+</p>
+The InPUT source code can now be downloaded from its <a href="https://github.com/feldob/InPUT/wiki">github repository</a>. Github allows everyone to share software projects. It is rather easy to file bug reports or even suggest code changes via git push. There is a wiki which will be updated in the near future, with examples, tutorials, and documentation.
+</p>
+Cheers,
+<div class="date">Felix</div>
+<p>
+<h3>Page under construction (24.03.2012)</h3>
+</p>
+Personal note:</p>
+
+Hi there,
+</p>
+my name is Felix, I am a computer science graduate student with the Mid Sweden University. I have recently started creating this website. Its main purpose is the promotion of the open-source framework by name InPUT which I am actively developing. If you are into experimental research doing computer experiments, you might want to check it out, it could make your life easier. Unfortunately, I haven't had the time to make it available as yet, but that will happen soon.
+</p>
+Take care!
+<div class="date">Felix</div>
     </div>
 
     <!-- FOOTER  -->
