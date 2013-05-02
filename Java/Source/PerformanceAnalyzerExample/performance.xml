@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<in:Design xmlns:in="http://TheInPUT.org/Design" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://TheInPUT.org/Design http://TheInPUT.org/Design.xsd" id="1356274766327" ref="performanceSpace">
+  <in:NValue id="performance">
+    <in:NValue id="1">
+      <in:NValue id="1" value="2544" />
+      <in:NValue id="2" value="1808" />
+      <in:NValue id="3" value="2501" />
+    </in:NValue>
+    <in:NValue id="2">
+      <in:NValue id="1" value="1263" />
+      <in:NValue id="2" value="1154" />
+      <in:NValue id="3" value="1041" />
+    </in:NValue>
+    <in:NValue id="3">
+      <in:NValue id="1" value="1357" />
+      <in:NValue id="2" value="1124" />
+      <in:NValue id="3" value="1585" />
+    </in:NValue>
+    <in:NValue id="4">
+      <in:NValue id="1" value="1513" />
+      <in:NValue id="2" value="1280" />
+      <in:NValue id="3" value="1215" />
+    </in:NValue>
+    <in:NValue id="5">
+      <in:NValue id="1" value="1026" />
+      <in:NValue id="2" value="1051" />
+      <in:NValue id="3" value="1115" />
+    </in:NValue>
+  </in:NValue>
+</in:Design>
+<!--Sat Apr 13 15:40:10 CEST 2013
+Environment: Language="java" Version="1.7.0" Architecture="amd64" Processors="2" OS="Linux" Memory="124125184"-->

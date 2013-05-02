@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<in:Design ref="someSpace.xml" xmlns:in="http://TheInPUT.org/Design" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://TheInPUT.org/Design http://TheInPUT.org/Design.xsd" id="1">
+  <in:NValue id="paramId">
+    <in:NValue id="1" value="188912922" />
+    <in:NValue id="2" value="-1772388034" />
+    <in:NValue id="3" value="-84875878" />
+    <in:NValue id="4" value="-2072655376" />
+    <in:NValue id="5" value="-1895759550" />
+    <in:NValue id="6" value="-208226690" />
+    <in:NValue id="7" value="341253300" />
+    <in:NValue id="8" value="-1327618916" />
+    <in:NValue id="9" value="1826954414" />
+    <in:NValue id="10" value="-2126595010" />
+  </in:NValue>
+</in:Design>
