@@ -1,4 +1,4 @@
-/*-- $Copyright (C) 2012 Felix Dobslaw$
+/*-- $Copyright (C) 2012 Felix Dobslaw$*/
 
 package se.miun.itm.input.annotation;
 
