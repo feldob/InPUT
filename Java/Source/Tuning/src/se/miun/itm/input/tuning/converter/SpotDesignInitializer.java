@@ -1,4 +1,22 @@
-package se.miun.itm.input.tuning.converter;
+/*-- $Copyright (C) 2012-13 Felix Dobslaw$
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is furnished
+to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */package se.miun.itm.input.tuning.converter;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -19,6 +37,7 @@ import org.jdom2.output.XMLOutputter;
 import se.miun.itm.input.Experiment;
 import se.miun.itm.input.IExperiment;
 import se.miun.itm.input.IInPUT;
+import se.miun.itm.input.InPUTConfig;
 import se.miun.itm.input.export.ByteArrayExporter;
 import se.miun.itm.input.impOrt.InputStreamImporter;
 import se.miun.itm.input.model.InPUTException;
@@ -43,7 +62,7 @@ public class SpotDesignInitializer {
 
 	private InputStreamImporter importer;
 
-	public SpotDesignInitializer() {
+	public SpotDesignInitializer() throws InPUTException {
 		outputter = new XMLOutputter();
 		outputter.setFormat(Format.getPrettyFormat());
 		importer = new InputStreamImporter();
@@ -280,7 +299,7 @@ public class SpotDesignInitializer {
 
 	private IDesign reinitiateDesignTemplate(IDesign inputDesign, Document designTemplate) throws InPUTException {
 		String output = outputter.outputString(designTemplate);
-		importer.resetContext(new ByteArrayInputStream(output.getBytes()), true);
+		importer.resetContext(new ByteArrayInputStream(output.getBytes()), InPUTConfig.isValidationActive());
 		inputDesign.impOrt(importer);
 
 		return inputDesign;

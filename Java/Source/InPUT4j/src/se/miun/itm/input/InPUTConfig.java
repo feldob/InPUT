@@ -1,5 +1,4 @@
-/*-- $Copyright (C) 2012 Felix Dobslaw$
-
+/*-- $Copyright (C) 2012-13 Felix Dobslaw$
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -17,8 +16,7 @@ PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIG
 HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-package se.miun.itm.input;
+ */package se.miun.itm.input;
 
 import java.io.InputStream;
 import java.util.List;
@@ -47,7 +45,7 @@ import se.miun.itm.input.util.xml.SAXUtil;
  * @NotThreadSafe
  */
 public abstract class InPUTConfig {
-
+	
 	private static IDesign config;
 
 	private static Document configDoc;
@@ -64,8 +62,6 @@ public abstract class InPUTConfig {
 					IInPUT.class.getResourceAsStream(Q.CONFIG), false);
 			// import the design
 			config = configSpace.impOrt(importer);
-			
-			System.out.println("### InPUTConfig initiated");
 
 		} catch (InPUTException e) {
 			System.out
@@ -95,7 +91,7 @@ public abstract class InPUTConfig {
 	 * 
 	 * @param paramId
 	 * @return
-	 * @throws InPUTException
+	 * @throws InPUTException 
 	 */
 	public static String getValueToString(String paramId) throws InPUTException {
 		return config.getValueToString(paramId);
@@ -192,9 +188,8 @@ public abstract class InPUTConfig {
 		design.extendScope(config);
 	}
 
-	public static void setValue(String paramId, Object value)
-			throws InPUTException {
-		config.setValue(paramId, value);
+	public static void setValue(String paramId, Object value) throws InPUTException {
+		 config.setValue(paramId, value);
 	}
 
 	public static boolean cachesDesigns() {

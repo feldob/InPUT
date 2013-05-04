@@ -1,5 +1,4 @@
-/*-- $Copyright (C) 2012 Felix Dobslaw$
-
+/*-- $Copyright (C) 2012-13 Felix Dobslaw$
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -17,11 +16,11 @@ PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIG
 HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-package se.miun.itm.input.impOrt;
+ */package se.miun.itm.input.impOrt;
 
 import java.io.InputStream;
 
+import se.miun.itm.input.InPUTConfig;
 import se.miun.itm.input.model.Document;
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.util.xml.SAXUtil;
@@ -38,12 +37,17 @@ public class InputStreamImporter implements InPUTImporter<Document> {
 	private InputStream inputStream;
 	private boolean validate;
 
-	public InputStreamImporter() {
+	public InputStreamImporter() throws InPUTException {
+		validate = InPUTConfig.isValidationActive();
 	}
 
-	public InputStreamImporter(InputStream stream, boolean validate) {
-		this.inputStream = stream;
+	public InputStreamImporter(InputStream stream, boolean validate) throws InPUTException {
 		this.validate = validate;
+		this.inputStream = stream;
+	}
+
+	public InputStreamImporter(InputStream is) throws InPUTException {
+		this(is, InPUTConfig.isValidationActive());
 	}
 
 	public void resetContext(InputStream stream, boolean validate) {
