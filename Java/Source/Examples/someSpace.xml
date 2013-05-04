@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<i:DesignSpace xmlns:i="http://TheInPUT.org/DesignSpace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="someSpace" xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://TheInPUT.org/DesignSpace.xsd">
-  <i:NParam id="paramId" type="integer[10]" exclMin="-41" inclMax="42"/>
+<i:DesignSpace 
+    xmlns:i="http://TheInPUT.org/DesignSpace" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    id="someSpace" 
+    xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://TheInPUT.org/DesignSpace.xsd">
+  <i:NParam 
+      id="paramId" 
+      type="integer[15]"
+      exclMin="-41" 
+      inclMax="42" />
 </i:DesignSpace>
