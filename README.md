@@ -65,10 +65,9 @@ You can also treat output, and entire experimental investigations, randomly inst
 
 Each programming language offers a language specific Readme in the respective folder. Currently, only Java is supported. C++ is coming soon. Take a look into [the tutorial page](https://github.com/feldob/InPUT/wiki/Tutorials) or view a screen cast [here](http://mutubehd.miun.se/video/742/InPUT+Tutorial+%28Step+1%29).
 
-# Good to know...
+# Working Offline (Java)
 
-When working offline, and input validation is desired, the schemaPath parameter in the [config.xml](https://github.com/feldob/InPUT/blob/master/Java/Source/InPUT4j/src/se/miun/itm/input/config.xml) must be set to a reachable location in the local network,
-containing the InPUT XSD descriptors (DesignSpace, Design, or CodeMappings). The latest schemata can always be downloaded from here:
+When working offline, schema validation has to be turned off in the [config.xml](https://github.com/feldob/InPUT/blob/master/Java/Source/InPUT4j/src/se/miun/itm/input/config.xml) by setting 'runtimeValidation' to false. As a consequence, execution becomes substantially faster too. The latest schemata can always be downloaded from here:
 
 * [design](https://github.com/feldob/InPUT/blob/master/Design.xsd)
 * [designSpace](https://github.com/feldob/InPUT/blob/master/DesignSpace.xsd)
