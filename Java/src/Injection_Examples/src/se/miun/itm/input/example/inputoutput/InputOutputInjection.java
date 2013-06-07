@@ -29,7 +29,7 @@ import se.miun.itm.input.annotation.Set;
  * boilerplate code. For that sake, a combination of Annotations and Aspect
  * oriented programming is used. The main difference is that it allows a
  * declarative way of describing the experiments, in contrast to the procedural
- * appraoch in the traditional example.
+ * approach in the traditional example.
  * 
  * @author Felix Dobslaw
  * 
