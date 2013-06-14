@@ -5,7 +5,7 @@ InPUT offers a descriptive and programming language independent format and IoC (
 It allows you to reproduce third party results by running experiments based on their descriptors; you choose programming language and the implementation of the algorithm. Thus, describing experiments using InPUT simplifies documentation as well as the collaboration between researchers and/or practitioners.
 InPUT offers adapters for different programming languages, reduces coding to a minimum, and induces clean code.
 In that sense, InPUT realizes the distinction between the specification ( *design spaces*, *design*), implementation ( *code mappings*), and use (InPUT IoC containers) of configuration, similar to how the [web service architecture](http://en.wikipedia.org/wiki/Web_service) differentiates between specification (WSDL), implementation (programming language of choice), and consumption (REST, SOAP) of services.
-For more info, see [wiki](https://github.com/feldob/InPUT/wiki), [scientific publication](http://dl.acm.org/citation.cfm?id=2330784.2330807), and [presentation slides](http://theinput.org/InPUT/input_gecco2012.pdf).
+For more info, see [wiki](https://github.com/feldob/InPUT/wiki), [scientific publication](http://dl.acm.org/citation.cfm?id=2330784.2330807), and [presentation slides](http://apachepersonal.miun.se/~feldob/InPUT/input_gecco2012.pdf).
 
 # Who benefits from InPUT?
 Software developers that have to make many (complex) choices for their algorithms and who like clean code. This includes practitioners and researchers in operational research or computational intelligence as well as practitioners who are keen on finding well performing configurations for their systems (database pools, multi-threaded application, etc.  ).
