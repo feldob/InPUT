@@ -18,8 +18,6 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */package se.miun.itm.input.model.design;
 
-import static org.junit.Assert.fail;
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
@@ -46,7 +44,7 @@ public class DesignSpaceTest extends IDesignSpaceTest {
 				new FileInputStream(DESIGN_SPACE_MAPPING_FILE));
 	}
 
-	// Should this test really expect a ClassCastException should the
+	// Should this test really expect a ClassCastException or should the
 	// the constructor throw an InPUTException?
 	@Test(expected=ClassCastException.class)
 	public void testDesignSpaceFromFile() throws InPUTException {
@@ -56,12 +54,10 @@ public class DesignSpaceTest extends IDesignSpaceTest {
 	}
 
 	@Test
-	public void testDesignSpaceFromInputStream() {
-		try {
-			tearDown();
-			space = new DesignSpace(new FileInputStream(DESIGN_SPACE_FILE));
-		} catch (Exception e) {
-			fail("Design spaces can be read as input streams.");
-		}
+	public void testDesignSpaceFromInputStream()
+			throws InPUTException, FileNotFoundException {
+		tearDown();
+		// Design spaces can be read as input streams.
+		space = new DesignSpace(new FileInputStream(DESIGN_SPACE_FILE));
 	}
 }
