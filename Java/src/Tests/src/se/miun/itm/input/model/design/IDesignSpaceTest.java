@@ -609,7 +609,7 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 			integer = space.next("SomeInteger");
 			b = space.next("SomeBoolean");
 			assertEquals(2, integer);
-			assertEquals(true, b);
+			assertTrue(b);
 		}
 
 		space.setFixed("SomeInteger", null);
@@ -680,6 +680,6 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 	@Test
 	public void testSetFixedComplex() throws InPUTException {
 		// /TODO
-		fail();
+		fail("Not implemented yet.");
 	}
 }
