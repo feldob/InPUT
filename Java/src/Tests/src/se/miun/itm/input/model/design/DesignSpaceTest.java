@@ -46,14 +46,13 @@ public class DesignSpaceTest extends IDesignSpaceTest {
 				new FileInputStream(DESIGN_SPACE_MAPPING_FILE));
 	}
 
-	@Test
-	public void testDesignSpaceFromFile() {
-		try {
-			tearDown();
-			space = new DesignSpace(DESIGN_SPACE_MAPPING_FILE);
-			fail("Mappings are not of appropriate structure for spaces.");
-		} catch (Exception e) {
-		}
+	// Should this test really expect a ClassCastException should the
+	// the constructor throw an InPUTException?
+	@Test(expected=ClassCastException.class)
+	public void testDesignSpaceFromFile() throws InPUTException {
+		tearDown();
+		// Mappings are not of appropriate structure for spaces.
+		space = new DesignSpace(DESIGN_SPACE_MAPPING_FILE);
 	}
 
 	@Test
