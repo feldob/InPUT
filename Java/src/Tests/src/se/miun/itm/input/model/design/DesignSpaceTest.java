@@ -21,9 +21,12 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import static org.junit.Assert.fail;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import se.miun.itm.input.model.InPUTException;
 
 public class DesignSpaceTest extends IDesignSpaceTest {
 
@@ -35,14 +38,12 @@ public class DesignSpaceTest extends IDesignSpaceTest {
 	}
 
 	@Test
-	public void testDesignSpaceWithMappingAsInputStreams() {
-		try {
-			tearDown();
-			space = new DesignSpace(new FileInputStream(DESIGN_SPACE_FILE),
-					new FileInputStream(DESIGN_SPACE_MAPPING_FILE));
-		} catch (Exception e) {
-			fail("Both space and mapping entries should be settable via streams.");
-		}
+	public void testDesignSpaceWithMappingAsInputStreams()
+			throws InPUTException, FileNotFoundException {
+		tearDown();
+		// Both space and mapping entries should be settable via streams.
+		space = new DesignSpace(new FileInputStream(DESIGN_SPACE_FILE),
+				new FileInputStream(DESIGN_SPACE_MAPPING_FILE));
 	}
 
 	@Test
