@@ -79,7 +79,7 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 			assertNotNull(someFloat);
 			assertNotNull(someDecimal);
 
-		} catch (Exception e) {
+		} catch (InPUTException e) {
 			e.printStackTrace();
 			fail("The random primitive type retrieval is not type safe.");
 		}
@@ -94,7 +94,7 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 			assertEquals("The default String is expected.",
 					"SomeStringCustomizedByTheUser", value);
 
-		} catch (Exception e) {
+		} catch (InPUTException e) {
 			e.printStackTrace();
 			fail("Strings are not randomly created, a default String is expected in that case.");
 		}
@@ -145,7 +145,7 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 			assertNotNull(someStructuralParent);
 			assertNotNull(deepStructuralParent);
 
-		} catch (Exception e) {
+		} catch (InPUTException e) {
 			e.printStackTrace();
 			fail("The random structural type retrieval is not type safe.");
 		}
@@ -187,7 +187,7 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 	 */
 	@SuppressWarnings("unused")
 	@Test
-	public void testNextNegative() {
+	public void testNextNegative() throws InPUTException {
 
 		try {
 			assertNull(space.next("ParamThatDoesNotExist"));
@@ -200,14 +200,13 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 		try {
 			int someBoolean = space.next("SomeBoolean");
 			fail("A boolean should not be directly castable to an int.");
-		} catch (Exception e) {
+		} catch (ClassCastException e) {
 		}
 
 		try {
 			AnotherStructural anotherStructural = space.next("SomeStructural");
 			fail("random structural types cannot be freely casted.");
-		} catch (Exception e) {
-
+		} catch (ClassCastException e) {
 		}
 	}
 
