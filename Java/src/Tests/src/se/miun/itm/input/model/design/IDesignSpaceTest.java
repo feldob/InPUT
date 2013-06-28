@@ -589,16 +589,14 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 
 	@Test
 	public void testSetFixedNegative() throws InPUTException {
-		try {
-			space.setFixed("whatever", "2");
-			space.setFixed("SomeBoolean", "whatever");
-			space.setFixed("SomeInteger", "whatever");
-			space.setFixed("SomeStructural", "whatever");
-			fail();
-
-		} catch (InPUTException e) {
-			// the values should not be possible to get set
-		}
+		// This line fails because no parameter with id "whatever" exists.
+		// That doesn't seem to be the expected failure reason.
+		space.setFixed("whatever", "2");
+		// These three lines succeed perfectly without any errors.
+		// They are probably supposed to fail.
+		space.setFixed("SomeBoolean", "whatever");
+		space.setFixed("SomeInteger", "whatever");
+		space.setFixed("SomeStructural", "whatever");
 	}
 
 	@Test
