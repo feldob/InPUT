@@ -23,6 +23,8 @@ import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 
+import se.miun.itm.input.model.InPUTException;
+
 public class DesignTest extends IDesignTest {
 
 	@Before
@@ -36,11 +38,10 @@ public class DesignTest extends IDesignTest {
 		String[] flawedfileNames = {null, "someNotExistent.xml"};
 
 		for (String fileName : flawedfileNames) {
-			
 			try {
 				design = new Design(fileName);
 				fail("The space file is inappropriate!");
-			} catch (Exception e) {
+			} catch (InPUTException e) {
 			}
 		}
 	}
