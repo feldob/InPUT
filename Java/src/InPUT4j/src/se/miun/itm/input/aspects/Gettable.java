@@ -28,7 +28,8 @@ public interface Gettable {
 	 * 
 	 * @param paramId
 	 *            The id of the parameter of interest in InPUT notion.
-	 * @return The current parameter value of type <code>paramId</code>
+	 * @return The current parameter value of type <code>paramId</code> or
+	 * 			<code>null</code> if <code>paramId</code> is invalid. 
 	 * @throws InPUTException 
 	 */
 	<T> T getValue(String paramId) throws InPUTException;
@@ -42,10 +43,11 @@ public interface Gettable {
 	 * @param actualParams
 	 *            The actual parameters necessary to instantiate the object.
 	 *            Only required if not using standard constructors.
-	 * @return The current parameter value of type <code>paramId</code>
+	 * @return The current parameter value of type <code>paramId</code> or
+	 * 			<code>null</code> if <code>paramId</code> is invalid.
 	 * @throws InPUTException 
 	 */
-	<T> T getValue(String string, Object[] actualParams) throws InPUTException;
+	<T> T getValue(String paramId, Object[] actualParams) throws InPUTException;
 
 	/**
 	 * Returns the current parameter value of this design for parameter
@@ -54,7 +56,8 @@ public interface Gettable {
 	 * @param paramId
 	 *            The id of the parameter of interest in InPUT notion.
 	 * @return The InPUT String variant of the current parameter value of type
-	 *         <code>paramId</code>
+	 *         <code>paramId</code> or <code>null</code> if
+	 *         <code>paramId</code> is invalid.
 	 * @throws InPUTException 
 	 */
 	String getValueToString(String paramId) throws InPUTException;
