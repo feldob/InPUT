@@ -507,17 +507,16 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 	}
 
 	@Test
-	public void testNegativeNextParameterConstructorOverride() {
+	public void testNegativeNextParameterConstructorOverride() throws InPUTException {
 		Object[] actualParams = { "SomeWrongInput", 10f };
-
 		SomeStructuralParent result = null;
-		try {
-			result = space.next("SomeStructuralParent", actualParams);
-			if (!(result instanceof YetAnotherSecondChoice)) {
-				fail("Wrong input should not be tolerated and lead to a quick exception.");
-			}
-		} catch (InPUTException e) {
-		}
+		// This line throws an InPUTException, but none seems to be expected.
+		result = space.next("SomeStructuralParent", actualParams);
+		// Alternatively, an InPUTException is expected, but then the test
+		// should fail if one isn't thrown. In that case it doesn't seem to
+		// make sense to check the type of result (since it should be null).
+		assertTrue("result should be an instance of YetAnotherSecondChoice.",
+				result instanceof YetAnotherSecondChoice);
 	}
 
 	@Test
