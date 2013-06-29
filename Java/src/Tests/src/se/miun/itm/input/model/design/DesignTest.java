@@ -33,7 +33,7 @@ public class DesignTest extends IDesignTest {
 	}
 
 	@Test
-	public void testDesign() {
+	public void testCreatingDesignsWithInvalidFileNamesShouldFail() {
 
 		String[] flawedfileNames = {null, "someNotExistent.xml"};
 
