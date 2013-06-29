@@ -411,15 +411,11 @@ public abstract class IDesignTest extends AbstractInPUTTest {
 			complex.addEntry(new SingleComplexChoice());
 		
 		design.setValue("SomeComplexStructural", complex);
+
+		// We know that the type cast should be of SomeComplexStructural subtype!
+		SomeComplexStructural current = design.getValue("SomeComplexStructural");			
 		
-		SomeComplexStructural current = null;
-		try {
-			current = design.getValue("SomeComplexStructural");
-			
-		} catch (Exception e) {
-			fail("We know that the type cast should be of SomeComplexStructural subtype!");
-		}
-		
+		// Performs validation as a side effect.
 		design.export(new ByteArrayExporter());
 		
 		assertEquals(complex.size(), current.size());
