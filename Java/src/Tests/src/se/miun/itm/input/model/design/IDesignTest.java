@@ -397,13 +397,11 @@ public abstract class IDesignTest extends AbstractInPUTTest {
 	@Test
 	public void testGetComplex() throws InPUTException {
 		SomeAbstractComplexStructural complex = design.getValue("SomeComplexStructural");
-		if (complex instanceof SomeComplexStructural) {
-			SomeComplexStructural struct = (SomeComplexStructural) complex;
-			assertEquals(3, struct.size());
-			design.setValue("SomeComplexStructural", struct);
-			assertEquals(complex, design.getValue("SomeComplexStructural"));
-		}else
-			fail("The complex type should be as the defined one.");
+		assertTrue("The complex type should be as the defined one.", complex instanceof SomeComplexStructural);
+		SomeComplexStructural struct = (SomeComplexStructural) complex;
+		assertEquals(3, struct.size());
+		design.setValue("SomeComplexStructural", struct);
+		assertEquals(complex, design.getValue("SomeComplexStructural"));
 	}
 
 	@Test
