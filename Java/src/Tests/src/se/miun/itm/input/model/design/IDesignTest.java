@@ -122,20 +122,25 @@ public abstract class IDesignTest extends AbstractInPUTTest {
 
 	@Test
 	public void testSetPrimitive() throws InPUTException {
-		design.setValue("SomeBoolean", true);
-		assertEquals(true,design.getValue("SomeBoolean"));
-		design.setValue("SomeInteger", 1);
-		assertEquals(1,design.getValue("SomeInteger"));
-		design.setValue("SomeShort", (short)42);
-		assertEquals((short)42,design.getValue("SomeShort"));
-		design.setValue("SomeLong", 1l);
-		assertEquals(1l,design.getValue("SomeLong"));
-		design.setValue("SomeDouble", .42d);
-		assertEquals(0.42d,(Double)design.getValue("SomeDouble"), PRECISION);
-		design.setValue("SomeFloat", .84f);
-		assertEquals(0.84f,(Float)design.getValue("SomeFloat"), PRECISION);
-		design.setValue("SomeDecimal", new BigDecimal(42));
-		assertEquals(new BigDecimal(42).floatValue(),((BigDecimal)design.getValue("SomeDecimal")).floatValue(), PRECISION);
+		setAndCompare(true, "SomeBoolean");
+		setAndCompare(1, "SomeInteger");
+		setAndCompare((short) 42, "SomeShort");
+		setAndCompare(1L, "SomeLong");
+		setAndCompare(.42d, "SomeDouble");
+		setAndCompare(.84f, "SomeFloat");
+		setAndCompare(new BigDecimal(42), "SomeDecimal");
+	}
+
+	// This test helper will set a parameter, then get it back and check that
+	// it got the new value. In order to make sure that the value was actually
+	// set it requires that the existing value (if any) is different from the
+	// one that is being set.
+	private void setAndCompare(Object value, String paramId) throws InPUTException {
+		Object current = design.getValue(paramId);
+		assertTrue(!value.equals(current));
+		design.setValue(paramId, value);
+		current = design.getValue(paramId);
+		assertEquals(value, current);
 	}
 
 	@Test
