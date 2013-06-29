@@ -437,22 +437,23 @@ public abstract class IDesignTest extends AbstractInPUTTest {
 
 		try {
 			design.setValue("IDoNotExist", design);
-			fail("Setting a not know parameter should result in an exception.");
-		} catch (Exception e) {
+			fail("Setting an unknown parameter should result in an exception.");
+		} catch (InPUTException e) {
 		}
 		
 		try {
 			design.setValue("IDoNotExist", null);
-			fail("Null value setting should result in an exception.");
-		} catch (Exception e) {
+			fail("Null value AND invalid id should result in an exception.");
+		} catch (InPUTException e) {
 		}
-		
+
+		// Check that the parameter even exists first.
+		assertNotNull(design.getValue("SomeStructuralParent"));
 		try {
 			design.setValue("SomeStructuralParent", null);
 			fail("Null value setting should result in an exception.");
-		} catch (Exception e) {
+		} catch (InPUTException e) {
 		}
-		assertNotNull(design.getValue("SomeStructuralParent"));
 	}
 
 	@Test
