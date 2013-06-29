@@ -377,20 +377,20 @@ public abstract class IDesignTest extends AbstractInPUTTest {
 	}
 
 	@Test
-	public void testSetArrayNegative() throws InPUTException {
-		
-		try {
-			design.setValue("SomeFixedArray.43", 42);
-			fail("There is no such array position");
-		} catch (Exception e) {
-			
-		}
-		
+	public void testSetValueForFixedArrayElementShouldFail() {
 		try {
 			design.setValue("SomeFixedArray.1", 44);
-			fail("another value than the fixed one may not be set");
-		} catch (Exception e) {
-			
+			fail("A new value cannot be set once one has been fixed.");
+		} catch (InPUTException e) {
+		}
+	}
+	
+	@Test
+	public void testSetValueForArrayElementWithOutOfRangeIndexShouldFail() {
+		try {
+			design.setValue("SomeFixedArray.43", 42);
+			fail("There is no such array position.");
+		} catch (InPUTException e) {
 		}
 	}
 
