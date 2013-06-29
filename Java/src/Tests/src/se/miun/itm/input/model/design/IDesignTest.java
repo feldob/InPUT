@@ -79,9 +79,17 @@ public abstract class IDesignTest extends AbstractInPUTTest {
 	}
 
 	@Test
-	public void testExtendScope() throws InPUTException {
+	public void testExtendScopeWithNullShouldDoNothing() throws InPUTException {
 		design.extendScope(null);
+	}
+
+	@Test
+	public void testExtendScopeWithSameDesignShouldDoNothing() throws InPUTException {
 		design.extendScope(design);
+	}
+
+	@Test
+	public void testExtendScope() throws InPUTException {
 		IDesign anotherDesign = new Design("anotherTestDesign.xml");
 		design.extendScope(anotherDesign);
 
