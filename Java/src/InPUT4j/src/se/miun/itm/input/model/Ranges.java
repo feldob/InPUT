@@ -432,19 +432,19 @@ public class Ranges {
 		if (extremas.length == 0)
 			return;
 		
-		boolean violates = true;
+		Comparable<?> violated = null;
 		for (Comparable<?> extrema : extremas) {
-			if (theValue.compareTo(extrema) <= 0) {
-				violates = false;
+			if (theValue.compareTo(extrema) > 0) {
+				violated = extrema;
 				break;
 			}
 		}
 
-		if (violates)
+		if (violated != null)
 			throw new IllegalArgumentException(spaceId
 					+ ": The entered value \"" + theValue
 					+ "\" for the parameter with id \"" + paramId
-					+ "\" is out of range (above maximum threshold \"" + max[0]
+					+ "\" is out of range (above maximum threshold \"" + violated
 					+ "\").");
 	}
 
@@ -456,19 +456,19 @@ public class Ranges {
 		if (extremas.length == 0)
 			return;
 
-		boolean violates = true;
+		Comparable<?> violated = null;
 		for (Comparable<?> extrema : extremas) {
-			if (theValue.compareTo(extrema) >= 0) {
-				violates = false;
+			if (theValue.compareTo(extrema) < 0) {
+				violated = extrema;
 				break;
 			}
 		}
 
-		if (violates)
+		if (violated != null)
 			throw new IllegalArgumentException(spaceId
 					+ ": The entered value \"" + theValue
 					+ "\" for the parameter with id \"" + paramId
-					+ "\" is out of range (below minimum threshold \"" + min[0]
+					+ "\" is out of range (below minimum threshold \"" + violated
 					+ "\").");
 	}
 

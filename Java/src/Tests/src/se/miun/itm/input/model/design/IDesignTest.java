@@ -205,15 +205,18 @@ public abstract class IDesignTest extends AbstractInPUTTest {
 		long someLong = design.getValue("SomeLong");
 		try {
 			design.setValue("ABiggerLong", someLong);
-			fail("somelong is excluded from the bigger long range!");
-		} catch (Exception e) {
+			fail("someLong is excluded from the bigger long range!");
+		} catch (InPUTException e) {
+			fail("The test is expected to throw an IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			// This is where the test will end up.
 		}
 		
 		try {
-			design.setValue("ABiggerLong", someLong + 1l);
-		} catch (Exception e) {
+			design.setValue("ABiggerLong", someLong + 1L);
+		} catch (InPUTException e) {
 			e.printStackTrace();
-			fail("The extended somelong fits into the range!");
+			fail("The extended somelong should fit into the range!");
 		}
 	}
 
