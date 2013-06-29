@@ -475,10 +475,7 @@ public abstract class IDesignTest extends AbstractInPUTTest {
 		design.export(new XMLFileExporter(designName));
 		IDesign design2 = design.getSpace().impOrt(new XMLFileImporter(designName));
 		
-		if (!design.same(design2)) {
-			fail();
-		};
-		
+		assertTrue(design.same(design2));
 		
 		new File(designName).delete();
 	}
