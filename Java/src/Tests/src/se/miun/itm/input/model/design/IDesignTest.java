@@ -144,33 +144,31 @@ public abstract class IDesignTest extends AbstractInPUTTest {
 	}
 
 	@Test
-	public void testSetPrimitiveNegative() throws InPUTException {
-		
+	public void testSetPrimitiveNegative() {
 		try {
 			design.setValue("SomeBoolean", 1);
 			fail("not allowed to set int for boolean!");
-		} catch (Exception e) {
+		} catch (InPUTException e) {
 		}
-		
 		try {
 			design.setValue("SomeDouble", true);
 			fail("not allowed to set boolean for double!");
-		} catch (Exception e) {
+		} catch (InPUTException e) {
 		}
 		try {
 			design.setValue("SomeLong", 0.84f);
 			fail("not allowed to set float for long!");
-		} catch (Exception e) {
+		} catch (InPUTException e) {
 		}
 		try {
-			design.setValue("SomeFloat", 1l);
+			design.setValue("SomeFloat", 1L);
 			fail("not allowed to set long for float!");
-		} catch (Exception e) {
+		} catch (InPUTException e) {
 		}
 		try {
 			design.setValue("SomeDecimal", (short)42);
 			fail("not allowed to set short for bigdecimal!");
-		} catch (Exception e) {
+		} catch (InPUTException e) {
 		}
 	}
 	
