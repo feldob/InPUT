@@ -358,22 +358,22 @@ public abstract class IDesignTest extends AbstractInPUTTest {
 		
 		assertEquals(value, current);
 		
-		long[] values = {1,2,3};
-		
+		final long[] values = {1,2,3};
 		design.setValue("SomeLargePrimitiveArray.1.1.42", values);
 		long[] currentValues = design.getValue("SomeLargePrimitiveArray.1.1.42");
 		
+		assertTrue(Arrays.equals(values, currentValues));
+		
+		// Some negative tests. (expected to fail)
 		try {
 			design.setValue("SomeLargePrimitiveArray.1.1.1.1", values);
-			fail();
-		} catch (Exception e) {}
+			fail("Should not be able to set the value of an array element with an array.");
+		} catch (InPUTException e) {}
 		
 		try {
 			design.setValue("SomeLargePrimitiveArray.1.1.42", value);
-			fail();
-		} catch (Exception e) {}
-		
-		assertTrue(Arrays.equals(values, currentValues));
+			fail("Should not be able to set the value of an array with a primitive.");
+		} catch (InPUTException e) {}
 	}
 
 	@Test
@@ -384,7 +384,7 @@ public abstract class IDesignTest extends AbstractInPUTTest {
 		} catch (InPUTException e) {
 		}
 	}
-	
+
 	@Test
 	public void testSetValueForArrayElementWithOutOfRangeIndexShouldFail() {
 		try {
