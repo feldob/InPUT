@@ -231,19 +231,23 @@ public abstract class IDesignTest extends AbstractInPUTTest {
 		SomeSharedStructuralSub structural = design.getValue("AnotherStructuralParent.SomeSharedStructuralSub");
 		assertEquals(parent.getSomeSharedStructuralSub(), structural);
 	}
-	
 
 	@Test
 	public void testSetInjectedStructural() throws InPUTException {
 		SomeSharedStructuralSub someShared = new SomeSubChoice();
+		// Check the parameter value before trying to set it.
 		SomeSharedStructuralSub currentShared = design.getValue("AnotherStructuralParent.SomeSharedStructuralSub");
 		assertNotSame(someShared, currentShared);
+
+		// Try to set the parameter. This should fail.
 		try {
 			design.setValue("AnotherStructuralParent.SomeSharedStructuralSub", someShared);
-			fail("Constructor injected should not be settable that way!");
-		} catch (Exception e) {
+			fail("Should not be able to set Constructor initialized param.");
+		} catch (InPUTException e) {
 		}
-		
+		// Check the parameter value again after trying to set it.
+		// Because setValue is expected to fail, the locally created object
+		// and the one returned by getValue should still be distinct.
 		currentShared = design.getValue("AnotherStructuralParent.SomeSharedStructuralSub");
 		
 		assertNotSame("The injection only works if the parameter is NOT instantiated by the constructor.", someShared, currentShared);
@@ -251,7 +255,9 @@ public abstract class IDesignTest extends AbstractInPUTTest {
 		String currentString = design.getValue("SomeStructuralParent.SomeSharedStructuralSub");
 		
 		String anotherString = "anotherString";
-		
+
+		// This parameter wasn't set by the constructor, so this call should
+		// succeed.
 		design.setValue("SomeStructuralParent.SomeSharedStructuralSub", anotherString);
 		currentString = design.getValue("SomeStructuralParent.SomeSharedStructuralSub");
 		
