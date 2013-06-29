@@ -292,7 +292,7 @@ public abstract class IDesignTest extends AbstractInPUTTest {
 		assertTrue(structural instanceof SomeSecondChoice);
 	}
 
-	@Test(expected=InPUTException.class)
+	@Test
 	public void testSetStructural() throws InPUTException {
 		SomeStructural choice = new SomeFirstChoice();
 		design.setValue("SomeStructural", choice);
@@ -301,8 +301,11 @@ public abstract class IDesignTest extends AbstractInPUTTest {
 		design.setValue("SomeStructural", choice);
 		assertEquals(choice, design.getValue("SomeStructural"));
 		
-		design.setValue("SomeStructural", new AnotherSubChoice());
-		fail("This type may not be set to the defined parameter.");
+		try {
+			design.setValue("SomeStructural", new AnotherSubChoice());
+			fail("This type may not be set to the defined parameter.");
+		} catch (InPUTException e) {
+		}
 	}
 
 	@Test
