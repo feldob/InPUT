@@ -243,16 +243,16 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 		try {
 			for (int i = 0; i < 10; i++) {
 				restrictedValue = space.next("SomeRestrictedPrimitive");
-				if (restrictedValue > 42 || restrictedValue < -42)
-					fail();
+				assertTrue(restrictedValue <= 42 || restrictedValue >= -42);
 
 				anotherRestrictedValue = space
 						.next("AnotherRestrictedPrimitive");
-				if (anotherRestrictedValue < .1d
-						|| (anotherRestrictedValue > .4 && anotherRestrictedValue < .8)
-						|| anotherRestrictedValue > .9)
-					fail();
 
+				boolean inFirstRange = anotherRestrictedValue > .1d &&
+						anotherRestrictedValue < .4d;
+				boolean inSecondRange = anotherRestrictedValue > .8d &&
+						anotherRestrictedValue < .9d;
+				assertTrue(inFirstRange || inSecondRange);
 			}
 
 			BigDecimal exclMin = new BigDecimal(0.42222222222);
@@ -260,9 +260,8 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 			BigDecimal veryRestricted;
 			for (int i = 0; i < 10; i++) {
 				veryRestricted = space.next("SomeVeryRestrictedPrimitive");
-				if (veryRestricted.compareTo(exclMin) <= 0
-						|| veryRestricted.compareTo(exclMax) >= 0)
-					assertTrue(false);
+				assertTrue(veryRestricted.compareTo(exclMin) > 0 &&
+						veryRestricted.compareTo(exclMax) < 0);
 			}
 		} catch (InPUTException e) {
 			e.printStackTrace();
