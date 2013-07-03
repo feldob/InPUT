@@ -25,6 +25,8 @@ import se.miun.itm.input.model.param.ParamStore;
 
 public abstract class AbstractInPUTTest {
 
+	protected static final double PRECISION = 0.000001;
+
 	@After
 	public void tearDown() {
 		Mappings.releaseAllMappings();

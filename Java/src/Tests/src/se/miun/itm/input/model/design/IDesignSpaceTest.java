@@ -488,7 +488,7 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 			if (parent instanceof YetAnotherThirdChoice) {
 				assertEquals(((Float) actualParams[1]).floatValue(),
 						((YetAnotherThirdChoice) parent)
-								.getSomeChoiceSpecificPrimitiveSub(), 0.000001);
+								.getSomeChoiceSpecificPrimitiveSub(), PRECISION);
 			}
 
 			Object[] actualParamsWithBlank = { Q.BLANK, 10f };
@@ -496,7 +496,7 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 			if (parent instanceof YetAnotherThirdChoice) {
 				assertEquals(((Float) actualParams[1]).floatValue(),
 						((YetAnotherThirdChoice) parent)
-								.getSomeChoiceSpecificPrimitiveSub(), 0.000001);
+								.getSomeChoiceSpecificPrimitiveSub(), PRECISION);
 			}
 
 		} catch (InPUTException e) {

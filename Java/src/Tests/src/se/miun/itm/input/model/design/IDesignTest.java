@@ -54,8 +54,6 @@ import se.miun.itm.input.model.InPUTException;
 
 public abstract class IDesignTest extends AbstractInPUTTest {
 
-	private static final double PRECISION = 0.000001;
-
 	public static final String DESIGN_FILE = "testDesign.xml";
 
 	protected IDesign design;
