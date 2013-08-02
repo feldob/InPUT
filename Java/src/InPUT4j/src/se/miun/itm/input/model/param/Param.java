@@ -43,7 +43,7 @@ import se.miun.itm.input.util.Q;
  * that are represented by parameter definitions, spanning e.g. the default
  * value ranges, its choices, its dependencies, its mappings, etc. Each
  * parameter is managed by a single container, the ParamStore. It combines the
- * language and implementation dependant information from the code mapping and
+ * language and implementation dependent information from the code mapping and
  * the abstract definition from the design space definitions.
  * 
  * @author Felix Dobslaw
