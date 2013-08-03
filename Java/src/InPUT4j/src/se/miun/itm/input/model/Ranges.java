@@ -160,7 +160,7 @@ public class Ranges {
 			} else
 				throw new InPUTException(
 						paramId
-								+ ": exclMax and inclMax attributes are mutual exclusive.");
+								+ ": exclMax and inclMax attributes are mutually exclusive.");
 		}
 	}
 
