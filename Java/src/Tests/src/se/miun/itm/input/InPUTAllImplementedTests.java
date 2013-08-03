@@ -16,27 +16,24 @@ PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIG
 HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */package se.miun.itm.input.aspects;
+ */
+package se.miun.itm.input;
 
-import se.miun.itm.input.model.InPUTException;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-public interface Settable {
+import se.miun.itm.input.model.design.DesignSpaceTest;
+import se.miun.itm.input.model.design.DesignTest;
 
-	/**
-	 * Resets the current parameter value of this design for the parameter
-	 * identified by <code>paramId</code> as an InPUT String.
-	 * 
-	 * @param paramId
-	 *            The id of the parameter of interest in InPUT notion.
-	 * @param obj
-	 *            A valid value of the appropriate type for the parameter
-	 *            identified by <code>paramId</code>.
-	 * @throws InPUTException if <code>paramId</code> is an invalid id
-	 * 			(<code>null</code> or unknown/nonexistent).
-	 * @throws InPUTException if <code>obj</code> is of a type that doesn't
-	 * 			match what was specified for <code>paramId</code>. This means
-	 * 			that <code>null</code> is always an invalid value.
-	 * @throws InPUTException if called on a read-only Design.
-	 */
-	void setValue(String paramId, Object obj) throws InPUTException;
+/**
+ * This test suite runs the test files that actually have implemented
+ * tests, so that running the tests is quicker and more meaningful.
+ * @author Christoffer Fink
+ */
+@RunWith(Suite.class)
+@SuiteClasses({
+    InPUTConfigTest.class, DesignSpaceTest.class, DesignTest.class
+})
+public class InPUTAllImplementedTests {
 }

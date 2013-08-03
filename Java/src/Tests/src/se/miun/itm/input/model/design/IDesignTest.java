@@ -54,17 +54,18 @@ import se.miun.itm.input.model.InPUTException;
 
 public abstract class IDesignTest extends AbstractInPUTTest {
 
-	private static final double PRECISION = 0.000001;
-
 	public static final String DESIGN_FILE = "testDesign.xml";
 
 	protected IDesign design;
 
-	@Test(expected=InPUTException.class)
-	public void testSetReadOnly() throws InPUTException{
+	@Test
+	public void testSetReadOnly() {
 		design.setReadOnly();
-		design.setValue("SomeBoolean", false);
-		fail("only read should disallow the setting of values!");
+		try {
+			design.setValue("SomeBoolean", false);
+			fail("Read-only should disallow the setting of values!");
+		} catch (InPUTException e) {
+		}
 	}
 
 	@Test
@@ -76,9 +77,17 @@ public abstract class IDesignTest extends AbstractInPUTTest {
 	}
 
 	@Test
-	public void testExtendScope() throws InPUTException {
+	public void testExtendScopeWithNullShouldDoNothing() throws InPUTException {
 		design.extendScope(null);
+	}
+
+	@Test
+	public void testExtendScopeWithSameDesignShouldDoNothing() throws InPUTException {
 		design.extendScope(design);
+	}
+
+	@Test
+	public void testExtendScope() throws InPUTException {
 		IDesign anotherDesign = new Design("anotherTestDesign.xml");
 		design.extendScope(anotherDesign);
 
@@ -119,50 +128,53 @@ public abstract class IDesignTest extends AbstractInPUTTest {
 
 	@Test
 	public void testSetPrimitive() throws InPUTException {
-		design.setValue("SomeBoolean", true);
-		assertEquals(true,design.getValue("SomeBoolean"));
-		design.setValue("SomeInteger", 1);
-		assertEquals(1,design.getValue("SomeInteger"));
-		design.setValue("SomeShort", (short)42);
-		assertEquals((short)42,design.getValue("SomeShort"));
-		design.setValue("SomeLong", 1l);
-		assertEquals(1l,design.getValue("SomeLong"));
-		design.setValue("SomeDouble", .42d);
-		assertEquals(0.42d,(Double)design.getValue("SomeDouble"), PRECISION);
-		design.setValue("SomeFloat", .84f);
-		assertEquals(0.84f,(Float)design.getValue("SomeFloat"), PRECISION);
-		design.setValue("SomeDecimal", new BigDecimal(42));
-		assertEquals(new BigDecimal(42).floatValue(),((BigDecimal)design.getValue("SomeDecimal")).floatValue(), PRECISION);
+		setAndCompare(true, "SomeBoolean");
+		setAndCompare(1, "SomeInteger");
+		setAndCompare((short) 42, "SomeShort");
+		setAndCompare(1L, "SomeLong");
+		setAndCompare(.42d, "SomeDouble");
+		setAndCompare(.84f, "SomeFloat");
+		setAndCompare(new BigDecimal(42), "SomeDecimal");
+	}
+
+	// This test helper will set a parameter, then get it back and check that
+	// it got the new value. In order to make sure that the value was actually
+	// set it requires that the existing value (if any) is different from the
+	// one that is being set.
+	private void setAndCompare(Object value, String paramId) throws InPUTException {
+		Object current = design.getValue(paramId);
+		assertTrue(!value.equals(current));
+		design.setValue(paramId, value);
+		current = design.getValue(paramId);
+		assertEquals(value, current);
 	}
 
 	@Test
-	public void testSetPrimitiveNegative() throws InPUTException {
-		
+	public void testSetPrimitiveNegative() {
 		try {
 			design.setValue("SomeBoolean", 1);
 			fail("not allowed to set int for boolean!");
-		} catch (Exception e) {
+		} catch (InPUTException e) {
 		}
-		
 		try {
 			design.setValue("SomeDouble", true);
 			fail("not allowed to set boolean for double!");
-		} catch (Exception e) {
+		} catch (InPUTException e) {
 		}
 		try {
 			design.setValue("SomeLong", 0.84f);
 			fail("not allowed to set float for long!");
-		} catch (Exception e) {
+		} catch (InPUTException e) {
 		}
 		try {
-			design.setValue("SomeFloat", 1l);
+			design.setValue("SomeFloat", 1L);
 			fail("not allowed to set long for float!");
-		} catch (Exception e) {
+		} catch (InPUTException e) {
 		}
 		try {
 			design.setValue("SomeDecimal", (short)42);
 			fail("not allowed to set short for bigdecimal!");
-		} catch (Exception e) {
+		} catch (InPUTException e) {
 		}
 	}
 	
@@ -199,15 +211,18 @@ public abstract class IDesignTest extends AbstractInPUTTest {
 		long someLong = design.getValue("SomeLong");
 		try {
 			design.setValue("ABiggerLong", someLong);
-			fail("somelong is excluded from the bigger long range!");
-		} catch (Exception e) {
+			fail("someLong is excluded from the bigger long range!");
+		} catch (InPUTException e) {
+			fail("The test is expected to throw an IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			// This is where the test will end up.
 		}
 		
 		try {
-			design.setValue("ABiggerLong", someLong + 1l);
-		} catch (Exception e) {
+			design.setValue("ABiggerLong", someLong + 1L);
+		} catch (InPUTException e) {
 			e.printStackTrace();
-			fail("The extended somelong fits into the range!");
+			fail("The extended somelong should fit into the range!");
 		}
 	}
 
@@ -222,19 +237,23 @@ public abstract class IDesignTest extends AbstractInPUTTest {
 		SomeSharedStructuralSub structural = design.getValue("AnotherStructuralParent.SomeSharedStructuralSub");
 		assertEquals(parent.getSomeSharedStructuralSub(), structural);
 	}
-	
 
 	@Test
 	public void testSetInjectedStructural() throws InPUTException {
 		SomeSharedStructuralSub someShared = new SomeSubChoice();
+		// Check the parameter value before trying to set it.
 		SomeSharedStructuralSub currentShared = design.getValue("AnotherStructuralParent.SomeSharedStructuralSub");
 		assertNotSame(someShared, currentShared);
+
+		// Try to set the parameter. This should fail.
 		try {
 			design.setValue("AnotherStructuralParent.SomeSharedStructuralSub", someShared);
-			fail("Constructor injected should not be settable that way!");
-		} catch (Exception e) {
+			fail("Should not be able to set Constructor initialized param.");
+		} catch (InPUTException e) {
 		}
-		
+		// Check the parameter value again after trying to set it.
+		// Because setValue is expected to fail, the locally created object
+		// and the one returned by getValue should still be distinct.
 		currentShared = design.getValue("AnotherStructuralParent.SomeSharedStructuralSub");
 		
 		assertNotSame("The injection only works if the parameter is NOT instantiated by the constructor.", someShared, currentShared);
@@ -242,7 +261,9 @@ public abstract class IDesignTest extends AbstractInPUTTest {
 		String currentString = design.getValue("SomeStructuralParent.SomeSharedStructuralSub");
 		
 		String anotherString = "anotherString";
-		
+
+		// This parameter wasn't set by the constructor, so this call should
+		// succeed.
 		design.setValue("SomeStructuralParent.SomeSharedStructuralSub", anotherString);
 		currentString = design.getValue("SomeStructuralParent.SomeSharedStructuralSub");
 		
@@ -277,7 +298,7 @@ public abstract class IDesignTest extends AbstractInPUTTest {
 		assertTrue(structural instanceof SomeSecondChoice);
 	}
 
-	@Test(expected=InPUTException.class)
+	@Test
 	public void testSetStructural() throws InPUTException {
 		SomeStructural choice = new SomeFirstChoice();
 		design.setValue("SomeStructural", choice);
@@ -286,8 +307,11 @@ public abstract class IDesignTest extends AbstractInPUTTest {
 		design.setValue("SomeStructural", choice);
 		assertEquals(choice, design.getValue("SomeStructural"));
 		
-		design.setValue("SomeStructural", new AnotherSubChoice());
-		fail("This type may not be set to the defined parameter.");
+		try {
+			design.setValue("SomeStructural", new AnotherSubChoice());
+			fail("This type may not be set to the defined parameter.");
+		} catch (InPUTException e) {
+		}
 	}
 
 	@Test
@@ -340,52 +364,50 @@ public abstract class IDesignTest extends AbstractInPUTTest {
 		
 		assertEquals(value, current);
 		
-		long[] values = {1,2,3};
-		
+		final long[] values = {1,2,3};
 		design.setValue("SomeLargePrimitiveArray.1.1.42", values);
 		long[] currentValues = design.getValue("SomeLargePrimitiveArray.1.1.42");
 		
+		assertTrue(Arrays.equals(values, currentValues));
+		
+		// Some negative tests. (expected to fail)
 		try {
 			design.setValue("SomeLargePrimitiveArray.1.1.1.1", values);
-			fail();
-		} catch (Exception e) {}
+			fail("Should not be able to set the value of an array element with an array.");
+		} catch (InPUTException e) {}
 		
 		try {
 			design.setValue("SomeLargePrimitiveArray.1.1.42", value);
-			fail();
-		} catch (Exception e) {}
-		
-		assertTrue(Arrays.equals(values, currentValues));
+			fail("Should not be able to set the value of an array with a primitive.");
+		} catch (InPUTException e) {}
 	}
 
 	@Test
-	public void testSetArrayNegative() throws InPUTException {
-		
-		try {
-			design.setValue("SomeFixedArray.43", 42);
-			fail("There is no such array position");
-		} catch (Exception e) {
-			
-		}
-		
+	public void testSetValueForFixedArrayElementShouldFail() {
 		try {
 			design.setValue("SomeFixedArray.1", 44);
-			fail("another value than the fixed one may not be set");
-		} catch (Exception e) {
-			
+			fail("A new value cannot be set once one has been fixed.");
+		} catch (InPUTException e) {
+		}
+	}
+
+	@Test
+	public void testSetValueForArrayElementWithOutOfRangeIndexShouldFail() {
+		try {
+			design.setValue("SomeFixedArray.43", 42);
+			fail("There is no such array position.");
+		} catch (InPUTException e) {
 		}
 	}
 
 	@Test
 	public void testGetComplex() throws InPUTException {
 		SomeAbstractComplexStructural complex = design.getValue("SomeComplexStructural");
-		if (complex instanceof SomeComplexStructural) {
-			SomeComplexStructural struct = (SomeComplexStructural) complex;
-			assertEquals(3, struct.size());
-			design.setValue("SomeComplexStructural", struct);
-			assertEquals(complex, design.getValue("SomeComplexStructural"));
-		}else
-			fail("The complex type should be as the defined one.");
+		assertTrue("The complex type should be as the defined one.", complex instanceof SomeComplexStructural);
+		SomeComplexStructural struct = (SomeComplexStructural) complex;
+		assertEquals(3, struct.size());
+		design.setValue("SomeComplexStructural", struct);
+		assertEquals(complex, design.getValue("SomeComplexStructural"));
 	}
 
 	@Test
@@ -395,15 +417,11 @@ public abstract class IDesignTest extends AbstractInPUTTest {
 			complex.addEntry(new SingleComplexChoice());
 		
 		design.setValue("SomeComplexStructural", complex);
+
+		// We know that the type cast should be of SomeComplexStructural subtype!
+		SomeComplexStructural current = design.getValue("SomeComplexStructural");			
 		
-		SomeComplexStructural current = null;
-		try {
-			current = design.getValue("SomeComplexStructural");
-			
-		} catch (Exception e) {
-			fail("We know that the type cast should be of SomeComplexStructural subtype!");
-		}
-		
+		// Performs validation as a side effect.
 		design.export(new ByteArrayExporter());
 		
 		assertEquals(complex.size(), current.size());
@@ -425,22 +443,23 @@ public abstract class IDesignTest extends AbstractInPUTTest {
 
 		try {
 			design.setValue("IDoNotExist", design);
-			fail("Setting a not know parameter should result in an exception.");
-		} catch (Exception e) {
+			fail("Setting an unknown parameter should result in an exception.");
+		} catch (InPUTException e) {
 		}
 		
 		try {
 			design.setValue("IDoNotExist", null);
-			fail("Null value setting should result in an exception.");
-		} catch (Exception e) {
+			fail("Null value AND invalid id should result in an exception.");
+		} catch (InPUTException e) {
 		}
-		
+
+		// Check that the parameter even exists first.
+		assertNotNull(design.getValue("SomeStructuralParent"));
 		try {
 			design.setValue("SomeStructuralParent", null);
 			fail("Null value setting should result in an exception.");
-		} catch (Exception e) {
+		} catch (InPUTException e) {
 		}
-		assertNotNull(design.getValue("SomeStructuralParent"));
 	}
 
 	@Test
@@ -462,10 +481,7 @@ public abstract class IDesignTest extends AbstractInPUTTest {
 		design.export(new XMLFileExporter(designName));
 		IDesign design2 = design.getSpace().impOrt(new XMLFileImporter(designName));
 		
-		if (!design.same(design2)) {
-			fail();
-		};
-		
+		assertTrue(design.same(design2));
 		
 		new File(designName).delete();
 	}

@@ -79,7 +79,7 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 			assertNotNull(someFloat);
 			assertNotNull(someDecimal);
 
-		} catch (Exception e) {
+		} catch (InPUTException e) {
 			e.printStackTrace();
 			fail("The random primitive type retrieval is not type safe.");
 		}
@@ -94,7 +94,7 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 			assertEquals("The default String is expected.",
 					"SomeStringCustomizedByTheUser", value);
 
-		} catch (Exception e) {
+		} catch (InPUTException e) {
 			e.printStackTrace();
 			fail("Strings are not randomly created, a default String is expected in that case.");
 		}
@@ -145,7 +145,7 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 			assertNotNull(someStructuralParent);
 			assertNotNull(deepStructuralParent);
 
-		} catch (Exception e) {
+		} catch (InPUTException e) {
 			e.printStackTrace();
 			fail("The random structural type retrieval is not type safe.");
 		}
@@ -187,7 +187,7 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 	 */
 	@SuppressWarnings("unused")
 	@Test
-	public void testNextNegative() {
+	public void testNextNegative() throws InPUTException {
 
 		try {
 			assertNull(space.next("ParamThatDoesNotExist"));
@@ -200,14 +200,13 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 		try {
 			int someBoolean = space.next("SomeBoolean");
 			fail("A boolean should not be directly castable to an int.");
-		} catch (Exception e) {
+		} catch (ClassCastException e) {
 		}
 
 		try {
 			AnotherStructural anotherStructural = space.next("SomeStructural");
 			fail("random structural types cannot be freely casted.");
-		} catch (Exception e) {
-
+		} catch (ClassCastException e) {
 		}
 	}
 
@@ -244,16 +243,16 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 		try {
 			for (int i = 0; i < 10; i++) {
 				restrictedValue = space.next("SomeRestrictedPrimitive");
-				if (restrictedValue > 42 || restrictedValue < -42)
-					fail();
+				assertTrue(restrictedValue <= 42 || restrictedValue >= -42);
 
 				anotherRestrictedValue = space
 						.next("AnotherRestrictedPrimitive");
-				if (anotherRestrictedValue < .1d
-						|| (anotherRestrictedValue > .4 && anotherRestrictedValue < .8)
-						|| anotherRestrictedValue > .9)
-					fail();
 
+				boolean inFirstRange = anotherRestrictedValue > .1d &&
+						anotherRestrictedValue < .4d;
+				boolean inSecondRange = anotherRestrictedValue > .8d &&
+						anotherRestrictedValue < .9d;
+				assertTrue(inFirstRange || inSecondRange);
 			}
 
 			BigDecimal exclMin = new BigDecimal(0.42222222222);
@@ -261,9 +260,8 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 			BigDecimal veryRestricted;
 			for (int i = 0; i < 10; i++) {
 				veryRestricted = space.next("SomeVeryRestrictedPrimitive");
-				if (veryRestricted.compareTo(exclMin) <= 0
-						|| veryRestricted.compareTo(exclMax) >= 0)
-					assertTrue(false);
+				assertTrue(veryRestricted.compareTo(exclMin) > 0 &&
+						veryRestricted.compareTo(exclMax) < 0);
 			}
 		} catch (InPUTException e) {
 			e.printStackTrace();
@@ -490,7 +488,7 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 			if (parent instanceof YetAnotherThirdChoice) {
 				assertEquals(((Float) actualParams[1]).floatValue(),
 						((YetAnotherThirdChoice) parent)
-								.getSomeChoiceSpecificPrimitiveSub(), 0.000001);
+								.getSomeChoiceSpecificPrimitiveSub(), PRECISION);
 			}
 
 			Object[] actualParamsWithBlank = { Q.BLANK, 10f };
@@ -498,7 +496,7 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 			if (parent instanceof YetAnotherThirdChoice) {
 				assertEquals(((Float) actualParams[1]).floatValue(),
 						((YetAnotherThirdChoice) parent)
-								.getSomeChoiceSpecificPrimitiveSub(), 0.000001);
+								.getSomeChoiceSpecificPrimitiveSub(), PRECISION);
 			}
 
 		} catch (InPUTException e) {
@@ -508,17 +506,16 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 	}
 
 	@Test
-	public void testNegativeNextParameterConstructorOverride() {
+	public void testNegativeNextParameterConstructorOverride() throws InPUTException {
 		Object[] actualParams = { "SomeWrongInput", 10f };
-
 		SomeStructuralParent result = null;
-		try {
-			result = space.next("SomeStructuralParent", actualParams);
-			if (!(result instanceof YetAnotherSecondChoice)) {
-				fail("Wrong input should not be tolerated and lead to a quick exception.");
-			}
-		} catch (InPUTException e) {
-		}
+		// This line throws an InPUTException, but none seems to be expected.
+		result = space.next("SomeStructuralParent", actualParams);
+		// Alternatively, an InPUTException is expected, but then the test
+		// should fail if one isn't thrown. In that case it doesn't seem to
+		// make sense to check the type of result (since it should be null).
+		assertTrue("result should be an instance of YetAnotherSecondChoice.",
+				result instanceof YetAnotherSecondChoice);
 	}
 
 	@Test
@@ -591,16 +588,14 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 
 	@Test
 	public void testSetFixedNegative() throws InPUTException {
-		try {
-			space.setFixed("whatever", "2");
-			space.setFixed("SomeBoolean", "whatever");
-			space.setFixed("SomeInteger", "whatever");
-			space.setFixed("SomeStructural", "whatever");
-			fail();
-
-		} catch (InPUTException e) {
-			// the values should not be possible to get set
-		}
+		// This line fails because no parameter with id "whatever" exists.
+		// That doesn't seem to be the expected failure reason.
+		space.setFixed("whatever", "2");
+		// These three lines succeed perfectly without any errors.
+		// They are probably supposed to fail.
+		space.setFixed("SomeBoolean", "whatever");
+		space.setFixed("SomeInteger", "whatever");
+		space.setFixed("SomeStructural", "whatever");
 	}
 
 	@Test
@@ -613,7 +608,7 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 			integer = space.next("SomeInteger");
 			b = space.next("SomeBoolean");
 			assertEquals(2, integer);
-			assertEquals(true, b);
+			assertTrue(b);
 		}
 
 		space.setFixed("SomeInteger", null);
@@ -684,6 +679,6 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 	@Test
 	public void testSetFixedComplex() throws InPUTException {
 		// /TODO
-		fail();
+		fail("Not implemented yet.");
 	}
 }
