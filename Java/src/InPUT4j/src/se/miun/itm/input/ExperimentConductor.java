@@ -30,6 +30,15 @@ import se.miun.itm.input.impOrt.InPUTArchiveImporter;
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.design.IDesign;
 
+/**
+ * An <code>ExperimentConductor</code> is an abstract template for the conduct of experiments, which is supposed to be 
+ * inherited for the specific needs of the specific experiment. Here, the generic T defines the type of the expected result of the
+ * execution of the conductor. This could, for instance, be an output of type IDesign.
+ *  
+ * @author Felix Dobslaw
+ *
+ * @param <T>
+ */
 public abstract class ExperimentConductor<T> {
 
 	private static final InPUTArchiveImporter importer = new InPUTArchiveImporter();
@@ -42,10 +51,20 @@ public abstract class ExperimentConductor<T> {
 
 	private IInPUT input;
 
+	/**
+	 * A conductor for an investigation index of the given <code>IInPUT</code> type.
+	 * @param input
+	 */
 	public ExperimentConductor(IInPUT input) {
 		this.input = input;
 	}
 
+	/**
+	 * A conductor that imports the <code>IInPUT</code> in archive form from the given <code>filePath</code> with id <code>id</code>. 
+	 * @param id
+	 * @param filePath
+	 * @throws InPUTException
+	 */
 	public ExperimentConductor(String id, String filePath) throws InPUTException {
 		this.input = getInPUT(id, filePath);
 	}
@@ -54,6 +73,13 @@ public abstract class ExperimentConductor<T> {
 		return input;
 	}
 
+	/**
+	 * A help-function that simplifies the import of an <code>IInPUT</code> archive on path <code>filePath</code> with id <code>id</code>. 
+	 * @param id
+	 * @param filePath
+	 * @return
+	 * @throws InPUTException
+	 */
 	public static IInPUT getInPUT(String id, String filePath) throws InPUTException {
 		synchronized (importer) {
 			importer.resetFileName(filePath);
@@ -62,17 +88,37 @@ public abstract class ExperimentConductor<T> {
 		}
 	}
 
-	public IExperiment initExperiment(String id, String filePath) throws InPUTException, IOException {
-		IExperiment result = initExperiment(input, id, filePath);
+	/**
+	 * Imports the given experiment archive from <code>filePath</code>, giving it id <code>id</code> .
+	 * @param id
+	 * @param filePath
+	 * @return
+	 * @throws InPUTException
+	 * @throws IOException
+	 */
+	public IExperiment importExperiment(String id, String filePath) throws InPUTException, IOException {
+		IExperiment result = importExperiment(input, id, filePath);
 		if (result != null)
 			experimentIds.put(id, filePath);
 		return result;
 	}
 
+	/**
+	 * A handle to simply retrieve an empty result output for the <code>IInPUT</code> type investigation, giving it id <code>id</code>.
+	 * @param id
+	 * @return
+	 * @throws InPUTException
+	 */
 	protected IDesign createNewSettableOutput(String id) throws InPUTException {
 		return input.getOutputSpace().nextEmptyDesign(id);
 	}
 
+	/**
+	 * A simple handle to export or write-back an experiment (with or without output) to the filePath.
+	 * @param filePath
+	 * @param experiment
+	 * @throws InPUTException
+	 */
 	public static void writeBackExperiment(String filePath, IExperiment experiment) throws InPUTException {
 		synchronized (zipExporter) {
 			zipExporter.resetFileName(filePath);
@@ -80,6 +126,12 @@ public abstract class ExperimentConductor<T> {
 		}
 	}
 
+	/**
+	 * A simple handle to add all outputs in <code>outputs</code> to IExperiment <code>experiment</code>.
+	 * @param experiment
+	 * @param outputs
+	 * @throws InPUTException
+	 */
 	protected void writeBackOutput(IExperiment experiment, List<IDesign> outputs) throws InPUTException {
 		String filePath = experimentIds.get(experiment.getId());
 		synchronized (zipExporter) {
@@ -90,7 +142,13 @@ public abstract class ExperimentConductor<T> {
 		}
 	}
 
-	protected void writeBackOutput(IExperiment experiment, IDesign output) throws InPUTException {
+	/**
+	 * write back a single IDesign <code>design</code> to the experimental archive <code>experiment</code>.
+	 * @param experiment
+	 * @param output
+	 * @throws InPUTException
+	 */
+	public void writeBackOutput(IExperiment experiment, IDesign output) throws InPUTException {
 		String filePath = experimentIds.get(experiment.getId());
 		synchronized (zipExporter) {
 			zipExporter.resetFileName(filePath);
@@ -100,9 +158,25 @@ public abstract class ExperimentConductor<T> {
 		}
 	}
 
+	/**
+	 * Is supposed to be implemented by the developer, executing the experiment, and returning the desired result in arbitrary format.
+	 * @param experiment
+	 * @return
+	 * @throws InPUTException
+	 */
 	public abstract T execute(IExperiment experiment) throws InPUTException;
 
-	public static IExperiment initExperiment(IInPUT input, String id, String filePath) throws InPUTException, IOException {
+	/**
+	 * Import a given experiment as an archive file in position <code>filePath</code>. The experiment has to be compatible with
+	 * the <code>IInPUT</code>.
+	 * @param input
+	 * @param id
+	 * @param filePath
+	 * @return
+	 * @throws InPUTException
+	 * @throws IOException
+	 */
+	public static IExperiment importExperiment(IInPUT input, String id, String filePath) throws InPUTException, IOException {
 		if (!new File(filePath).exists())
 			return null;
 		synchronized (experimentImporter) {

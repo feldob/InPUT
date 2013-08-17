@@ -32,9 +32,9 @@ import se.miun.itm.input.util.InputStreamWrapper;
 
 /**
  * An experiment summarizes a computer experiment, and is always defined with
- * respect to a InPUT meta design space object. It contains optional designs for
+ * respect to a InPUT investigation object. It contains optional designs for
  * a choice of algorithm, problem, and preferences that depend on both,
- * algorithm and problems. In addition, it allows for the adding and removing of
+ * algorithm and problems. In addition, it allows for the adding and removal of
  * outputs that are defined with respect to the output space of the InPUT
  * instance.
  * 
@@ -44,7 +44,8 @@ import se.miun.itm.input.util.InputStreamWrapper;
  * exchange between different users, on different systems.
  * 
  * Each experiment allows for the getting and setting of values for each input design
- * that it contains (contains them all in its scope). Therefore, it requires that all designs, used in its scope, have different parameter ids.
+ * that it contains (contains them all in its scope). Therefore, it requires that all designs,
+ * used in its scope, have non-overlapping parameter ids.
  * 
  * @author Felix Dobslaw
  * 
@@ -118,13 +119,23 @@ public interface IExperiment extends Identifiable, Exportable, Extendable,
 	void importProperties(String propertiesPath) throws InPUTException;
 
 	/**
-	 * Returns the InPUT meta instance for this computer experiment.
+	 * Returns the InPUT investigation for this computer experiment.
 	 * 
 	 * @return
 	 */
 	IInPUT getInPUT();
 
+	/**
+	 * Does the given experiment investigate the same combination of algorithm and properties.
+	 * @param experiment
+	 * @return
+	 */
 	boolean investigatesSameConfiguration(IExperiment experiment);
 
-	boolean same(IExperiment algorithmDesign);
+	/**
+	 * Is the given experiment investigating the same combination of algorithm, problem and properties?
+	 * @param experiment
+	 * @return
+	 */
+	boolean same(IExperiment experiment);
 }

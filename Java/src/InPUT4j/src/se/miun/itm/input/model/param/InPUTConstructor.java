@@ -182,7 +182,7 @@ public class InPUTConstructor {
 			if (!contextConstructors.get(j).getParameterTypes()[i].equals(context))
 				toRemove.add(j);
 
-		int index;
+		Integer index;
 		for (int j = toRemove.size() - 1; j >= 0; j--) {
 			index = toRemove.get(j);
 			contextConstructors.remove(index);

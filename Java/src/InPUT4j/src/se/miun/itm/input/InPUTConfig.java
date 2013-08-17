@@ -34,7 +34,7 @@ import se.miun.itm.input.util.Q;
 import se.miun.itm.input.util.xml.SAXUtil;
 
 /**
- * A static meta service that is initiated each time InPUT starts. InPUT itself
+ * The static IInPUT service provider that is initiated each time InPUT starts. InPUT itself
  * is used for its configuration, which is why it, at startup, requires to read
  * the InPUT configuration files in this folder. The InPUT properties can either
  * be retrieved by calling the methods below, or by direct access through the
@@ -46,10 +46,13 @@ import se.miun.itm.input.util.xml.SAXUtil;
  */
 public abstract class InPUTConfig {
 	
-	private static IDesign config;
+	private static IDesign config; // the config file used; by default config.xml in this folder
 
-	private static Document configDoc;
+	private static Document configDoc; // the plain config file document xml.
 
+	/**
+	 * Initiate InPUTConfig by automatically loading configuration space, mapping and design.
+	 */
 	static {
 		try {
 			// read the code mapping file
@@ -81,6 +84,12 @@ public abstract class InPUTConfig {
 		return config.getValue(paramId);
 	}
 
+	/**
+	 * If runtimeValidation is set to "true" then the schemaLocation has to point to a reachable position with the
+	 * Design.xsd¸DesignSpace.xsd, and CodeMapping.xsd in place. Validation adds support for error handling.
+	 * @return
+	 * @throws InPUTException
+	 */
 	public static boolean isValidationActive() throws InPUTException {
 		return config.getValue(Q.RUNTIME_VALIDATION);
 	}
@@ -98,7 +107,7 @@ public abstract class InPUTConfig {
 	}
 
 	/**
-	 * checks if logging is activated for InPUT.
+	 * checks if logging is activated for InPUT. If activated, a "input.log" file should appear in the working directory.
 	 * 
 	 * @return
 	 */
@@ -132,7 +141,7 @@ public abstract class InPUTConfig {
 	}
 
 	/**
-	 * initialize the config xml document tree.
+	 * initialize the config.xml document tree.
 	 * 
 	 * @param type
 	 * @return
@@ -188,10 +197,21 @@ public abstract class InPUTConfig {
 		design.extendScope(config);
 	}
 
+	/**
+	 * experimentally: Being able to set the config values is discouraged, and should only be used
+	 * if you know what you are doing.
+	 * @param paramId
+	 * @param value
+	 * @throws InPUTException
+	 */
 	public static void setValue(String paramId, Object value) throws InPUTException {
 		 config.setValue(paramId, value);
 	}
 
+	/**
+	 * Checks if all designs that are created can be retrieved using the Design.lookup method.
+	 * @return
+	 */
 	public static boolean cachesDesigns() {
 		return Boolean.parseBoolean(getProperty(Q.CACHE_DESIGNS));
 	}

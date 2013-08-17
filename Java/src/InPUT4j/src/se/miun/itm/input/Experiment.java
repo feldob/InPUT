@@ -35,7 +35,6 @@ import se.miun.itm.input.impOrt.InPUTImporter;
 import se.miun.itm.input.impOrt.XMLFileImporter;
 import se.miun.itm.input.model.Document;
 import se.miun.itm.input.model.InPUTException;
-import se.miun.itm.input.model.design.Design;
 import se.miun.itm.input.model.design.IDesign;
 import se.miun.itm.input.model.design.IDesignSpace;
 import se.miun.itm.input.util.InputStreamWrapper;
@@ -43,7 +42,8 @@ import se.miun.itm.input.util.Q;
 import se.miun.itm.input.util.xml.SAXUtil;
 
 /**
- * The default implementation of the IExperiment interface for InPUT4j.
+ * The default implementation of the <code>IExperiment</code> interface for
+ * InPUT4j.
  * 
  * @author Felix Dobslaw
  * 
@@ -51,9 +51,9 @@ import se.miun.itm.input.util.xml.SAXUtil;
  */
 public class Experiment implements IExperiment {
 
-	private final XMLFileImporter fileImporter = new XMLFileImporter();
+	private static final XMLFileImporter fileImporter = new XMLFileImporter();
 
-	private final DocumentImporter docImporter = new DocumentImporter();
+	private static final DocumentImporter docImporter = new DocumentImporter();
 
 	private final List<IDesign> outputs = new ArrayList<IDesign>();
 
@@ -76,6 +76,7 @@ public class Experiment implements IExperiment {
 
 	/**
 	 * TODO unchecked cast for Design has to be fixed at some stage.
+	 * 
 	 * @param id
 	 * @param experiment
 	 * @throws InPUTException
@@ -83,22 +84,19 @@ public class Experiment implements IExperiment {
 	public Experiment(String id, IExperiment experiment) throws InPUTException {
 		this.id = id;
 		this.input = experiment.getInPUT();
-		
+
 		IDesign design = experiment.getProblemFeatures();
-		if (design != null){
-			setProblemFeatures(new Design((Design)design));
-		}
-		
+		if (design != null)
+			setProblemFeatures(design.toClone());
+
 		design = experiment.getPreferences();
-		if (design != null) {
-			setPreferences(new Design((Design)design));
-		}
-		
+		if (design != null)
+			setPreferences(design.toClone());
+
 		design = experiment.getAlgorithmDesign();
-		if (design != null) {
-			setAlgorithmDesign(new Design((Design)design));
-		}
-		
+		if (design != null)
+			setAlgorithmDesign(design.toClone());
+
 		addAllContent(experiment);
 	}
 
@@ -138,21 +136,30 @@ public class Experiment implements IExperiment {
 	}
 
 	@Override
-	public void importProblemFeatures(String featuresPath) throws InPUTException {
-		fileImporter.resetFileName(featuresPath);
-		features = input.getProblemFeatureSpace().impOrt(fileImporter);
+	public void importProblemFeatures(String featuresPath)
+			throws InPUTException {
+		synchronized (fileImporter) {
+			fileImporter.resetFileName(featuresPath);
+			features = input.getProblemFeatureSpace().impOrt(fileImporter);
+		}
 	}
 
 	@Override
-	public void importAlgorithmDesign(String algorithmPath) throws InPUTException {
-		fileImporter.resetFileName(algorithmPath);
-		algorithmDesign = input.getAlgorithmDesignSpace().impOrt(fileImporter);
+	public void importAlgorithmDesign(String algorithmPath)
+			throws InPUTException {
+		synchronized (fileImporter) {
+			fileImporter.resetFileName(algorithmPath);
+			algorithmDesign = input.getAlgorithmDesignSpace().impOrt(
+					fileImporter);
+		}
 	}
 
 	@Override
 	public void importProperties(String preferencesPath) throws InPUTException {
-		fileImporter.resetFileName(preferencesPath);
-		preferences = input.getPropertySpace().impOrt(fileImporter);
+		synchronized (fileImporter) {
+			fileImporter.resetFileName(preferencesPath);
+			preferences = input.getPropertySpace().impOrt(fileImporter);
+		}
 	}
 
 	@Override
@@ -163,7 +170,8 @@ public class Experiment implements IExperiment {
 	@Override
 	public void setPreferences(IDesign preferences) {
 		if (preferences != null && input.getPropertySpace() == null)
-			throw new IllegalArgumentException("No propertySpace is defined, you cannot set preferences.");
+			throw new IllegalArgumentException(
+					"No propertySpace is defined, you cannot set preferences.");
 		this.preferences = preferences;
 		initScopes();
 	}
@@ -171,7 +179,8 @@ public class Experiment implements IExperiment {
 	@Override
 	public void setAlgorithmDesign(IDesign algorithmDesign) {
 		if (algorithmDesign != null && input.getAlgorithmDesignSpace() == null)
-			throw new IllegalArgumentException("No algorithm design space is defined, you cannot set an algorithm design.");
+			throw new IllegalArgumentException(
+					"No algorithm design space is defined, you cannot set an algorithm design.");
 		this.algorithmDesign = algorithmDesign;
 		initScopes();
 	}
@@ -179,7 +188,8 @@ public class Experiment implements IExperiment {
 	@Override
 	public void setProblemFeatures(IDesign features) {
 		if (features != null && input.getProblemFeatureSpace() == null)
-			throw new IllegalArgumentException("No problem feature space is defined, you cannot set problem features.");
+			throw new IllegalArgumentException(
+					"No problem feature space is defined, you cannot set problem features.");
 		this.features = features;
 		initScopes();
 	}
@@ -195,7 +205,8 @@ public class Experiment implements IExperiment {
 	}
 
 	@Override
-	public <T> T getValue(String paramId, Object[] actualParams) throws InPUTException {
+	public <T> T getValue(String paramId, Object[] actualParams)
+			throws InPUTException {
 		T result;
 		if (input.getAlgorithmDesignSpace() != null && algorithmDesign != null) {
 			result = algorithmDesign.getValue(paramId, actualParams);
@@ -239,13 +250,19 @@ public class Experiment implements IExperiment {
 				return;
 			}
 
-		throw new InPUTException("There is no set parameter or property by name '" + paramId + "' defined in InPUT '" + id + "'.");
+		throw new InPUTException(
+				"There is no set parameter or property by name '" + paramId
+						+ "' defined in InPUT '" + id + "'.");
 	}
 
-	private void initDesigns(Map<String, Document> designs) throws InPUTException {
-		features = initDesign(input.getProblemFeatureSpace(), designs.get(Q.PROBLEM_FEATURES_XML));
-		preferences = initDesign(input.getPropertySpace(), designs.get(Q.PREFERENCES_XML));
-		algorithmDesign = initDesign(input.getAlgorithmDesignSpace(), designs.get(Q.ALGORITHM_DESIGN_XML));
+	private void initDesigns(Map<String, Document> designs)
+			throws InPUTException {
+		features = initDesign(input.getProblemFeatureSpace(),
+				designs.get(Q.PROBLEM_FEATURES_XML));
+		preferences = initDesign(input.getPropertySpace(),
+				designs.get(Q.PREFERENCES_XML));
+		algorithmDesign = initDesign(input.getAlgorithmDesignSpace(),
+				designs.get(Q.ALGORITHM_DESIGN_XML));
 		initScopes();
 	}
 
@@ -261,34 +278,39 @@ public class Experiment implements IExperiment {
 				design.extendScope(neighbor);
 	}
 
-	private IDesign initDesign(IDesignSpace space, Document document) throws InPUTException {
-		if (document != null) {
-			docImporter.resetContext(document);
-			return space.impOrt(docImporter);
-		}
+	private IDesign initDesign(IDesignSpace space, Document document)
+			throws InPUTException {
+		if (document != null)
+			synchronized (docImporter) {
+				docImporter.resetContext(document);
+				return space.impOrt(docImporter);
+			}
 		return null;
 	}
 
 	@Override
-	public Void impOrt(InPUTImporter<Map<String, InputStreamWrapper>> importer) throws InPUTException, IOException {
+	public Void impOrt(InPUTImporter<Map<String, InputStreamWrapper>> importer)
+			throws InPUTException, IOException {
 		Map<String, InputStreamWrapper> documents = importer.impOrt();
 
 		Map<String, Document> designs = new HashMap<String, Document>();
-		
+
 		for (String id : documents.keySet())
 			if (ExperimentArchiveImporter.isExperimentalFile(id))
-				designs.put(id,SAXUtil.build(documents.get(id).next(), false));
-			else{
+				designs.put(id, SAXUtil.build(documents.get(id).next(), false));
+			else {
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
-				InputStreamWrapper.fromInputStreamToOutputStream(documents.get(id).next(), out);
+				InputStreamWrapper.fromInputStreamToOutputStream(
+						documents.get(id).next(), out);
 				addContent(id, out);
 			}
-		
+
 		initDesigns(designs);
 
 		int i = 1;
 		while (designs.containsKey(Q.OUTPUT + i + Q.XML)) {
-			outputs.add(initDesign(input.getOutputSpace(), designs.get(Q.OUTPUT + i + Q.XML)));
+			outputs.add(initDesign(input.getOutputSpace(),
+					designs.get(Q.OUTPUT + i + Q.XML)));
 			i++;
 		}
 
@@ -335,7 +357,8 @@ public class Experiment implements IExperiment {
 		if (!experiment.getInPUT().equals(input))
 			return false;
 
-		if (!sameExists(experiment.getAlgorithmDesign(), algorithmDesign) || !sameExists(experiment.getPreferences(), preferences)
+		if (!sameExists(experiment.getAlgorithmDesign(), algorithmDesign)
+				|| !sameExists(experiment.getPreferences(), preferences)
 				|| !sameExists(experiment.getProblemFeatures(), features))
 			return false;
 
@@ -345,7 +368,9 @@ public class Experiment implements IExperiment {
 	public boolean sameExists(IDesign first, IDesign second) {
 
 		if (first == null || second == null)
-			return (first == null && second == null); // True if both are null, false if any are null.
+			return (first == null && second == null); // True if both are null,
+														// false if any are
+														// null.
 
 		// We know neither are null.
 		return first.same(second);
@@ -355,10 +380,13 @@ public class Experiment implements IExperiment {
 	public boolean same(IExperiment foreigner) {
 		if (foreigner == null)
 			return false;
-		
-		if ((algorithmDesign != null && !algorithmDesign.same(foreigner.getAlgorithmDesign()))
-				|| (preferences != null && !preferences.same(foreigner.getPreferences()))
-				|| (features != null && !features.same(foreigner.getProblemFeatures())))
+
+		if ((algorithmDesign != null && !algorithmDesign.same(foreigner
+				.getAlgorithmDesign()))
+				|| (preferences != null && !preferences.same(foreigner
+						.getPreferences()))
+				|| (features != null && !features.same(foreigner
+						.getProblemFeatures())))
 			return false;
 
 		return true;
@@ -370,7 +398,8 @@ public class Experiment implements IExperiment {
 	}
 
 	@Override
-	public void addContent(String name, ByteArrayOutputStream contentAsStream) throws InPUTException {
+	public void addContent(String name, ByteArrayOutputStream contentAsStream)
+			throws InPUTException {
 		content.put(name, contentAsStream);
 	}
 

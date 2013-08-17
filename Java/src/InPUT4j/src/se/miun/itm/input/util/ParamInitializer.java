@@ -66,7 +66,7 @@ public class ParamInitializer {
 		return params;
 	}
 
-	private static Integer getRootDist(Element elem) {
+	private static int getRootDist(Element elem) {
 		int counter = 0;
 		while (!elem.isRootElement()) {
 			elem = elem.getParentElement();
@@ -138,7 +138,7 @@ public class ParamInitializer {
 			LinkedList<Element> newParams) {
 		int counter = 0;
 		for (int i = 0; i < newParams.size(); i++) {
-			if (getRootDist(element).compareTo(getRootDist(newParams.get(i))) < 0)
+			if (getRootDist(element) < getRootDist(newParams.get(i)))
 				break;
 			counter++;
 		}

@@ -113,6 +113,36 @@ public class ParamEvaluationOrderComparator<Element> implements Comparator<Objec
 		return false;
 	}
 
+	/* TODO fix bugg: Comment from Peter:
+	 * 	If the extermeValue expression is like "TestMe*TestYou" and you happen to have a parameter called just "Test" that one will cause false dependencies and strange init orders
+		If you find param2 string inside extremeValue you should check before and after it so those positions are not a Digit/Letter/Underscore/Dot
+		To be totally correct the above parsing should be checked by the current expression evaluator, since the scripting language rules are different
+		
+		if (!extremeValue.isNull() && param2.getChildren().size() == 0)
+ {
+  const std::string& expression = extremeValue.getValue();
+  const std::string& param_id = param2.getId();
+  size_t pos = 0;
+
+  while ((pos = expression.find( param_id, pos )) != std::string::npos)
+  {
+   DefaultEvaluator& evalSetup = CppScriptEvaluator::getEvaluatorConfiguration();
+   if (pos == 0 
+    || (evalSetup.getCharacterTraits(expression[pos-1]) 
+     & (DefaultEvaluator::CT_IdentifierBody | DefaultEvaluator::CT_IdentifierStart)) == 0)
+   {
+    if ( pos >= (expression.length() - param_id.length()) // Last possible pos or next char.
+     || (evalSetup.getCharacterTraits(expression[pos + param_id.length()]) & 
+      (DefaultEvaluator::CT_IdentifierBody | DefaultEvaluator::CT_IdentifierStart)) == 0)
+    {
+     return true;
+    }
+   }
+   
+   pos+= param_id.length(); // Try looking later in the string.
+  }
+ }
+	 */
 	private static boolean relativeTo(Param<?> param1, Param<?> param2, String extremeAttr) {
 		String extremeValue = param1.getAttributeValue(extremeAttr);
 		if (extremeValue != null)

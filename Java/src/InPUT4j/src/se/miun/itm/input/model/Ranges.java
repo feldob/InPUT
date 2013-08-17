@@ -429,7 +429,7 @@ public class Ranges {
 
 		Comparable<?>[] extremas = evaluatedRanges.getStrongTypedMax();
 
-		if (extremas.length == 0)
+		if (extremas == null || extremas.length == 0)
 			return;
 		
 		boolean violates = true;
@@ -439,12 +439,12 @@ public class Ranges {
 				break;
 			}
 		}
-
+		
 		if (violates)
 			throw new IllegalArgumentException(spaceId
 					+ ": The entered value \"" + theValue
 					+ "\" for the parameter with id \"" + paramId
-					+ "\" is out of range (above maximum threshold \"" + max[0]
+					+ "\" is out of range (above maximum threshold \"" + extremas[0]
 					+ "\").");
 	}
 
@@ -453,7 +453,7 @@ public class Ranges {
 
 		Comparable<?>[] extremas = evaluatedRanges.getStrongTypedMin();
 
-		if (extremas.length == 0)
+		if (extremas == null || extremas.length == 0)
 			return;
 
 		boolean violates = true;

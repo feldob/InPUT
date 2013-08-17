@@ -120,7 +120,7 @@ public abstract class AStruct extends Param<StructuralGenerator> {
 	}
 
 	public void reflectObject(SValue sValue, Object[] actualParams, AStruct choice) throws InPUTException {
-		if (isEnum())
+		if (isEnum().booleanValue())
 			sValue.setPlainInputValue(((SChoice) choice).getEnumValue());
 		else
 			sValue.setPlainInputValue(choice.newInstance(actualParams));
@@ -279,7 +279,7 @@ public abstract class AStruct extends Param<StructuralGenerator> {
 		return generator.initComplex(valueElement, actualParams);
 	}
 
-	public boolean isEnum() throws InPUTException {
+	public Boolean isEnum() throws InPUTException {
 		return generator.isEnum();
 	}
 

@@ -131,11 +131,11 @@ public abstract class StructuralGenerator extends
 									+ param.getId() + "'.", e);
 				}
 			} else
-				isEnum = false;
+				isEnum = Boolean.FALSE;
 		}
 	}
 
-	public boolean isEnum() throws InPUTException {
+	public Boolean isEnum() throws InPUTException {
 		if (isEnum == null)
 			initIsEnum();
 		return isEnum;
@@ -262,6 +262,7 @@ public abstract class StructuralGenerator extends
 
 	private void checkType(Object value) throws InPUTException {
 		Class<?> cLass = getSuperClass();
+		// param.isArrayType() && cLass.isAssignableFrom(value.getClass())
 		if ((param.isArrayType() && !value.getClass().isArray()) || (!param.isArrayType() && !cLass.isInstance(value)))
 			throw new InPUTException("The object \"" + value
 					+ "\" is of the wrong type. \""

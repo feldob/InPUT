@@ -83,7 +83,7 @@ public abstract class ValueGenerator<AMapping extends IMapping, AParam extends P
 		return value;
 	}
 	
-	protected Object nextValue(Integer type, Map<String, Object> vars)
+	private Object nextValue(int type, Map<String, Object> vars)
 			throws InPUTException {
 		Object value;
 		// either only a single value of the type
@@ -237,7 +237,7 @@ public abstract class ValueGenerator<AMapping extends IMapping, AParam extends P
 			throws InPUTException;
 
 	@Override
-	public boolean hasGetHandle() {
+	public Boolean hasGetHandle() {
 		if (hasGetHandle == null)
 			initHandles();
 		return hasGetHandle;
@@ -249,7 +249,7 @@ public abstract class ValueGenerator<AMapping extends IMapping, AParam extends P
 	}
 
 	@Override
-	public boolean hasSetHandle() {
+	public Boolean hasSetHandle() {
 		if (hasSetHandle == null)
 			initHandles();
 		return hasSetHandle;

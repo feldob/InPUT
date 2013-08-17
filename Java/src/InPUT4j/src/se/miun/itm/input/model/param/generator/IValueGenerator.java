@@ -37,9 +37,9 @@ public interface IValueGenerator {
 	void invokeSetter(Object parentValue, Object value)
 			throws InPUTException;
 
-	boolean hasGetHandle();
+	Boolean hasGetHandle();
 
-	boolean hasSetHandle();
+	Boolean hasSetHandle();
 
 	void validateInPUT(String paramId, Object value, ElementCache elementCache) throws InPUTException;
 	
