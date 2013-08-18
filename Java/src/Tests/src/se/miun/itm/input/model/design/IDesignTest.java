@@ -260,13 +260,15 @@ public abstract class IDesignTest extends AbstractInPUTTest {
 		assertEquals(value, customizableGetter, PRECISION);
 		assertEquals(value, parent.andTheCustomizableGetter(), PRECISION);
 	}
-	
 
 	@Test
 	public void testSetCustomizedGetter() throws InPUTException {
 		double value = 0.5;
-		design.setValue("CustomizableInputDemonstrator.CustomizableSetGetPrimitive", value);
 		SomeCommonStructural parent = design.getValue("CustomizableInputDemonstrator");
+		assertNotSame(value, parent.andTheCustomizableGetter());
+		design.setValue("CustomizableInputDemonstrator.CustomizableSetGetPrimitive", value);
+		assertEquals(parent.andTheCustomizableGetter(), value, PRECISION);
+		parent = design.getValue("CustomizableInputDemonstrator");
 		assertEquals(value, parent.andTheCustomizableGetter(), PRECISION);
 	}
 	

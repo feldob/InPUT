@@ -23,8 +23,10 @@ import java.util.Random;
 import org.junit.Before;
 
 import se.miun.itm.input.InPUTConfig;
+import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.design.DesignSpace;
 import se.miun.itm.input.model.design.IDesignSpace;
+import se.miun.itm.input.model.param.Param;
 
 public class InPUTTestStarter {
 
@@ -38,4 +40,24 @@ public class InPUTTestStarter {
 		rng = InPUTConfig.getValue("random");
 		rng.setSeed(123456789);
 	}
+	
+	/*
+	public static void main(String [] args)
+	{
+		IDesignSpace space;
+		Random rng;
+		
+		Param.debugResetInstance();
+		
+		try 
+		{
+			space = new DesignSpace("testSpace.xml");
+		} 
+		catch (InPUTException e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+	}
+	*/
 }
