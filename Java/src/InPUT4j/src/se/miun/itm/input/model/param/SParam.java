@@ -32,9 +32,11 @@ import se.miun.itm.input.model.param.generator.StructuralGenerator;
 import se.miun.itm.input.util.Q;
 
 /**
- * The concrete implementation of complex parameter meta definitions, being an extended wrapper to the SParam entry in DesignSpace.xsl.
- * SParams can either be of user customizable type, such as String, without specific user choices, or with a set of choices that can be
- * selected as alternatives for an instance of a design space.
+ * The concrete implementation of complex parameter meta definitions, being an
+ * extended wrapper to the SParam entry in DesignSpace.xsl. SParams can either
+ * be of user customizable type, such as String, without specific user choices,
+ * or with a set of choices that can be selected as alternatives for an instance
+ * of a design space.
  * 
  * @author Felix Dobslaw
  * 
@@ -44,13 +46,15 @@ public class SParam extends AStruct {
 
 	private static final long serialVersionUID = -4899687772776177806L;
 
-	public SParam(Element original, String designId, ParamStore ps) throws InPUTException {
+	public SParam(Element original, String designId, ParamStore ps)
+			throws InPUTException {
 		super(original, designId, ps);
 		initToParent();
 	}
 
 	@Override
-	protected StructuralGenerator initGenerator(boolean initRanges) throws InPUTException {
+	protected StructuralGenerator initGenerator(boolean initRanges)
+			throws InPUTException {
 		String fixedValue = getAttributeValue(Q.FIXED_ATTR);
 		if (fixedValue != null) {
 			return new FixedStructuralGenerator(this, fixedValue);
@@ -82,10 +86,10 @@ public class SParam extends AStruct {
 	public AStruct getChoiceById(String localChoiceId) {
 		if (isImplicit())
 			return this;
-		
+
 		for (Element child : getChildren())
 			if (child.getAttributeValue(Q.ID_ATTR).equals(localChoiceId))
-				return (AStruct)child;
+				return (AStruct) child;
 		return null;
 	}
 
@@ -97,7 +101,7 @@ public class SParam extends AStruct {
 	public AStruct nextChoice() throws InPUTException {
 		int choices = getAmountChoices();
 		if (choices > 0)
-			return getChoiceByPosition(ps.getRNG().nextInt(choices)+1);
+			return getChoiceByPosition(ps.getRNG().nextInt(choices) + 1);
 		else
 			return this;
 	}
@@ -116,20 +120,26 @@ public class SParam extends AStruct {
 	@Override
 	public boolean isStringType() {
 		String type = getAttributeValue(Q.TYPE_ATTR);
-		return type != null && (type.equals(Q.STRING) || type.startsWith(Q.STRING) && type.contains("["));
+		return type != null
+				&& (type.equals(Q.STRING) || type.startsWith(Q.STRING)
+						&& type.contains("["));
 	}
 
 	@Override
-	public void init(Value<?> sValue, Object[] actualParams, ElementCache elementCache) throws InPUTException {
-		if (isPlainValueElement(sValue) && !(isComplex() && sValue.getAttributeValue(Q.VALUE_ATTR) == null))
+	public void init(Value<?> sValue, Object[] actualParams,
+			ElementCache elementCache) throws InPUTException {
+		if (isPlainValueElement(sValue)
+				&& !(isComplex() && sValue.getAttributeValue(Q.VALUE_ATTR) == null))
 			initValue(sValue, actualParams, elementCache);
 		else if (isComplex())
-			((SValue) sValue).setPlainInputValue(initComplex(sValue, actualParams));
+			((SValue) sValue).setPlainInputValue(initComplex(sValue,
+					actualParams));
 		else if (isArrayType())
 			initArray(sValue, actualParams);
 	}
 
-	public static Object[] extendActualParams(Object[] actualParams, String localChoiceId) {
+	public static Object[] extendActualParams(Object[] actualParams,
+			String localChoiceId) {
 		Object[] newParams;
 		if (actualParams != null) {
 			newParams = Arrays.copyOf(actualParams, actualParams.length);
@@ -142,10 +152,12 @@ public class SParam extends AStruct {
 	}
 
 	@Override
-	public void initIfNotConstructorInit(SValue sValue, Value<?> subValue, Object value) throws InPUTException {
+	public void initIfNotConstructorInit(SValue sValue, Value<?> subValue,
+			Object value) throws InPUTException {
 		String localId = sValue.getAttributeValue(Q.VALUE_ATTR);
 		AStruct choice = getChoiceById(localId);
-		if (!choice.isInitByConstructor(subValue.getLocalId()) && subValue.getParam().hasSetHandle())
+		if (!choice.isInitByConstructor(subValue.getLocalId())
+				&& subValue.getParam().hasSetHandle())
 			subValue.getParam().injectOnParent(subValue, value);
 	}
 
@@ -170,18 +182,18 @@ public class SParam extends AStruct {
 		return builder.toString();
 	}
 
-	private void appendAllChoicesToString(StringBuilder builder){
+	private void appendAllChoicesToString(StringBuilder builder) {
 		if (isImplicit()) {
 			builder.append(getLocalId());
 		} else {
 			int choices = getAmountChoices();
 			for (int i = 0; i < choices; i++) {
 				try {
-					builder.append(getChoiceByPosition(i+1).toString());
+					builder.append(getChoiceByPosition(i + 1).toString());
 				} catch (InPUTException e) {
 					e.printStackTrace();
 				}
-				if (i < choices-1)
+				if (i < choices - 1)
 					builder.append(", ");
 			}
 		}
@@ -213,11 +225,12 @@ public class SParam extends AStruct {
 		for (Element child : getChildren())
 			if (child instanceof SChoice) {
 				if (counter == index) {
-					return (AStruct)child;
+					return (AStruct) child;
 				}
 				counter++;
 			}
-		throw new InPUTException("The index " + index + " is not valid for parameter '" + getId() + "'.");
+		throw new InPUTException("The index " + index
+				+ " is not valid for parameter '" + getId() + "'.");
 	}
 
 	public Object getFixedChoice(Object value) throws InPUTException {
@@ -227,10 +240,13 @@ public class SParam extends AStruct {
 	}
 
 	public void setFixed(String value) throws InPUTException {
-		if (value != null) {
-			setAttribute(Q.FIXED_ATTR, value);
-		} else
+		if (value == null)
 			removeAttribute(Q.FIXED_ATTR);
+		else if (getChoiceById(value) != null)
+			setAttribute(Q.FIXED_ATTR, value);
+		else
+			throw new InPUTException("The passed value '" + value
+					+ "' is of wrong type for parameter '" + getId() + "'.");
 		generator = initGenerator(true);
 	}
 
