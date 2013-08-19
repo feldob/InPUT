@@ -20,13 +20,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Properties;
 
 import se.miun.itm.input.example.structured.model.AnotherDecision;
 import se.miun.itm.input.example.structured.model.Raw;
-import se.miun.itm.input.export.InputProperties;
 import se.miun.itm.input.export.LaTeXFileExporter;
-import se.miun.itm.input.export.PropertiesExporter;
 import se.miun.itm.input.export.XMLFileExporter;
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.design.DesignSpace;
