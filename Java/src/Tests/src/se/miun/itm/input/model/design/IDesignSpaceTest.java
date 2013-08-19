@@ -173,7 +173,6 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 			assertEquals(1, structuralArray.length);
 			assertEquals(1, structuralArray[0].length);
 			assertEquals(1, structuralArray[0][0].length);
-			
 
 		} catch (InPUTException e) {
 			e.printStackTrace();
@@ -248,10 +247,10 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 				anotherRestrictedValue = space
 						.next("AnotherRestrictedPrimitive");
 
-				boolean inFirstRange = anotherRestrictedValue > .1d &&
-						anotherRestrictedValue < .4d;
-				boolean inSecondRange = anotherRestrictedValue > .8d &&
-						anotherRestrictedValue < .9d;
+				boolean inFirstRange = anotherRestrictedValue > .1d
+						&& anotherRestrictedValue < .4d;
+				boolean inSecondRange = anotherRestrictedValue > .8d
+						&& anotherRestrictedValue < .9d;
 				assertTrue(inFirstRange || inSecondRange);
 			}
 
@@ -260,8 +259,8 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 			BigDecimal veryRestricted;
 			for (int i = 0; i < 10; i++) {
 				veryRestricted = space.next("SomeVeryRestrictedPrimitive");
-				assertTrue(veryRestricted.compareTo(exclMin) > 0 &&
-						veryRestricted.compareTo(exclMax) < 0);
+				assertTrue(veryRestricted.compareTo(exclMin) > 0
+						&& veryRestricted.compareTo(exclMax) < 0);
 			}
 		} catch (InPUTException e) {
 			e.printStackTrace();
@@ -506,16 +505,22 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 	}
 
 	@Test
-	public void testNegativeNextParameterConstructorOverride() throws InPUTException {
-		Object[] actualParams = { "SomeWrongInput", 10f };
-		SomeStructuralParent result = null;
-		// This line throws an InPUTException, but none seems to be expected.
-		result = space.next("SomeStructuralParent", actualParams);
+	public void testNegativeNextParameterConstructorOverride()
+			throws InPUTException {
+		
+		try {
+			Object[] actualParams = { "SomeWrongInput", 10f };
+			// This line throws an InPUTException, but none seems to be expected.
+			space.next("SomeStructuralParent", actualParams);
+			fail("such a constructor does not exist.");
+		} catch (InPUTException e) {
+			
+		}
 		// Alternatively, an InPUTException is expected, but then the test
 		// should fail if one isn't thrown. In that case it doesn't seem to
 		// make sense to check the type of result (since it should be null).
-		assertTrue("result should be an instance of YetAnotherSecondChoice.",
-				result instanceof YetAnotherSecondChoice);
+//		assertTrue("result should be an instance of YetAnotherSecondChoice.",
+//				result instanceof YetAnotherSecondChoice);
 	}
 
 	@Test
@@ -588,15 +593,21 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 
 	@Test
 	public void testSetFixedNegative() throws InPUTException {
-		// This line fails because no parameter with id "whatever" exists.
-		// That doesn't seem to be the expected failure reason.
-		space.setFixed("whatever", "2");
+		try {
+			space.setFixed("whatever", "2");
+			fail("a non-existent parameter cannot be set fixed.");
+		} catch (InPUTException e) {
+		}
+
 		// These three lines succeed perfectly without any errors.
 		// They are probably supposed to fail.
-		space.setFixed("SomeBoolean", "whatever");
-		space.setFixed("SomeInteger", "whatever");
-		space.setFixed("SomeStructural", "whatever");
-		fail();
+		try {
+			space.setFixed("SomeStructural", "whatever");
+			space.setFixed("SomeBoolean", "whatever");
+			space.setFixed("SomeInteger", "whatever");
+			fail("none of the above parameters should be able to be set by a String.");
+		} catch (InPUTException e) {
+		}
 	}
 
 	@Test
@@ -646,9 +657,11 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 		space.setFixed("SomeStructural", null);
 		assertFalse(store.getParam("SomeStructural").isFixed());
 
-		SomeStructural[][][] values = space.next("SomeStructuralArrayOfUnspecifiedSize");
+		SomeStructural[][][] values = space
+				.next("SomeStructuralArrayOfUnspecifiedSize");
 		space.setFixed("SomeStructuralArrayOfUnspecifiedSize", "FirstChoice");
-		assertTrue(store.getParam("SomeStructuralArrayOfUnspecifiedSize").isFixed());
+		assertTrue(store.getParam("SomeStructuralArrayOfUnspecifiedSize")
+				.isFixed());
 		for (int k = 0; k < 10; k++) {
 			values = space.next("SomeStructuralArrayOfUnspecifiedSize");
 			for (int i = 0; i < values.length; i++) {
@@ -659,12 +672,14 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 				}
 			}
 		}
-		
+
 		space.setFixed("SomeStructuralArrayOfUnspecifiedSize", null);
-		assertFalse(store.getParam("SomeStructuralArrayOfUnspecifiedSize").isFixed());
-		
+		assertFalse(store.getParam("SomeStructuralArrayOfUnspecifiedSize")
+				.isFixed());
+
 		space.setFixed("SomeStructuralArrayOfUnspecifiedSize", "SecondChoice");
-		assertTrue(store.getParam("SomeStructuralArrayOfUnspecifiedSize").isFixed());
+		assertTrue(store.getParam("SomeStructuralArrayOfUnspecifiedSize")
+				.isFixed());
 		for (int k = 0; k < 10; k++) {
 			values = space.next("SomeStructuralArrayOfUnspecifiedSize");
 			for (int i = 0; i < values.length; i++) {
