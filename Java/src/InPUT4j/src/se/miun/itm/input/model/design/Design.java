@@ -101,7 +101,7 @@ public class Design implements IDesign {
 			ref += Q.XML;
 
 		Document space = SAXUtil.build(ref, InPUTConfig.isValidationActive());
-		return new DesignSpace(space);
+		return new DesignSpace(space, ref);
 	}
 
 	private void initValues() throws InPUTException {

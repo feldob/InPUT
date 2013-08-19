@@ -61,8 +61,8 @@ public interface IDesign extends Identifiable, Exportable, Valuable,
 	Void impOrt(InPUTImporter<Document> importer) throws InPUTException;
 
 	/**
-	 * Has as a consequence, that from after its execution, no write operations are allowed anymore, and will lead to
-	 * the throwing of InPUTExceptions.
+	 * Subsequent calls to {@link #setValue(String, Object) setValue} will
+	 * throw an InPUTExceptions.
 	 */
 	void setReadOnly();
 
