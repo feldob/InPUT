@@ -22,10 +22,11 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import se.miun.itm.input.tuning.sequential.ISequentialTunerTest;
+import se.miun.itm.input.tuning.converter.SpotConverterTest;
+import se.miun.itm.input.tuning.sequential.SPOTTest;
 
 @RunWith(Suite.class)
-@SuiteClasses({ ISequentialTunerTest.class, ITunerTest.class})
+@SuiteClasses({ SPOTTest.class, SpotConverterTest.class})
 public class AllTunerTests {
 
 }
