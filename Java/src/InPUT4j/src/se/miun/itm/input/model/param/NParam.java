@@ -39,8 +39,9 @@ import se.miun.itm.input.util.Q;
  * 
  * @NotThreadSafe
  */
-public class NParam extends Param<NumericGenerator>{
+public class NParam extends Param<NumericGenerator> {
 
+	private static final String NUMERIC_PATTERN = "-?\\d+(\\.\\d+)?";
 	private static final long serialVersionUID = 4936437855938927299L;
 
 	public NParam(Element original, String designId, ParamStore ps)
@@ -49,15 +50,16 @@ public class NParam extends Param<NumericGenerator>{
 	}
 
 	@Override
-	protected NumericGenerator initGenerator(boolean initRanges) throws InPUTException {
+	protected NumericGenerator initGenerator(boolean initRanges)
+			throws InPUTException {
 		String fixedValue = getFixedValue();
 		NumericGenerator generator;
-		if (fixedValue != null)
+		if (isValidFixedValue(fixedValue))
 			generator = new FixedNumericGenerator(this, fixedValue);
-		else{
+		else {
 			generator = new RandomNumericGenerator(this, initRandom(ps));
 		}
-		
+
 		if (initRanges) {
 			generator.initRanges();
 		}
@@ -83,7 +85,8 @@ public class NParam extends Param<NumericGenerator>{
 		return generator.getPrimitiveClass();
 	}
 
-	public void isValid(String paramId, Object value, ElementCache elementCache) throws InPUTException {
+	public void isValid(String paramId, Object value, ElementCache elementCache)
+			throws InPUTException {
 		if (generator.hasWrapper())
 			value = invokeGetter(value);
 		generator.validateInPUT(paramId, value, elementCache);
@@ -95,7 +98,8 @@ public class NParam extends Param<NumericGenerator>{
 	}
 
 	@Override
-	public void initValue(Value<?> nValue, Object[] actualParams, ElementCache elementCache) throws InPUTException {
+	public void initValue(Value<?> nValue, Object[] actualParams,
+			ElementCache elementCache) throws InPUTException {
 		String valueString = nValue.getAttributeValue(Q.VALUE_ATTR);
 		// retrieve the numeric of the element
 		Object value = generator.parse(valueString);
@@ -106,20 +110,22 @@ public class NParam extends Param<NumericGenerator>{
 		nValue.setInputValue(value);
 	}
 
-	public void initValueAttribute(NValue nValue, Object value) throws InPUTException {
-			String valueString;
-			// differentiate between wrapper and plain types.
-			if (generator.hasWrapper())
-				// with a wrapper, the 'real' value has to be retrieved
-				valueString = invokeGetter(value).toString();
-			else
-				// otherwise, simply tostring it, that works for all plain types.
-				valueString = value.toString();
-			// now, set the value to the element.
-			nValue.setAttribute(Q.VALUE_ATTR, valueString);
-		}
+	public void initValueAttribute(NValue nValue, Object value)
+			throws InPUTException {
+		String valueString;
+		// differentiate between wrapper and plain types.
+		if (generator.hasWrapper())
+			// with a wrapper, the 'real' value has to be retrieved
+			valueString = invokeGetter(value).toString();
+		else
+			// otherwise, simply tostring it, that works for all plain types.
+			valueString = value.toString();
+		// now, set the value to the element.
+		nValue.setAttribute(Q.VALUE_ATTR, valueString);
+	}
 
-	public void initNumericElementFromValue(NValue nValue, Object value) throws InPUTException {
+	public void initNumericElementFromValue(NValue nValue, Object value)
+			throws InPUTException {
 		if (!value.getClass().isArray())
 			nValue.setAttribute(Q.VALUE_ATTR, value.toString());
 		else
@@ -130,17 +136,17 @@ public class NParam extends Param<NumericGenerator>{
 	public String getParamId() {
 		return getId();
 	}
-	
+
 	@Override
 	public void checkIfParameterSettable(String paramId) throws InPUTException {
-		
+
 	}
 
 	@Override
 	public boolean isPlainValueElement(Value<?> valueElement) {
 		// / retrieve the value String of the element
 		String valueString = valueElement.getAttributeValue(Q.VALUE_ATTR);
-		return (valueString != null && !valueString.equals(Q.NULL))
+		return (isValidFixedValue(valueString) && !valueString.equals(Q.NULL))
 				|| !isArrayType()
 				|| (isArrayType() && !getId().equals(getId()));
 	}
@@ -165,12 +171,12 @@ public class NParam extends Param<NumericGenerator>{
 	public Object getValueForString(String valueString) throws InPUTException {
 		return generator.parse(valueString);
 	}
-	
+
 	@Override
 	public String getValueTypeString() {
 		return Q.NVALUE;
 	}
-	
+
 	@Override
 	public String toString() {
 		return generator.toString();
@@ -187,14 +193,22 @@ public class NParam extends Param<NumericGenerator>{
 	public boolean isBoolean() {
 		return generator.isBoolean();
 	}
-	
+
 	public void setFixed(String value) throws InPUTException {
-		if (value != null) {
-			setAttribute(Q.FIXED_ATTR, value);
-		}else{
+		if (value == null)
 			removeAttribute(Q.FIXED_ATTR);
-		}
+		else if (isValidFixedValue(value))
+			setAttribute(Q.FIXED_ATTR, value);
+		else
+			throw new InPUTException(
+					"the value you entered is not of correct numeric type.");
+
 		generator = initGenerator(true);
+	}
+
+	//TODO refactor this into generator class
+	private boolean isValidFixedValue(String value) {
+		return value != null && (value.matches(NUMERIC_PATTERN) || value.equals("true") || value.equals("false"));
 	}
 
 	@Override
