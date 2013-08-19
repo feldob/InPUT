@@ -23,14 +23,20 @@ import se.miun.itm.input.model.InPUTException;
 public interface Settable {
 
 	/**
-	 * Resets the current parameter value of this design for parameter
-	 * <code>paramId</code> as an InPUT String.
+	 * Resets the current parameter value of this design for the parameter
+	 * identified by <code>paramId</code> as an InPUT String.
 	 * 
 	 * @param paramId
 	 *            The id of the parameter of interest in InPUT notion.
 	 * @param obj
-	 *            A valid value of type <code>paramId</code>.
-	 * @throws InPUTException 
+	 *            A valid value of the appropriate type for the parameter
+	 *            identified by <code>paramId</code>.
+	 * @throws InPUTException if <code>paramId</code> is an invalid id
+	 * 			(<code>null</code> or unknown/nonexistent).
+	 * @throws InPUTException if <code>obj</code> is of a type that doesn't
+	 * 			match what was specified for <code>paramId</code>. This means
+	 * 			that <code>null</code> is always an invalid value.
+	 * @throws InPUTException if called on a read-only Design.
 	 */
 	void setValue(String paramId, Object obj) throws InPUTException;
 }
