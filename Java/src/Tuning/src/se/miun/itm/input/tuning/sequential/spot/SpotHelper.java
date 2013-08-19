@@ -44,17 +44,16 @@ public class SpotHelper {
 
 	private static AtomicInteger globalExperimentCounter = new AtomicInteger(0);
 
-	// @NotThreadSafe
 	private static SpotConverter converter;
 
-	static {
+	static{
 		try {
 			converter = new SpotConverter();
 		} catch (InPUTException e) {
 			System.out.println("An internal initialization error of class SpotConverter occured. Is the config.xml valid (esp. the validation setup)?");
 		}
 	}
-
+	
 	private final SpotROI inputROI;
 
 	private final SpotROI outputROI;
@@ -84,7 +83,9 @@ public class SpotHelper {
 	static {
 		String[] args = { "--vanilla" };
 		engine = new Rengine(args, false, null);
-		engine.eval(SPOTQ.COMMAND_LOAD_SPOT, false);
+		REXP allRight = engine.eval(SPOTQ.COMMAND_LOAD_SPOT, false);
+		if (allRight == null)
+			System.err.println("SPOT is not appropriately installed.");
 	}
 
 	public SpotHelper(IInPUT input, IDesign config, String studyId)
@@ -308,7 +309,7 @@ public class SpotHelper {
 
 	public void initSPOTinitialDesign() {
 		initInverseFunction();
-		engine.eval("inputConfig=spot(inputFile,\"init\")", false);
+		engine.eval("inputConfig<-spot(inputFile,\"init\")", false);
 	}
 
 	public void initSPOTConfFileName() {
@@ -323,7 +324,7 @@ public class SpotHelper {
 
 	public void initSPOTSequentialDesign() {
 		engine.eval(
-				"inputConfig=spot(inputFile,\"seq\", spotConfig=inputConfig)",
+				"inputConfig<-spot(inputFile,\"seq\", spotConfig=inputConfig)",
 				false);
 	}
 
@@ -350,6 +351,8 @@ public class SpotHelper {
 	}
 
 	public IExperiment nextExperiment(int position) throws InPUTException {
-		return converter.toExperiment(input.getId(), currentDES, position);
+		synchronized (converter) {
+			return converter.toExperiment(input.getId(), currentDES, position);
+		}
 	}
 }

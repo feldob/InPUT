@@ -41,14 +41,14 @@ public class SpotConverter implements InputConverter<SpotDES, SpotROI, SpotRES> 
 
 	public static final String ID_CHOP_PATTERN = Pattern.quote(".");
 
-	private SpotDesignInitializer experimentInitializer;
+	private final SpotDesignInitializer experimentInitializer;
 
 	private AtomicInteger designId = new AtomicInteger();
-	
-	public SpotConverter() throws InPUTException {
-		experimentInitializer = new SpotDesignInitializer();
-	}
 
+	public SpotConverter() throws InPUTException{
+		 experimentInitializer = new SpotDesignInitializer();
+	}
+	
 	@Override
 	public SpotDES fromExperiments(List<IExperiment> designs) throws InPUTException {
 		if (designs == null)
