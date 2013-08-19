@@ -20,7 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Random;
 
@@ -33,7 +33,6 @@ public class InPUTConfigTest {
 
 	@Test
 	public void testGetValue() throws InPUTException {
-		
 		assertNotNull(InPUTConfig.getValue(Q.LOGGING));
 		assertNotNull(InPUTConfig.getValue(Q.SCHEMA_PATH));
 		assertNotNull(InPUTConfig.getValue(Q.EVALUATOR));
@@ -42,9 +41,9 @@ public class InPUTConfigTest {
 		assertNotNull(InPUTConfig.getValue(Q.THREAD_SAFE));
 		
 		Object value = InPUTConfig.getValue(Q.RANDOM);
-		if (!(value instanceof Random))
-			fail("The random entry should be of type java.lang.Random!");
-		assertNotNull(value);
+		assertNotNull("Value should not be null.", value);
+		assertTrue("The random entry should be of type java.lang.Random!",
+				value instanceof Random);
 	}
 
 	@Test
