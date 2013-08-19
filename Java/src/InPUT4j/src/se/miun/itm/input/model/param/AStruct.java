@@ -164,12 +164,12 @@ public abstract class AStruct extends Param<StructuralGenerator> {
 	private Object enhanceActualParam(Object[] actualParams,
 			List<Value<? extends Param<?>>> subParamValueElements,
 			ElementCache elementCache, InPUTConstructor inputConstructor,
-			String paramId, int i) throws InPUTException {
+			String paramId, int index) throws InPUTException {
 		Object enhancedValue = null;
 		try {
-			if (actualParams != null && actualParams[i] != Q.BLANK) {
-				enhancedValue = actualParams[i];
-			} else {
+			if (parameterIsDefined(actualParams, index))
+				enhancedValue = actualParams[index];
+			else {
 				if (inputConstructor.isLocalInitByConstructor(paramId))
 					enhancedValue = getValueForLocalId(subParamValueElements,
 							paramId);
@@ -178,7 +178,7 @@ public abstract class AStruct extends Param<StructuralGenerator> {
 							subParamValueElements, paramId, elementCache);
 				else if (elementCache != null)
 					enhancedValue = getValueForContext(actualParams,
-							elementCache, i, paramId);
+							elementCache, index, paramId);
 			}
 		} catch (Exception e) {
 			throw new InPUTException(
@@ -191,6 +191,10 @@ public abstract class AStruct extends Param<StructuralGenerator> {
 					e);
 		}
 		return enhancedValue;
+	}
+
+	private boolean parameterIsDefined(Object[] actualParams, int index) {
+		return actualParams != null && actualParams[index] != Q.BLANK;
 	}
 
 	private Object getValueForContext(Object[] actualParams,

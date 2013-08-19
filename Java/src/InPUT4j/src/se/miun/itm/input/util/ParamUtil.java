@@ -77,6 +77,10 @@ public class ParamUtil {
 		Param<?> param = ps.getParam(paramId);
 		if (param == null)
 			param = getParamForLocalId(paramId, parentParam, ps);
+		
+		//TODO this is strongly heuristic, and there are cases where this might not work well. A quick fix before restructuring of InPUT.
+		if (param == null)
+			param = ps.getParamForAnyStore(paramId);
 		return param;
 	}
 

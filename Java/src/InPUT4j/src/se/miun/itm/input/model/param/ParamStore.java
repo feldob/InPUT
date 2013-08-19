@@ -373,4 +373,14 @@ public class ParamStore implements Identifiable {
 
 		fixed.addAll(store.getFixed());
 	}
+
+	public Param<?> getParamForAnyStore(String paramId) {
+		Param<?> param = null;
+		for (String storeId : stores.keySet()) {
+			param = stores.get(storeId).getParam(paramId);
+			if (param != null)
+				break;
+		}
+		return param;
+	}
 }
