@@ -20,10 +20,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import java.math.BigDecimal;
 
-import se.miun.itm.input.junit.DatabaseConnectingDialog;
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.design.IDesign;
 import se.miun.itm.input.model.design.IDesignSpace;
+import se.miun.itm.input.sql.example.DatabaseConnectingDialog;
 import se.miun.itm.input.util.sql.DatabaseAdapter;
 
 /**

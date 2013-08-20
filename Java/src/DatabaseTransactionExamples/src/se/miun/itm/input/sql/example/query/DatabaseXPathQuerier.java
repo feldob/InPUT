@@ -2,7 +2,7 @@ package se.miun.itm.input.sql.example.query;
 
 import java.io.File;
 
-import se.miun.itm.input.junit.DatabaseConnectingDialog;
+import se.miun.itm.input.sql.example.DatabaseConnectingDialog;
 
 /**
  * An example that demonstrates how SQL statements containing XPath
