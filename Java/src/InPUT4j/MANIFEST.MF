@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Class-Path: . jdom-2.0.3.jar xercesImpl.jar jaxen.jar
+Main-Class: se.miun.itm.input.standalone.Main
+
