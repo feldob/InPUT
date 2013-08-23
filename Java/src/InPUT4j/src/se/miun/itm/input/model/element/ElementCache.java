@@ -47,9 +47,12 @@ public class ElementCache {
 	private Map<String, Value<?>> cache = new HashMap<String, Value<?>>();
 
 	private final List<ElementCache> neighbors = new ArrayList<ElementCache>();
+	
+	private boolean readOnly = false;
 
 	public void setReadOnly() {
 		cache = Collections.unmodifiableMap(cache);
+		readOnly = true;
 	}
 
 	public Value<?> get(String paramId) {
@@ -69,6 +72,9 @@ public class ElementCache {
 			throws InPUTException {
 		try {
 			cache.put(id, valueE);
+			for (ElementCache neighbor : neighbors)
+				if (neighbor.containsKey(id))
+					neighbor.put(id, valueE);
 		} catch (UnsupportedOperationException e) {
 			throw new InPUTException("The design is read only!", e);
 		}
@@ -123,6 +129,9 @@ public class ElementCache {
 			return false;
 		
 		ElementCache foreigner = ((ElementCache)obj);
+		if (size() != foreigner.size())
+			return false;
+			
 		Value<?> entry1, entry2;
 		for (String key : cache.keySet()) {
 			entry1 = cache.get(key);
@@ -134,8 +143,16 @@ public class ElementCache {
 		return true;
 	}
 	
+	private int size() {
+		return cache.size();
+	}
+
 	@Override
 	public String toString() {
 		return cache.toString();
+	}
+
+	public boolean isReadOnly() {
+		return readOnly;
 	}
 }
