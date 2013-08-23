@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:DesignSpace
+    id="circularDependencySpace04" xmlns:i="http://TheInPUT.org/DesignSpace"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://TheInput.org/DesignSpace.xsd ">
+
+    <!--
+        These are the same parameters that are used in 02.
+        We already know that no Design can be created using these parameters.
+        However, while both 02 and 03 can be used to create a DesignSpace
+        (only creating the Design fails), including both groups of parameters
+        causes even the DesignSpace creation to fail.
+    -->
+    <i:NParam type="integer" id="C3" exclMin="A3"/>
+    <i:NParam type="integer" id="B3" exclMin="C3"/>
+    <i:NParam type="integer" id="A3" exclMin="B3"/>
+
+    <!-- These are the same parameters as in 03. -->
+    <i:NParam type="integer" id="A2" exclMax="B2"/>
+    <i:NParam type="integer" id="B2" exclMin="C2"/>
+    <i:NParam type="integer" id="C2" inclMax="D2"/>
+    <i:NParam type="integer" id="D2" inclMin="A2"/>
+    <!--
+        Trying to create a DesignSpace using this file will cause a
+        StackOverflowError.
+        Param.dependsOn(Param) and Param.dependsOnDependers(Param) end up
+        calling each other recursively.
+    -->
+</i:DesignSpace>

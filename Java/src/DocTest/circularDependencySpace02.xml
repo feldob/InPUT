@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:DesignSpace
+    id="circularDependencySpace02" xmlns:i="http://TheInPUT.org/DesignSpace"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://TheInput.org/DesignSpace.xsd ">
+
+    <!-- A3, B3 and C3 form a direct circular dependency. -->
+    <i:NParam type="integer" id="A3" exclMin="B3"/>
+    <i:NParam type="integer" id="B3" exclMin="C3"/>
+    <i:NParam type="integer" id="C3" exclMin="A3"/>
+    <!--
+        While this scenario is very similar to 01, with only two
+        parameters, this DesignSpace can be read.
+        However, trying to create a Design from it will fail with an
+        InPUTException:
+        The evaluation engine could not process the expression 'B3'.
+    -->
+</i:DesignSpace>

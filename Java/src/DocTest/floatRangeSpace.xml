@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:DesignSpace
+    id="floatRangeSpace"
+    xmlns:i="http://TheInPUT.org/DesignSpace"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://theinput.org/DesignSpace.xsd" >
+
+    <!--
+        Both values will be truncated, which means that 2 is the only
+        legal value.
+    -->
+	<i:NParam type="integer" id="A" inclMin="2.72" exclMax="3.14" />
+
+</i:DesignSpace>

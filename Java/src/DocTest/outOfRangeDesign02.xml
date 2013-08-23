@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:Design
+    xmlns:i="http://TheInPUT.org/Design"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://TheInPUT.org/Design http://TheInPUT.org/Design.xsd"
+    id="outOfRangeDesign02"
+    ref="testSpace.xml">
+
+    <!--
+        This Design is valid.
+        Therefore, one would expect to be able to set the value of A
+        immediately after importing the Design. However, as
+        DesignTest.settingDependentValueFailsUnlessFirstTouchingDependee and
+        DesignTest.settingDependentValueSucceedsOnlyIfFirstTouchingDependee
+        together demonstrate that setting A without first touching B results
+        in an InPUTException.
+    -->
+    <i:NValue id="A" value="5" />
+    <i:NValue id="B" value="4" />
+
+    <!--
+        These parameters are valid but irrelevant for most tests.
+    -->
+    <i:NValue id="C" value="123" />
+    <i:NValue id="F" value="43" />
+
+</i:Design>

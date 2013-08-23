@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:DesignSpace
+    id="boolParamSpace02"
+    xmlns:i="http://TheInPUT.org/DesignSpace"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://theinput.org/DesignSpace.xsd" >
+
+    <!--
+        All of these fixed literals evaluate to false.
+    -->
+
+    <i:NParam type="boolean" id="A" fixed="1" />
+    <i:NParam type="boolean" id="B" fixed="0" />
+    <i:NParam type="boolean" id="C" fixed="-1" />
+    <i:NParam type="boolean" id="D" fixed="hello" />
+    <i:NParam type="boolean" id="E" fixed="" />
+    <i:NParam type="boolean" id="F" fixed="1 == 1" />
+
+</i:DesignSpace>

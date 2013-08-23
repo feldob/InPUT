@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:DesignSpace xmlns:i="http://TheInPUT.org/DesignSpace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="testSpace" xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://theinput.org/DesignSpace.xsd">
+  <i:NParam type="integer" id="B" exclMin="3" />
+  <i:NParam type="integer" id="C" />
+  <i:NParam type="integer" id="F" fixed="43" />
+  <i:NParam type="integer" id="A" exclMin="B" />
+</i:DesignSpace>

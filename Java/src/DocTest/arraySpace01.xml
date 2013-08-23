@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:DesignSpace
+    id="arraySpace01"
+    xmlns:i="http://TheInPUT.org/DesignSpace"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://theinput.org/DesignSpace.xsd" >
+
+    <!--
+        Arrays can have their elements defined the same way regular
+        parameters are defined.
+        They support expressions and multiple ranges.
+    -->
+    <i:NParam type="integer[3]" id="A" inclMin="1" inclMax="1" />
+    <i:NParam type="integer[3]" id="B" inclMin="2" inclMax="2" />
+    <i:NParam type="integer[9]" id="C" inclMin="1,2" inclMax="1,2" />
+    <i:NParam type="integer[3]" id="D" inclMin="Z-2" inclMax="Z-2" />
+    <i:NParam type="integer" id="Z" fixed="5" />
+
+    <!--
+        As with any parameter, a simple arithemtic expression will
+        cause a NumberFormatException.
+    <i:NParam type="integer[3]" id="X" inclMin="2" inclMax="1+1" />
+    -->
+
+</i:DesignSpace>

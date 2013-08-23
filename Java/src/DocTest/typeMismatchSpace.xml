@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:DesignSpace
+    id="typeMismatchSpace"
+    xmlns:i="http://TheInPUT.org/DesignSpace"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://theinput.org/DesignSpace.xsd" >
+
+    <!--
+        The integer parameter A is fixed to 2.72 but the value will be
+        truncated to the integer 2.
+    -->
+	<i:NParam type="integer" id="A" fixed="2.72" />
+
+</i:DesignSpace>

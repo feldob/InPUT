@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:DesignSpace
+    id="relativeSpace"
+    xmlns:i="http://TheInPUT.org/DesignSpace"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://theinput.org/DesignSpace.xsd" >
+
+    <!--
+        The parameters X and Y are "fixed" to the value 2. Y is literally
+        fixed to 2 while X simply has its range restricted to only include
+        the value 2.
+        A and B are defined in terms of X and Y, respectively. Both are
+        expected to always be initialized to 4 (twice the size of X and Y).
+
+        C and D are limited to exactly the same value as A and B (4), and
+        both reference X. However, only one of the endpoints contains a
+        reference. The other endpoint is a literal 4.
+
+        When creating a design, all values are initialized correctly.
+        However, calling next() on the design space does not return the
+        correct values for A-D.
+        For some reason, A and B always return 0, while C and D return
+        random (invalid) values.
+
+        It looks as though the references are evaluated to 0(*) which in this
+        case means that the range will be 0 - 0 for A and B and 0 - 4 for D
+        (inclusive). However, this doesn't explain why C seems to be using
+        the same range. A range of 4 to 0 shouldn't even be allowed.
+
+        * Using an expression such as "X-5" will produce a lower limit of
+        -5, which suggests that the expression is indeed evaluated, but that
+        the referenced parameter is simply set to 0.
+    -->
+    <i:NParam type="integer" id="A" inclMin="X*2" inclMax="X*2" />
+    <i:NParam type="integer" id="B" inclMin="Y*2" inclMax="Y*2" />
+    <i:NParam type="integer" id="C" inclMin="4" inclMax="X*2" />
+    <i:NParam type="integer" id="D" inclMin="X*2" inclMax="4" />
+
+    <!-- Fixed -->
+    <i:NParam type="integer" id="X" inclMin="2" inclMax="2" />
+    <i:NParam type="integer" id="Y" fixed="2" />
+
+</i:DesignSpace>
