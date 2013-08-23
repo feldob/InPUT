@@ -386,10 +386,10 @@ public class Ranges {
 		return result;
 	}
 
-	public void checkValidity(String paramId, Object value, ElementCache elementCache)
-			throws InPUTException {
+	public void checkValidity(String paramId, Object value,
+			ElementCache elementCache) throws InPUTException {
 		if (isOfValidPlainType(value)) {
-			checkValidPlainValidity(paramId, value, elementCache);
+			checkPlainValueValidity(paramId, value, elementCache);
 		} else if (value.getClass().isArray()) {
 			checkValidArrayType(paramId, value, elementCache);
 		} else
@@ -402,16 +402,27 @@ public class Ranges {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void checkValidPlainValidity(String paramId, Object value, ElementCache elementCache)
-			throws InPUTException {
+	private void checkPlainValueValidity(String paramId, Object value,
+			ElementCache elementCache) throws InPUTException {
 		Comparable<Comparable<?>> theValue = (Comparable<Comparable<?>>) value;
-		
+
+		checkArrayElementSizeValidity(paramId, value, elementCache);
+
+		checkPlainValueRangeValidity(elementCache, theValue);
+	}
+
+	private void checkArrayElementSizeValidity(String paramId, Object value,
+			ElementCache elementCache) throws InPUTException {
 		Value<?> current = elementCache.get(paramId);
-		
-		if (current!= null && current.isArrayType()) {
-			throw new InPUTException("You entered the plain value '"+ value +"' for '" + paramId + "', but an array was expected.");
+
+		if (current != null && current.isArrayType()) {
+			throw new InPUTException("You entered the plain value '" + value
+					+ "' for '" + paramId + "', but an array was expected.");
 		}
-		
+	}
+
+	private void checkPlainValueRangeValidity(ElementCache elementCache,
+			Comparable<Comparable<?>> theValue) throws InPUTException {
 		switch (type) {
 		case BOOLEAN:
 			break;
@@ -431,7 +442,7 @@ public class Ranges {
 
 		if (extremas == null || extremas.length == 0)
 			return;
-		
+
 		Comparable<?> violated = null;
 		for (Comparable<?> extrema : extremas) {
 			if (theValue.compareTo(extrema) > 0) {
@@ -439,13 +450,13 @@ public class Ranges {
 				break;
 			}
 		}
-		
+
 		if (violated != null)
 			throw new IllegalArgumentException(spaceId
 					+ ": The entered value \"" + theValue
 					+ "\" for the parameter with id \"" + paramId
-					+ "\" is out of range (above maximum threshold \"" + violated
-					+ "\").");
+					+ "\" is out of range (above maximum threshold \""
+					+ violated + "\").");
 	}
 
 	private void checkMinima(Comparable<Comparable<?>> theValue,
@@ -468,33 +479,43 @@ public class Ranges {
 			throw new IllegalArgumentException(spaceId
 					+ ": The entered value \"" + theValue
 					+ "\" for the parameter with id \"" + paramId
-					+ "\" is out of range (below minimum threshold \"" + violated
-					+ "\").");
+					+ "\" is out of range (below minimum threshold \""
+					+ violated + "\").");
 	}
 
-	private void checkValidArrayType(String paramId, Object value, ElementCache elementCache) throws InPUTException {
+	private void checkValidArrayType(String paramId, Object newValue,
+			ElementCache elementCache) throws InPUTException {
 		Value<?> current = elementCache.get(paramId);
-		Object flag = value;
 		if (current != null && current.getValue() != null) {
 			Object currentValue = current.getInputValue(null);
-			//TODO must be turned around to flag too!
-			while(currentValue.getClass().isArray())
-			{
-				currentValue = Array.get(currentValue, 0);
-				if (!flag.getClass().isArray())
-					throw new InPUTException("The dimension for the set value in " + paramId + " is wrong.");
-				flag = Array.get(flag, 0);
-			}
-			
-			if (flag.getClass().isArray())
-				throw new InPUTException("The dimension for the set value in " + paramId + " is wrong.");
+			checkDimensionalityValidity(paramId, newValue, currentValue);
 		}
-		
-//		Class<?> compType = value.getClass().getComponentType();
-//		if (compType.isAssignableFrom(type.getPrimitiveClass())
-//				|| compType.isAssignableFrom(type.getNumClass()))
-//			return;
-//		throw new InPUTException("The datatype for the set value for parameter '" + paramId + "' is wrong. '"+ type.getPrimitiveClass().getName() + "' expected, but was '" + compType  + "'.");
+
+		checkArrayEntriesRespectRange(newValue, elementCache);
+	}
+
+	private void checkArrayEntriesRespectRange(Object newValue, ElementCache cache)
+			throws InPUTException {
+		if (!newValue.getClass().isArray())
+			checkPlainValueRangeValidity(cache, (Comparable<Comparable<?>>) newValue);
+		else
+			for (int i = 0; i < Array.getLength(newValue); i++)
+				checkArrayEntriesRespectRange(Array.get(newValue, i), cache);
+	}
+
+	private void checkDimensionalityValidity(String paramId, Object newValue,
+			Object currentValue) throws InPUTException {
+		while (currentValue.getClass().isArray()) {
+			currentValue = Array.get(currentValue, 0);
+			if (!newValue.getClass().isArray())
+				throw new InPUTException("The dimension for the set value in "
+						+ paramId + " is wrong.");
+			newValue = Array.get(newValue, 0);
+		}
+
+		if (newValue.getClass().isArray())
+			throw new InPUTException("The dimension for the set value in "
+					+ paramId + " is wrong.");
 	}
 
 	private boolean isOfValidPlainType(Object value) {
@@ -515,7 +536,7 @@ public class Ranges {
 	}
 
 	private Map<String, Object> initVarsFromElementCache(
-			ElementCache elementCache) {
+			ElementCache elementCache) throws InPUTException {
 		Map<String, Object> dependencies = new HashMap<String, Object>();
 		addDependencies(elementCache, dependencies, getMinDependencies());
 		addDependencies(elementCache, dependencies, getMaxDependencies());
@@ -523,10 +544,11 @@ public class Ranges {
 	}
 
 	private void addDependencies(ElementCache elementCache,
-			Map<String, Object> dependencies, Set<Param<?>> params) {
+			Map<String, Object> dependencies, Set<Param<?>> params)
+			throws InPUTException {
 		for (Param<?> param : params)
 			dependencies.put(param.getId(), elementCache.get(param.getId())
-					.getInputValue());
+					.getInputValue(null));
 	}
 
 	public boolean isIndependant() {
@@ -590,7 +612,8 @@ public class Ranges {
 				Class<?> componentType = getComponentType(value);
 				if (isNotCorrectNumericType(value, componentType))
 					throw new InPUTException("The value \"" + value.toString()
-							+ "\" for parameter '" + paramId +"' is of the wrong type. \""
+							+ "\" for parameter '" + paramId
+							+ "' is of the wrong type. \""
 							+ type.getPrimitiveClass().getName() + "\" or \""
 							+ type.getNumClass()
 							+ "\" was expected, but was \""
@@ -602,14 +625,13 @@ public class Ranges {
 	public boolean isNotCorrectNumericType(Object value, Class<?> componentType) {
 		return !type.equals(Numeric.DECIMAL)
 				&& (!componentType.equals(type.getPrimitiveClass())
-						&&
-						(!componentType.equals(type.getNumClass())) && !type
+						&& (!componentType.equals(type.getNumClass())) && !type
 						.getNumClass().isInstance(value));
 	}
 
 	private Class<?> getComponentType(Object value) {
 		Class<?> type = null;
-		while (value.getClass().isArray()){
+		while (value.getClass().isArray()) {
 			type = value.getClass().getComponentType();
 			value = Array.get(value, 0);
 		}
