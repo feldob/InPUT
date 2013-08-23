@@ -18,6 +18,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */package se.miun.itm.input.model.param.generator;
 
+import java.lang.reflect.Array;
 import java.util.Map;
 
 import se.miun.itm.input.model.InPUTException;
@@ -47,6 +48,26 @@ public class FixedNumericGenerator extends NumericGenerator {
 	@Override
 	public void validateInPUT(String paramId, Object value, ElementCache elementCache) throws InPUTException {
 		super.validateInPUT(paramId, value, elementCache);
+		validate(value);
+	}
+
+	private void validate(Object value) throws InPUTException {
+		if (isArrayType(value))
+			validateArray(value);
+		else
+			validateValue(value);
+	}
+
+	private boolean isArrayType(Object value) {
+		return value.getClass().isArray();
+	}
+
+	private void validateArray(Object value) throws InPUTException {
+		for (int i = 0; i < Array.getLength(value); i++)
+			validate(Array.get(value, i));
+	}
+
+	private void validateValue(Object value) throws InPUTException {
 		if (!value.toString().equals(fixedValue))
 			throw new InPUTException(param.getId()+": you have entered the value \"" + value.toString() + "\" that is not allowed by this fixed parameter. Only \"" + fixedValue + "\" is allowed.");
 	}
