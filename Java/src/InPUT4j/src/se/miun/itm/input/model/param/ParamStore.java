@@ -150,7 +150,22 @@ public class ParamStore implements Identifiable {
 		for (Element param : params)
 			initParam(id, param);
 		initDependencies();
+		checkCircularDependencies();
 		initRanges();
+	}
+
+	private void checkCircularDependencies() throws InPUTException {
+		Set<Param<?>> dependees;
+		for (Param<?> param : inputParamElements.values()) {
+			if (!(param instanceof NParam))
+				continue;
+			
+			dependees = param.getDependees();
+			for (Param<?> dependee : dependees)
+				if (param.dependsOn(dependee))
+					throw new InPUTException("There is a circular dependency between parameter '" + dependee.getId() + "' and '"+ param.getId()+ "'. It has to be resolved.");
+		}
+		
 	}
 
 	private void preprocessTreeForTypes() throws InPUTException {
@@ -273,7 +288,7 @@ public class ParamStore implements Identifiable {
 		initParam(paramE);
 	}
 
-	private void initDependencies() {
+	private void initDependencies() throws InPUTException {
 		List<Param<?>> paramList;
 		paramList = new ArrayList<Param<?>>(inputParamElements.values());
 
