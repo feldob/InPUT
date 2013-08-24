@@ -73,7 +73,7 @@ public abstract class Param<AGenerator extends IValueGenerator> extends
 	public Param(Element original, String designId, ParamStore ps)
 			throws InPUTException {
 		super(original);
-		checkParameterIdValidity(original);
+//		checkParameterIdValidity(original);
 		this.ps = ps;
 		dimensions = DimensionHelper.derive(original);
 		initFromOriginal(original);
