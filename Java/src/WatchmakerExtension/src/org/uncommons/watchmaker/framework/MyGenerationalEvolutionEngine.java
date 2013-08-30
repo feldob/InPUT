@@ -112,4 +112,16 @@ public class MyGenerationalEvolutionEngine<T> extends MyAbstractEvolutionEngine<
 	        population.addAll(elite);
 	        return evaluatePopulation(population);
 	    }
+
+
+		@Override
+		public void addEvolutionObserver(EvolutionObserver<? super T> observer) {
+			throw new IllegalArgumentException("not supported");
+		}
+
+
+		@Override
+		public void removeEvolutionObserver(EvolutionObserver<? super T> observer) {
+			throw new IllegalArgumentException("not supported");			
+		}
 }
