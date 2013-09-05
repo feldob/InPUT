@@ -400,10 +400,10 @@ public class ExtendedDesignTest {
 		final String designSpaceFile = "arraySpace03.xml";
 		try {
 			IDesignSpace space = new DesignSpace(designSpaceFile);
-			fail("no dots in param ids, and it wasnt validated and found!");
-//			IDesign design = space.nextDesign("design");
-//			assertNotNull(design.getValue("A.1.1"));
-//			assertNotNull(design.getValue("A.1.1.1"));
+//			fail("no dots in param ids, and it wasnt validated and found!");
+			IDesign design = space.nextDesign("design");
+			assertNotNull(design.getValue("A.1.1"));
+			assertNotNull(design.getValue("A.1.1.1"));
 		} catch (Exception e) {
 			
 		}
