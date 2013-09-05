@@ -26,8 +26,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Set;
 
 import model.AnotherStructural;
 import model.AnotherStructuralParent;
@@ -377,6 +379,15 @@ public abstract class IDesignTest extends AbstractInPUTTest {
 			fail("Should not be able to set the value of an array with a primitive.");
 		} catch (InPUTException e) {}
 	}
+	
+	@Test
+	public void testSetStructuredArray() throws InPUTException {
+		SomeStructural[][][] value = new SomeStructural[][][]{new SomeStructural[][]{new SomeStructural[]{new SomeFirstChoice()}}};
+		design.setValue("SomeStructuralArrayOfUnspecifiedSize", value);
+		SomeStructural[][][] current = design.getValue("SomeStructuralArrayOfUnspecifiedSize");
+		
+		assertTrue(Arrays.deepEquals(current, value));
+	}
 
 	@Test
 	public void testSetValueForFixedArrayElementShouldFail() {
@@ -482,4 +493,58 @@ public abstract class IDesignTest extends AbstractInPUTTest {
 		
 		new File(designName).delete();
 	}
+
+	@Test
+	public void testSetOptionalNumeric() throws InPUTException {
+		String optionalParamId = "OptionalNumeric";
+		
+		// fail("Test if value is set. expected that it is reset.");
+		design.setValue(optionalParamId, 23);
+		assertEquals(23, design.getValue(optionalParamId));
+
+		// fail("Set null and make sure that it really is null afterwards.");
+		design.setValue(optionalParamId, null);
+		assertEquals(null, design.getValue(optionalParamId));
+	}
+	
+	@Test
+	public void testGetOptionalNumeric() throws InPUTException {
+		String optionalParamId = "OptionalNumeric";
+		assertTrue(design.getSupportedParamIds().contains(optionalParamId));
+//		fail("Test get optional that does not exists. expected is a 'null'");
+		assertEquals(null, design.getValue(optionalParamId));		
+	
+//		fail("Test optional that exists. Expected is the value");
+		design.setValue(optionalParamId, 22);
+		assertEquals(22, design.getValue(optionalParamId));
+	}
+	
+	@Test
+	public void testSetOptionalStructural() throws InPUTException {
+		String optionalParamId = "OptionalStructural";
+		
+//		fail("Test if value is set. expected that it is reset.");
+		SomeCommonStructural value = new SomeSecondChoice();
+		design.setValue(optionalParamId, value);
+		assertEquals(value, design.getValue(optionalParamId));
+
+//		fail("Set null and make sure that it really is null afterwards.");
+		design.setValue(optionalParamId, null);
+		assertEquals(null, design.getValue(optionalParamId));
+	}
+	
+	@Test
+	public void testGetOptionalStructural() throws InPUTException {
+		String optionalParamId = "OptionalStructural";
+		
+		assertTrue(design.getSupportedParamIds().contains(optionalParamId));
+		//fail("Test get optional that does not exists. expected is a 'null'");
+		assertEquals(null, design.getValue(optionalParamId));		
+	
+		//fail("Test optional that exists. Expected is the value");
+		SomeCommonStructural value = new SomeSecondChoice();
+		design.setValue(optionalParamId, value);
+		assertEquals(value, design.getValue(optionalParamId));
+	}
+
 }

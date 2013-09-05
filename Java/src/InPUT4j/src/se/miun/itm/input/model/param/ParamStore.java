@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -77,6 +78,8 @@ public class ParamStore implements Identifiable {
 	private final Random rng;
 
 	private final int hash;
+
+	private final Set<String> optionalParamIds = new HashSet<String>();
 
 	private ParamStore(IDesignSpace space, Document designSpace, InputStream mappingStream) throws InPUTException {
 		id = designSpace.getRootElement().getAttributeValue(Q.ID_ATTR);
@@ -304,7 +307,8 @@ public class ParamStore implements Identifiable {
 		String paramId = param.getId();
 		inputParamElements.put(paramId, param);
 		paramsInv.put(param, paramId);
-		// log.info(paramId + ": Success");
+		if (param.isOptional())
+			optionalParamIds.add(param.getId());
 	}
 
 	public boolean containsParam(String paramId) {
@@ -397,5 +401,9 @@ public class ParamStore implements Identifiable {
 				break;
 		}
 		return param;
+	}
+
+	public Set<String> getOptionalParamIds() {
+		return optionalParamIds ;
 	}
 }

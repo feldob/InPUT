@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jaxen.function.ContainsFunction;
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 
@@ -269,10 +270,12 @@ public abstract class Param<AGenerator extends IValueGenerator> extends
 
 	public void validateInPUT(String paramId, Object value,
 			ElementCache elementCache) throws InPUTException {
-		if (value == null)
-			throw new InPUTException(getId()
-					+ ": Null value setting is not supported.");
-		generator.validateInPUT(paramId, value, elementCache);
+		if (!isOptional()) {
+			if (value == null)
+				throw new InPUTException(getId()
+						+ ": Null value setting is not supported.");
+			generator.validateInPUT(paramId, value, elementCache);
+		}
 	}
 
 	protected abstract AGenerator initGenerator(boolean initRanges)
@@ -354,6 +357,11 @@ public abstract class Param<AGenerator extends IValueGenerator> extends
 
 	public boolean initByConstructor(String paramId) {
 		return generator.initByConstructor(paramId);
+	}
+	
+	public boolean isOptional() {
+		Attribute optionalAttribute = getAttribute(Q.OPTIONAL);
+		return optionalAttribute == null ? false : Boolean.parseBoolean(optionalAttribute.getValue());
 	}
 
 	public abstract String getValueTypeString();

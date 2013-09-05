@@ -185,7 +185,7 @@ public abstract class StructuralGenerator extends
 		if (!StructuralMapping.class.isInstance(mapping)) {
 			throw new InPUTException("design space \"" + param.getSpaceId()
 					+ "\": Your mapping for parameter \""
-					+ param.getId() + "\" is incorrect. Have you set a type?");
+					+ param.getId() + "\" is incorrect. Have you set the 'type' attribute in the mapping element?");
 		}
 		return mapping;
 	}

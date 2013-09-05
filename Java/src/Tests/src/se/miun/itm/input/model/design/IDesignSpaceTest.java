@@ -551,7 +551,7 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 		assertFalse(paramIds.contains("somedecimal"));
 		assertFalse(paramIds.contains(null));
 	}
-
+	
 	@Test
 	public void testRelativeNumericConsistency() throws InPUTException {
 		IDesign design;

@@ -63,6 +63,7 @@ public class Design implements IDesign {
 	protected Design(final String expId, final ParamStore ps)
 			throws InPUTException {
 		this.ps = ps;
+		addOptionalParamsToCache();
 		design = initEmptyDesign(expId);
 		design.getRootElement().setAttribute(Q.REF_ATTR, ps.getId());
 		if (InPUTConfig.cachesDesigns())
@@ -72,8 +73,9 @@ public class Design implements IDesign {
 
 	protected Design(final ParamStore ps, Document design)
 			throws InPUTException {
-		this.design = design;
 		this.ps = ps;
+		addOptionalParamsToCache();
+		this.design = design;
 		initValues();
 		InPUTConfig.extendToConfigScope(this);
 	}
@@ -84,12 +86,19 @@ public class Design implements IDesign {
 
 		DesignSpace space = initDesignSpace(filePath, ref);
 		ps = space.getParamStore();
+		addOptionalParamsToCache();
 		initValues();
 		InPUTConfig.extendToConfigScope(this);
 	}
 
 	public Design(Design design) throws InPUTException {
 		this(design.getParamStore(), design.getXML());
+	}
+
+	private void addOptionalParamsToCache() throws InPUTException {
+		for (String optionalParamId : ps.getOptionalParamIds()) {
+			elementCache.put(optionalParamId, null);
+		}
 	}
 
 	private DesignSpace initDesignSpace(String filePath, String ref)
@@ -238,9 +247,13 @@ public class Design implements IDesign {
 		param.validateInPUT(paramId, value, elementCache);
 		if (param.isArrayType())
 			value = ParamUtil.repackArrayForImport(value);
-		// create new element
-		Value<?> valueE = ValueFactory.constructElementByValue(value, param,
-				param.getDimensions(), elementCache);
+
+		Value<?> valueE = null;
+		if (!(param.isOptional() && value == null)) {
+			// create new element
+			valueE = ValueFactory.constructElementByValue(value, param,
+					param.getDimensions(), elementCache);
+		}
 		setElement(paramId, valueE);
 	}
 
@@ -264,9 +277,10 @@ public class Design implements IDesign {
 	}
 
 	private void emptyCacheForChildren(Value<?> valueE) throws InPUTException {
-		for (Element child : valueE.getChildren())
-			if (child instanceof Value<?>)
-				emptyCache((Value<?>) child);
+		for (Object childValueE : valueE.getChildren()) {
+			Value<?> childValue = (Value<?>) childValueE;
+			emptyCache(childValue.getId(), childValue);
+		}
 
 	}
 
@@ -309,16 +323,18 @@ public class Design implements IDesign {
 	}
 
 	void addElement(String paramId, Value<?> valueE) throws InPUTException {
-		valueE.getParam().checkIfParameterSettable(paramId);
-
 		Element parent = retrieveParent(paramId);
 		// remove old element
 		parent.removeContent(elementCache.get(paramId));
-		// add new element
-		parent.addContent(valueE);
-		valueE.renewId();
+
+		if (valueE != null) {
+			valueE.getParam().checkIfParameterSettable(paramId);
+			// add new element
+			parent.addContent(valueE);
+			valueE.renewId();
+		}
 		// update index
-		updateElementCache(valueE);
+		updateElementCache(paramId, valueE);
 	}
 
 	@Override
@@ -333,25 +349,31 @@ public class Design implements IDesign {
 		return eName.equals(Q.SVALUE) || eName.equals(Q.NVALUE);
 	}
 
-	// thread safety has to be wrapped when calling
-	private void updateElementCache(final Value<?> valueE)
-			throws InPUTException {
-		// remove old entries
-		emptyCache(valueE);
-
-		// add the new entries.
-		elementCache.put(valueE.getId(), valueE);
-
-		for (Object childValueE : valueE.getChildren())
-			updateElementCache((Value<?>) childValueE);
+	private void updateElementCache(Value<?> value) throws InPUTException {
+		updateElementCache(value.getId(), value);
 	}
 
-	private void emptyCache(final Value<?> valueE) throws InPUTException {
-		Value<?> obsoleteValue = elementCache.get(valueE.getId());
-		if (obsoleteValue != null) {
+	// thread safety has to be wrapped when calling
+	private void updateElementCache(String paramId, final Value<?> valueE)
+			throws InPUTException {
+		// remove old entries
+		emptyCache(paramId, valueE);
+
+		// add the new entries.
+		elementCache.put(paramId, valueE);
+
+		if (valueE != null)
 			for (Object childValueE : valueE.getChildren()) {
-				emptyCache((Value<?>) childValueE);
+				Value<?> childValue = (Value<?>) childValueE;
+				updateElementCache(childValue.getId(), childValue);
 			}
+	}
+
+	private void emptyCache(String paramId, final Value<?> valueE)
+			throws InPUTException {
+		Value<?> obsoleteValue = elementCache.get(paramId);
+		if (obsoleteValue != null && valueE != null) {
+			emptyCacheForChildren(valueE);
 
 			elementCache.remove(obsoleteValue.getId());
 		}

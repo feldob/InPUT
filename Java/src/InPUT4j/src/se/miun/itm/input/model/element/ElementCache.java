@@ -136,11 +136,15 @@ public class ElementCache {
 		for (String key : cache.keySet()) {
 			entry1 = cache.get(key);
 			entry2 = foreigner.get(key);
-			if (!entry1.same(entry2))
+			if (!isValidEntry(entry1, entry2))
 				return false;
 		}
 		
 		return true;
+	}
+
+	private boolean isValidEntry(Value<?> entry1, Value<?> entry2) {
+		return (entry1 == null && entry2 == null) || entry1.same(entry2);
 	}
 	
 	private int size() {

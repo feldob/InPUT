@@ -30,6 +30,8 @@
 	<i:NParam type="double" id="AnotherRestrictedPrimitive"
 		exclMin="0.1,0.8" exclMax="0.4,0.9" />
 
+	<i:NParam type="integer" id="OptionalNumeric" optional="true" />
+
 	<i:SParam id="SomeStructural">
 		<i:SChoice id="SomeFirstChoice" />
 		<i:SChoice id="SomeSecondChoice" />
@@ -90,6 +92,11 @@
 	<i:SParam type="[3]" id="SomeComplexStructural" fixed="TheSecondSingleChoice TheSingleChoice">
 		<i:SChoice id="TheSingleChoice"/>
 		<i:SChoice id="TheSecondSingleChoice"/>
+	</i:SParam>
+	
+	<i:SParam id="OptionalStructural" optional="true">
+		<i:SChoice id="FirstChoice" />
+		<i:SChoice id="SecondChoice" />
 	</i:SParam>
 
 </i:DesignSpace>
