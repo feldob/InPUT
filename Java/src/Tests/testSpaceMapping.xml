@@ -73,4 +73,10 @@
 	<i:Mapping id="SomeComplexStructural.TheSecondSingleChoice"
 		type="model.SecondSingleComplexChoice" />
 
+<i:Mapping id="OptionalStructural" type="model.SomeCommonStructural"/>
+	<i:Mapping id="OptionalStructural.FirstChoice"
+		type="model.SomeFirstChoice" />
+	<i:Mapping id="OptionalStructural.SecondChoice"
+		type="model.SomeSecondChoice" />
+		
 </i:CodeMappings>

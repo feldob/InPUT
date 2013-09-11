@@ -253,7 +253,7 @@ public class SValue extends Value<AStruct> {
 		// find the structChoice element for the object value
 		AStruct choice = param.getChoiceById(localId);
 		if (choice == null)
-			throw new InPUTException("There is no choice in parameter '" + param.getId() + "' for the given class name: " + className);
+			throw new InPUTException("There is no choice in parameter '" + param.getId() + "' for the given class name: '" + className + "'. Have you possibly given an array type parameter a 'value' attribute in the design?");
 
 		for (Param<?> subParam : param.getParamChildren())
 			if (!(subParam instanceof SChoice))

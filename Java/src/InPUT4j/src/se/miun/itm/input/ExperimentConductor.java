@@ -184,4 +184,8 @@ public abstract class ExperimentConductor<T> {
 			return input.impOrt(id, experimentImporter);
 		}
 	}
+	
+	public static int getExistingOutputsFor(IExperiment experiment) {
+		return experiment.getOutput().size();
+	}
 }

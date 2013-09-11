@@ -47,6 +47,7 @@
 		<xsd:attributeGroup ref="i:idAttributes" />
 		<xsd:attribute name="type" type="xsd:string" />
 		<xsd:attribute name="fixed" type="xsd:string" />
+		<xsd:attribute name="optional" type="xsd:boolean"/>
 	</xsd:complexType>
 
 	<xsd:complexType name="structChoiceType">
