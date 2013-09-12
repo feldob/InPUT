@@ -1,5 +1,4 @@
-/*-- $Copyright (C) 2012 Felix Dobslaw$
-
+/*-- $Copyright (C) 2012-13 Felix Dobslaw$
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -17,21 +16,22 @@ PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIG
 HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-package se.miun.itm.input.util;
+ */package se.miun.itm.input.util;
 
-import java.sql.PreparedStatement;
-import java.sql.Types;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Scanner;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.jdom2.Namespace;
 
 import se.miun.itm.input.InPUTConfig;
 import se.miun.itm.input.model.InPUTException;
+import se.miun.itm.input.util.sql.DatabaseAdapter;
 import se.miun.itm.input.util.sql.Table;
 
 /**
@@ -239,18 +239,35 @@ public class Q {
 	public static final String NULL = "null";
 
 	public static final String CACHE_DESIGNS = "cacheDesigns";
+
+	public static final String OPTIONAL = "optional";
+
+	/**
+	 * The pattern used for delimiting SQL function definitions in SQL files.
+	 */
+	public static final Pattern SQL_FUNCTION_DELIMITER =
+		Pattern.compile("(?i)\\s*--\\s*FUNCTION[ \t]+DELIMITER[ \t-]*\n");
 	
 	/**
-	 * A placeholder for the name of an auto-incremented SQL data type.
+	 * An immutable set of SQL statements that inserts data that InPUT requires.
 	 */
-	public static final String SQL_AUTO_INCREMENT_PLACEHOLDER = "AUTO_INCREMENT_PLACEHOLDER";
+	public static final Set<String> SQL_DATA;
 	
 	/**
-	 * An immutable {@code Map} in which each key is a DBMS name that
-	 * is mapped into an array of SQL functions that shall be part of
-	 * the InPUT SQL schema in databases with the specified DBMS.
+	 * An immutable set of the definitions of the functions of the InPUT SQL schema.
 	 */
-	public static final Map<String, String[]> SQL_FUNCTIONS;
+	public static final Set<String> SQL_FUNCTIONS;
+	
+	/**
+	 * An immutable set of the definitions of the indexes of the InPUT SQL schema.
+	 */
+	public static final Set<String> SQL_INDEXES;
+	
+	/**
+	 * An immutable set of {@link Table}:s that defines
+	 * the SQL tables of the InPUT SQL schema.
+	 */
+	public static final Set<Table> SQL_TABLES;
 	
 	/**
 	 * The name of the InPUT SQL schema.
@@ -262,168 +279,50 @@ public class Q {
 	 */
 	public static final String SQL_STATE_UNIQUE_VIOLATION = "23505";
 	
-	/**
-	 * An immutable list of {@link Table}:s that defines the
-	 * SQL tables, indexes and rows that InPUT requires.
-	 */
-	public static final List<Table> SQL_TABLES;
-	
 	static {
-		int charOctetLength = 100;
-		Map<String, String[]> sqlFunctions = new LinkedHashMap<String, String[]>(1);
-		List<Table> sqlTables = new ArrayList<Table>(9);
+		final String	DATA_FILENAME = "data.sql",
+						FUNCTION_FILENAME = "functions.sql",
+						INDEX_FILENAME = "indexes.sql",
+						TABLE_FILENAME = "tables.sql";
+		Map<String, Set<String>> sqlStatements = new LinkedHashMap<String, Set<String>>();
+		Pattern delimiterPattern = Pattern.compile("\\s*;+\\s*");
+		Scanner sqlScanner = null;
+		Set<Table> tables = new LinkedHashSet<Table>();
 		
 		try {
-			sqlTables.add(new Table(
-				"CREATE TABLE " + SQL_SCHEMA_NAME + ".design_space " +
-				"(" +
-					"id varchar(" + charOctetLength + ") NOT NULL PRIMARY KEY, " +
-					"content xml NOT NULL" +
-				")"));
 			
-			sqlTables.add(new Table(
-				"CREATE TABLE " + SQL_SCHEMA_NAME + ".design " +
-				"(" +
-					"id varchar(" + charOctetLength + ") NOT NULL PRIMARY KEY, " +
-					"design_space varchar(" + charOctetLength + ") NOT NULL REFERENCES " +
-						SQL_SCHEMA_NAME + ".design_space(id), " +
-					"content xml NOT NULL" +
-				")",
-				"CREATE INDEX design_design_space " +
-				"ON " + SQL_SCHEMA_NAME + ".design(design_space)"));
+			for (String filename : Arrays.asList(
+					TABLE_FILENAME, INDEX_FILENAME, FUNCTION_FILENAME, DATA_FILENAME)) {
+				Set<String> statements = new LinkedHashSet<String>();
+				
+				sqlScanner = new Scanner(DatabaseAdapter.class.
+					getResourceAsStream(filename), "UTF-8");
+				sqlScanner.useDelimiter(filename.equals(FUNCTION_FILENAME) ?
+					SQL_FUNCTION_DELIMITER : delimiterPattern);
+				
+				while (sqlScanner.hasNext())
+					statements.add(sqlScanner.next());
+				
+				sqlScanner.close();
+				sqlStatements.put(filename, statements);
+			}
 			
-			sqlTables.add(new Table(
-				"CREATE TABLE " + SQL_SCHEMA_NAME + ".programming_language " +
-				"(" +
-					"name varchar(" + charOctetLength + ") NOT NULL PRIMARY KEY" +
-				")",
-				null,
-				new Table.Row(new Table.Entry<String>(
-					"name", Types.VARCHAR, "Java", PreparedStatement.class.getMethod(
-						"setString", int.class, String.class)))));
+			for (String def : sqlStatements.get(TABLE_FILENAME))
+				tables.add(new Table(def));
 			
-			sqlTables.add(new Table(
-				"CREATE TABLE " + SQL_SCHEMA_NAME + ".framework " +
-				"(" +
-					"id varchar(" + charOctetLength + ") NOT NULL PRIMARY KEY" +
-				")"));
-			
-			sqlTables.add(new Table(
-				"CREATE TABLE " + SQL_SCHEMA_NAME + ".mappings " +
-				"(" +
-					"id varchar(" + charOctetLength + ") NOT NULL, " +
-					"version " + SQL_AUTO_INCREMENT_PLACEHOLDER + " NOT NULL, " +
-					"programming_language varchar(" + charOctetLength + ") " +
-						"NOT NULL REFERENCES " + SQL_SCHEMA_NAME +
-						".programming_language(name), " +
-					"framework varchar(" + charOctetLength + ") REFERENCES " +
-						SQL_SCHEMA_NAME + ".framework(id), " +
-					"design_space varchar(" + charOctetLength + ") NOT NULL REFERENCES " +
-						SQL_SCHEMA_NAME + ".design_space(id), " +
-					"content xml NOT NULL, " +
-					"PRIMARY KEY(id, version), " +
-					"UNIQUE(id, programming_language, framework), " +
-					"UNIQUE(programming_language, framework, design_space)" +
-				")"));
-			
-			sqlTables.add(new Table(
-				"CREATE TABLE " + SQL_SCHEMA_NAME + ".input " +
-				"(" +
-					"id varchar(" + charOctetLength + ") NOT NULL PRIMARY KEY, " +
-					"algorithm_design_space varchar(" + charOctetLength + ") " +
-						"REFERENCES " + SQL_SCHEMA_NAME + ".design_space(id), " +
-					"property_space varchar(" + charOctetLength + ") REFERENCES " +
-						SQL_SCHEMA_NAME + ".design_space(id), " +
-					"problem_feature_space varchar(" + charOctetLength + ") " +
-						"REFERENCES " + SQL_SCHEMA_NAME + ".design_space(id), " +
-					"output_space varchar(" + charOctetLength + ") REFERENCES " +
-						SQL_SCHEMA_NAME + ".design_space(id)" +
-				")"));
-			
-			sqlTables.add(new Table(
-				"CREATE TABLE " + SQL_SCHEMA_NAME + ".experiment " +
-				"(" +
-					"id varchar(" + charOctetLength + ") NOT NULL PRIMARY KEY, " +
-					"input varchar(" + charOctetLength + ") NOT NULL REFERENCES " +
-						SQL_SCHEMA_NAME + ".input(id), " +
-					"algorithm_design varchar(" + charOctetLength + ") " +
-						"REFERENCES " + SQL_SCHEMA_NAME + ".design(id), " +
-					"problem_features varchar(" + charOctetLength + ") " +
-						"REFERENCES " + SQL_SCHEMA_NAME + ".design(id), " +
-					"preferences varchar(" + charOctetLength + ") REFERENCES " +
-						SQL_SCHEMA_NAME + ".design(id)" +
-				")",
-				"CREATE INDEX experiment_input " +
-				"ON " + SQL_SCHEMA_NAME + ".experiment(input)"));
-			
-			sqlTables.add(new Table(
-				"CREATE TABLE " + SQL_SCHEMA_NAME + ".experiment_content " +
-				"(" +
-					"experiment varchar(" + charOctetLength + ") NOT NULL REFERENCES " +
-						SQL_SCHEMA_NAME + ".experiment(id), " +
-					"name varchar(" + charOctetLength + ") NOT NULL, " +
-					"content blob NOT NULL, " +
-					"PRIMARY KEY(experiment, name)" +
-				")"));
-
-			sqlTables.add(new Table(
-				"CREATE TABLE " + SQL_SCHEMA_NAME + ".experiment_output " +
-				"(" +
-					"experiment varchar(" + charOctetLength + ") NOT NULL REFERENCES " +
-						SQL_SCHEMA_NAME + ".experiment(id), " +
-					"output varchar(" + charOctetLength + ") NOT NULL REFERENCES " +
-						SQL_SCHEMA_NAME + ".design(id), " +
-					"PRIMARY KEY(experiment, output)" +
-				")"));
 		} catch (Exception e) {
 			// This code should be unreachable.
 			e.printStackTrace();
 			System.exit(1);
+		} finally {
+			if (sqlScanner != null)
+				sqlScanner.close();
 		}
 		
-		sqlFunctions.put("PostgreSQL", new String [] {
-			"CREATE FUNCTION input.update_xml(outdated_xml xml, namespace_mappings text[][2], " +
-					"xpath text, newValue text) RETURNS xml AS $$ " +
-				"DECLARE " +
-					"i int; " +
-					"altered_results text[]; " +
-					"original_results text[] = ARRAY[XMLSERIALIZE (DOCUMENT (SELECT xpath(" +
-						"'.', outdated_xml, namespace_mappings))[1] AS text)]; " +
-					"outdated_attribute text; " +
-					"partial_xpath text; " +
-					"result text; " +
-					"result_count int; " +
-					"xpath_steps text[] := regexp_split_to_array(xpath, '/'); " +
-				"BEGIN " +
-					"IF char_length(xpath_steps[1]) > 0 THEN " +
-						"i := 1; " +
-						"partial_xpath := xpath_steps[i]; " +
-					"ELSE " +
-						"i := 2; " +
-						"partial_xpath := '/' || xpath_steps[i]; " +
-					"END IF; " +
-					"WHILE i <= array_length(xpath_steps, 1) LOOP " +
-						"original_results := original_results || XMLSERIALIZE (CONTENT (SELECT " +
-							"xpath(partial_xpath, outdated_xml, namespace_mappings))[1] AS text); " +
-						"i := i + 1; " +
-						"partial_xpath := partial_xpath || '/' || xpath_steps[i]; " +
-					"END LOOP; " +
-					"result_count := array_length(original_results, 1); " +
-					"outdated_attribute := substring(xpath_steps[result_count] from 2); " +
-					"original_results[result_count] := substring(original_results[result_count - 1] from " +
-						"outdated_attribute || '\\s*=\\s*\"' || original_results[result_count] || '\"'); " +
-					"altered_results := original_results; " +
-					"altered_results[result_count] := outdated_attribute || '=\"' || newValue || '\"'; " +
-					"FOR i IN REVERSE result_count - 1..1 LOOP " +
-						"altered_results[i] := replace(original_results[i], " +
-							"original_results[i + 1], altered_results[i + 1]); " +
-					"END LOOP; " +
-					"RETURN XMLPARSE (DOCUMENT altered_results[1]); " +
-				"END; " +
-			"$$ LANGUAGE plpgsql"});
-		
-		SQL_TABLES = Collections.unmodifiableList(sqlTables);
-		SQL_FUNCTIONS = Collections.unmodifiableMap(sqlFunctions);
+		SQL_TABLES = Collections.unmodifiableSet(tables);
+		SQL_INDEXES = Collections.unmodifiableSet(sqlStatements.get(INDEX_FILENAME));
+		SQL_FUNCTIONS = Collections.unmodifiableSet(sqlStatements.get(FUNCTION_FILENAME));
+		SQL_DATA = Collections.unmodifiableSet(sqlStatements.get(DATA_FILENAME));
 	}
 	
 	public static String getSchemaLocation() throws InPUTException {
