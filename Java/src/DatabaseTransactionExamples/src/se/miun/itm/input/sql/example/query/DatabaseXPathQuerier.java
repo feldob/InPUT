@@ -10,7 +10,7 @@ import se.miun.itm.input.sql.example.DatabaseConnectingDialog;
  * schema about the contents of designs and design spaces.
  * 
  * <p><b>Note</b>: This example has only been tested with the DBMS
- * <i>PostgreSQL 9.3</i>, and may therefore not work with other
+ * <i>PostgreSQL 9.2</i>, and may therefore not work with other
  * systems/versions.</p>
  * 
  * @author Stefan Karlsson
