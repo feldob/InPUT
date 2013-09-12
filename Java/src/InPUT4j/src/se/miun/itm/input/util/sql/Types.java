@@ -5,15 +5,11 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import se.miun.itm.input.util.Q;
-
 /**
  * An uninstantiable class with a static immutable {@link Map} that maps the names
  * of all fields of the class {@link java.sql.Types} into their values. In addition,
- * the {@code Map} maps "XML" into {@code java.sql.Types.SQLXML}, "BYTEA" into
- * {@code java.sql.Types.BINARY} and "AUTOINCREMENT", "AUTONUMBER", "SERIAL" and
- * {@code Q.SQL_AUTO_INCREMENT_PLACEHOLDER} are mapped into
- * {@code java.sql.Types.INTEGER}.
+ * the {@code Map} maps "XML" into {@code java.sql.Types.SQLXML} and "BYTEA" into
+ * {@code java.sql.Types.BINARY}.
  * 
  * @ThreadSafe
  * @author Stefan Karlsson
@@ -23,10 +19,8 @@ public abstract class Types {
 	/**
 	 * An immutable {@link Map} that maps the names of all fields of the class
 	 * {@link java.sql.Types} into their values. In addition, the {@code Map}
-	 * maps "XML" into {@code java.sql.Types.SQLXML}, "BYTEA" into
-	 * {@code java.sql.Types.BINARY} and "AUTOINCREMENT", "AUTONUMBER", "SERIAL"
-	 * and {@code Q.SQL_AUTO_INCREMENT_PLACEHOLDER} are mapped into
-	 * {@code java.sql.Types.INTEGER}.
+	 * maps "XML" into {@code java.sql.Types.SQLXML} and "BYTEA" into
+	 * {@code java.sql.Types.BINARY}.
 	 */
 	public static final Map<String, Integer> TYPES;
 	
@@ -48,10 +42,6 @@ public abstract class Types {
 
 		types.put("XML", java.sql.Types.SQLXML);
 		types.put("BYTEA", java.sql.Types.BINARY);
-		types.put("AUTOINCREMENT", java.sql.Types.INTEGER);
-		types.put("AUTONUMBER", java.sql.Types.INTEGER);
-		types.put("SERIAL", java.sql.Types.INTEGER);
-		types.put(Q.SQL_AUTO_INCREMENT_PLACEHOLDER, java.sql.Types.INTEGER);
 		
 		TYPES = Collections.unmodifiableMap(types);
 	}
