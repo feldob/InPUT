@@ -1,12 +1,14 @@
 package se.miun.itm.input.model.mapping;
 
 import java.util.AbstractSet;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.NavigableSet;
 import java.util.NoSuchElementException;
@@ -248,7 +250,9 @@ public final class Framework extends AbstractSet<Document> implements Exportable
 	 */
 	@Override
 	public boolean add(Document doc) {
-		RuntimeException ex = check(doc);
+		Document clone = new Document(doc.getRootElement().clone(),
+			doc.getDocType(), doc.getBaseURI());
+		RuntimeException ex = check(clone);
 		
 		if (ex != null)
 			throw ex;
@@ -258,7 +262,7 @@ public final class Framework extends AbstractSet<Document> implements Exportable
 			if (isReleased)
 				throw new IllegalStateException("The framework has been released.");
 			
-			return uncheckedAdd(doc);
+			return uncheckedAdd(clone);
 		}
 	}
 	
@@ -276,12 +280,17 @@ public final class Framework extends AbstractSet<Document> implements Exportable
 	@Override
 	public boolean addAll(Collection<? extends Document> c) {
 		boolean modified = false;
+		List<Document> cloneList = new ArrayList<Document>(c.size());
 		
 		for (Document doc : c) {
-			RuntimeException ex = check(doc);
+			Document clone = new Document(doc.getRootElement().clone(),
+				doc.getDocType(), doc.getBaseURI());
+			RuntimeException ex = check(clone);
 			
 			if (ex != null)
 				throw ex;
+			
+			cloneList.add(clone);
 		}
 		
 		synchronized (Framework.class) {
@@ -289,7 +298,7 @@ public final class Framework extends AbstractSet<Document> implements Exportable
 			if (isReleased)
 				throw new IllegalStateException("The framework has been released.");
 			
-			for (Document doc : c)
+			for (Document doc : cloneList)
 				modified |= uncheckedAdd(doc);
 		}
 		
