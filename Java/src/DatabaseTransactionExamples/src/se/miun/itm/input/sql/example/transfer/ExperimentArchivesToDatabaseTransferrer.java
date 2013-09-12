@@ -1,4 +1,4 @@
-package se.miun.itm.input.sql.example;
+package se.miun.itm.input.sql.example.transfer;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -13,6 +13,7 @@ import se.miun.itm.input.impOrt.InPUTArchiveImporter;
 import se.miun.itm.input.model.IOInPUTException;
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.SQLInPUTException;
+import se.miun.itm.input.sql.example.DatabaseConnectingDialog;
 import se.miun.itm.input.util.sql.DatabaseAdapter;
 
 /**
