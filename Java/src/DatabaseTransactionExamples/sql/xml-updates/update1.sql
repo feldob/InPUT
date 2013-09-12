@@ -3,8 +3,8 @@
  * with the ID "hello-world-problem-features" */
 UPDATE input.design
 SET content = input.update_xml(
-	content,
-	'{{"in", "http://TheInPUT.org/Design"}}',
 	'/in:Design/in:SValue[@id="TargetString"]/@value',
+	content,
+	ARRAY[ARRAY['in', 'http://TheInPUT.org/Design']],
 	'HELLO STEFAN')
 WHERE id = 'hello-world-problem-features';
