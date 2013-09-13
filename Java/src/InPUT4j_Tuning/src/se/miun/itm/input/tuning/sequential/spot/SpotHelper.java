@@ -85,7 +85,7 @@ public class SpotHelper {
 		engine = new Rengine(args, false, null);
 		REXP allRight = engine.eval(SPOTQ.COMMAND_LOAD_SPOT, false);
 		if (allRight == null)
-			System.err.println("SPOT is not appropriately installed.");
+			System.err.println("SPOT is not appropriately installed. Open R and install SPOT by: 'install.packages(\"SPOT\")'.");
 	}
 
 	public SpotHelper(IInPUT input, IDesign config, String studyId)
