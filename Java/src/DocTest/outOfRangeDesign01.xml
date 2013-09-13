@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:Design
+    xmlns:i="http://TheInPUT.org/Design"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://TheInPUT.org/Design http://TheInPUT.org/Design.xsd"
+    id="outOfRangeDesign01"
+    ref="testSpace.xml">
+
+    <!--
+        According to the DesignSpace defined by testSpace.xml, A must be
+        bigger than B (exclMin), while B must be bigger than 3 (exclMin).
+        Setting B to 4 is perfectly alright, but setting A to 4 violates
+        the requirement that A be strictly bigger than B.
+        Yet, importing this Design does not cause any errors.
+    -->
+    <i:NValue id="A" value="4" />
+    <i:NValue id="B" value="4" />
+
+    <!--
+        These parameters are valid but irrelevant for most tests.
+    -->
+    <i:NValue id="C" value="123" />
+    <i:NValue id="F" value="43" />
+
+</i:Design>

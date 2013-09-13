@@ -151,6 +151,7 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 		}
 	}
 
+	//TODO this test could at times lead to an expection. Why?
 	@Test
 	public void testNextArray() {
 		int[] primitiveUnspecifiedArray;
@@ -504,6 +505,7 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 		}
 	}
 
+	//TODO has a random failure pattern, has to be analyzed.
 	@Test
 	public void testNegativeNextParameterConstructorOverride()
 			throws InPUTException {
@@ -511,7 +513,7 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 		try {
 			Object[] actualParams = { "SomeWrongInput", 10f };
 			// This line throws an InPUTException, but none seems to be expected.
-			space.next("SomeStructuralParent", actualParams);
+			Object result = space.next("SomeStructuralParent", actualParams);
 			fail("such a constructor does not exist.");
 		} catch (InPUTException e) {
 			
@@ -549,7 +551,7 @@ public abstract class IDesignSpaceTest extends AbstractInPUTTest {
 		assertFalse(paramIds.contains("somedecimal"));
 		assertFalse(paramIds.contains(null));
 	}
-
+	
 	@Test
 	public void testRelativeNumericConsistency() throws InPUTException {
 		IDesign design;

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:DesignSpace
+    id="boolParamSpace01"
+    xmlns:i="http://TheInPUT.org/DesignSpace"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://theinput.org/DesignSpace.xsd" >
+
+    <!--
+        Checking the case sensitivity of boolean values.
+        All these spellings are legal.
+    -->
+
+    <i:NParam type="boolean" id="A" fixed="True" />
+    <i:NParam type="boolean" id="B" fixed="true" />
+    <i:NParam type="boolean" id="C" fixed="TRUE" />
+    <i:NParam type="boolean" id="D" fixed="tRUe" />
+
+    <i:NParam type="boolean" id="Z" fixed="False" />
+    <i:NParam type="boolean" id="Y" fixed="false" />
+    <i:NParam type="boolean" id="X" fixed="FALSE" />
+    <i:NParam type="boolean" id="W" fixed="fALESe" />
+
+</i:DesignSpace>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:DesignSpace
+    id="subsetSpace"
+    xmlns:i="http://TheInPUT.org/DesignSpace"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://theinput.org/DesignSpace.xsd" >
+
+	<i:NParam type="integer" id="A" />
+	<i:NParam type="integer" id="B" />
+
+    <i:NParam type="integer[2]" id="Z" />
+
+</i:DesignSpace>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:DesignSpace
+    id="circularDependencySpace01" xmlns:i="http://TheInPUT.org/DesignSpace"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://TheInput.org/DesignSpace.xsd ">
+
+    <!-- A1 and B1 form a direct circular dependency. -->
+    <i:NParam type="integer" id="A1" exclMin="B1"/>
+    <i:NParam type="integer" id="B1" exclMin="A1"/>
+    <!--
+        Creating a DesignSpace from this file will result in a
+        NumberFormatException while trying to parse "A1".
+    -->
+</i:DesignSpace>

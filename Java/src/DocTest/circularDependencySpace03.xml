@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:DesignSpace
+    id="circularDependencySpace03" xmlns:i="http://TheInPUT.org/DesignSpace"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://TheInput.org/DesignSpace.xsd ">
+
+    <!-- In addition to forming a longer chain, each dependency is of a
+        different kind (incl/excl min/max).
+        The result is the same as for test 02. In other words, creating the
+        DesignSpace works, but using it to generate a Design fails.
+    -->
+    <i:NParam type="integer" id="A2" exclMax="B2"/>
+    <i:NParam type="integer" id="B2" exclMin="C2"/>
+    <i:NParam type="integer" id="C2" inclMax="D2"/>
+    <i:NParam type="integer" id="D2" inclMin="A2"/>
+</i:DesignSpace>

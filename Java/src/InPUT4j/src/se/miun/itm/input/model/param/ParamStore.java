@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -77,6 +78,8 @@ public class ParamStore implements Identifiable {
 	private final Random rng;
 
 	private final int hash;
+
+	private final Set<String> optionalParamIds = new HashSet<String>();
 
 	private ParamStore(IDesignSpace space, Document designSpace, InputStream mappingStream) throws InPUTException {
 		id = designSpace.getRootElement().getAttributeValue(Q.ID_ATTR);
@@ -150,7 +153,22 @@ public class ParamStore implements Identifiable {
 		for (Element param : params)
 			initParam(id, param);
 		initDependencies();
+		checkCircularDependencies();
 		initRanges();
+	}
+
+	private void checkCircularDependencies() throws InPUTException {
+		Set<Param<?>> dependees;
+		for (Param<?> param : inputParamElements.values()) {
+			if (!(param instanceof NParam))
+				continue;
+			
+			dependees = param.getDependees();
+			for (Param<?> dependee : dependees)
+				if (param.dependsOn(dependee))
+					throw new InPUTException("There is a circular dependency between parameter '" + dependee.getId() + "' and '"+ param.getId()+ "'. It has to be resolved.");
+		}
+		
 	}
 
 	private void preprocessTreeForTypes() throws InPUTException {
@@ -273,7 +291,7 @@ public class ParamStore implements Identifiable {
 		initParam(paramE);
 	}
 
-	private void initDependencies() {
+	private void initDependencies() throws InPUTException {
 		List<Param<?>> paramList;
 		paramList = new ArrayList<Param<?>>(inputParamElements.values());
 
@@ -289,7 +307,8 @@ public class ParamStore implements Identifiable {
 		String paramId = param.getId();
 		inputParamElements.put(paramId, param);
 		paramsInv.put(param, paramId);
-		// log.info(paramId + ": Success");
+		if (param.isOptional())
+			optionalParamIds.add(param.getId());
 	}
 
 	public boolean containsParam(String paramId) {
@@ -382,5 +401,9 @@ public class ParamStore implements Identifiable {
 				break;
 		}
 		return param;
+	}
+
+	public Set<String> getOptionalParamIds() {
+		return optionalParamIds ;
 	}
 }

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:DesignSpace
+    id="overlapSpace"
+    xmlns:i="http://TheInPUT.org/DesignSpace"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://theinput.org/DesignSpace.xsd" >
+
+    <!--
+        If these dependencies were to be respected, then, because of
+        C's and D's dependencies on A and B, both A and B would have to
+        be initialized to 0. That would allow D to be initialized to 0
+        as well, which is the only possibility.
+        However, C cannot be set to any valid value at all.
+    -->
+	<i:NParam type="long" id="A" inclMax="0" />
+	<i:NParam type="long" id="B" inclMin="0" />
+    <!-- No possible value exists for C. -->
+	<i:NParam type="long" id="C" exclMin="B" exclMax="A" />
+    <!-- The only possible value for D is 0. -->
+	<i:NParam type="long" id="D" inclMin="B" inclMax="A" />
+
+</i:DesignSpace>

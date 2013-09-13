@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:DesignSpace
+    id="fixedRelativeSpace"
+    xmlns:i="http://TheInPUT.org/DesignSpace"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://theinput.org/DesignSpace.xsd" >
+
+    <!--
+        Both parameters are fixed, but one is defined to a fixed value in
+        relation to the other parameter. However, fixed parameter values
+        aren't evaluated, so the expression is illegal.
+    -->
+	<i:NParam type="integer" id="A" fixed="43"/>
+    <!-- Try to make C twice as big as A. -->
+	<i:NParam type="integer" id="C" fixed="A * 2" />
+
+</i:DesignSpace>

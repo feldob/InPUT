@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:DesignSpace
+    id="multirangeSpace03"
+    xmlns:i="http://TheInPUT.org/DesignSpace"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://theinput.org/DesignSpace.xsd" >
+
+    <!--
+        A is either between 1 and B or between B and B+1 (inclusive).
+        However, these expressions cannot be evaluated.
+    -->
+    <i:NParam type="integer" id="A" inclMin="1,B" inclMax="B,B+1" />
+    <i:NParam type="integer" id="B" fixed="5" />
+
+</i:DesignSpace>

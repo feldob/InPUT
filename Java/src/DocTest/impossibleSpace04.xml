@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:DesignSpace
+    id="impossibleSpace04"
+    xmlns:i="http://TheInPUT.org/DesignSpace"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://theinput.org/DesignSpace.xsd" >
+
+    <!--
+        The only valid value for A is 2.
+        Setting inclMin=2 and exclMax=2 prevents the DesignSpace from being
+        created at all:
+        B: Each maximum value has to be larger than the minimum value.
+        However, setting exclMax to A, which can only be 2, only causes a
+        problem when trying to create a design.
+    -->
+	<i:NParam type="integer" id="A" exclMin="1" exclMax="3" />
+	<i:NParam type="integer" id="B" inclMin="2" exclMax="A" />
+</i:DesignSpace>

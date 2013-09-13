@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:DesignSpace
+    id="multirangeSpace02"
+    xmlns:i="http://TheInPUT.org/DesignSpace"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://theinput.org/DesignSpace.xsd" >
+
+    <!--
+        A mismatched multi-range declaration with one or more missing max
+        values is legal in the sense that a DesignSpace can be created.
+        However, whether generating a value for the parameter will succeed
+        or throw an ArrayIndexOutOfBoundsException is random.
+
+        If a range with matching endpoints is picked by chance, then the
+        instantiation works. If, on the other hand, a min without a
+        matching max is chosen, then there will be an exception.
+
+        This can be demonstrated by defining one parameter with most of its
+        ranges matched and one parameter with most of them unmatched.
+        Generating values for both should have different probabilities of
+        throwing an exception.
+
+        A is defined over 5 ranges, 1 of which is matched. The probability
+        of successfully generating a value should therefore be 1 out of 5,
+        or 20%.
+        B is defined over 5 ranges, 4 of which are matched. The probability
+        of successfully generating a value should therefore be 4 out of 5,
+        or 80%.
+    -->
+    <i:NParam type="integer" id="A" inclMin="1,2,3,4,5" inclMax="1" />
+    <i:NParam type="integer" id="B" inclMin="1,2,3,4,5" inclMax="1,2,3,4" />
+
+</i:DesignSpace>

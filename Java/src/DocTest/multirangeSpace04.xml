@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:DesignSpace
+    id="multirangeSpace04"
+    xmlns:i="http://TheInPUT.org/DesignSpace"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://theinput.org/DesignSpace.xsd" >
+
+    <!--
+        The endpoint of one of several ranges may not be an expression.
+        Creating a DesignSpace from this configuration fails with a
+        NumberFormatException.
+    -->
+    <i:NParam type="integer" id="A" inclMin="1+2,5" inclMax="4,5*5" />
+
+</i:DesignSpace>

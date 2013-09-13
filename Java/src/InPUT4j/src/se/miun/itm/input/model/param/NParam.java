@@ -207,6 +207,7 @@ public class NParam extends Param<NumericGenerator> {
 	}
 
 	//TODO refactor this into generator class
+	//TODO this evaluation disregards functions (e.g. that link to other params). As a consequence, they will be disregarded entirely. As a fix, the ranges should get a third entry for dependencies, not only max and min, but also fixed. That will behave very similar to them, and can evaluate the functions.
 	private boolean isValidFixedValue(String value) {
 		return value != null && (value.matches(NUMERIC_PATTERN) || value.equals("true") || value.equals("false"));
 	}

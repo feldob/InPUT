@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:DesignSpace
+    id="referenceSpace"
+    xmlns:i="http://TheInPUT.org/DesignSpace"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://theinput.org/DesignSpace.xsd" >
+
+    <!--
+        A is simply defined to be between 1 and C (inclusive).
+        However, "C" is not evaluated as an expressions.
+        B is defined exactly the same as A. The only difference is that
+        the expression has been expanded to "C+0". This works.
+    -->
+    <i:NParam type="integer" id="A" inclMin="1" inclMax="C" />
+    <i:NParam type="integer" id="B" inclMin="1" inclMax="C+0" />
+    <i:NParam type="integer" id="C" inclMin="3" inclMax="5" />
+
+</i:DesignSpace>

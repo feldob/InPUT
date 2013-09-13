@@ -244,6 +244,7 @@ public class Q {
 
 	public static final String OPTIONAL = "optional";
 
+<<<<<<< HEAD
 	/**
 	 * The pattern used for delimiting SQL function definitions in SQL files.
 	 */
@@ -327,6 +328,8 @@ public class Q {
 		SQL_DATA = Collections.unmodifiableSet(sqlStatements.get(DATA_FILENAME));
 	}
 	
+=======
+>>>>>>> upstream/master
 	public static String getSchemaLocation() throws InPUTException {
 		String result = DESIGN_NAMESPACE_ID + " " + InPUTConfig.getValue(SCHEMA_PATH) + DESIGN_ROOT
 				+ ".xsd";

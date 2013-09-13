@@ -25,6 +25,7 @@ import java.util.List;
 import org.jdom2.Element;
 
 import se.miun.itm.input.eval.ParamEvaluationOrderComparator;
+import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.param.Param;
 
 /**
@@ -44,10 +45,11 @@ public class TreeSorter {
 	 * 
 	 * @param parent
 	 * @param comparator
+	 * @throws InPUTException 
 	 */
 	@SuppressWarnings("unchecked")
 	public static void reorganizeTree(final Element parent,
-			final ParamEvaluationOrderComparator<Element> comparator) {
+			final ParamEvaluationOrderComparator<Element> comparator) throws InPUTException {
 		List<Param<?>> params = (List<Param<?>>)(List<?>)parent.getChildren();
 		if (params != null && !params.isEmpty()) {
 			List<Param<?>> paramsCopy = new ArrayList<Param<?>>();
@@ -74,8 +76,9 @@ public class TreeSorter {
 	 * 
 	 * @param parent
 	 * @param child
+	 * @throws InPUTException 
 	 */
-	private static void addDependenciesToParent(Param<?>  parent, Param<?>  child) {
+	private static void addDependenciesToParent(Param<?>  parent, Param<?>  child) throws InPUTException {
 		for (Param<?> dependee : child.getDependees())
 			if (!isUpperLevelRelevant(parent, dependee))
 				parent.addDependee(dependee);

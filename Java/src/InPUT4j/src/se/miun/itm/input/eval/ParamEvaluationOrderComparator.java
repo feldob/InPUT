@@ -20,6 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import java.util.Comparator;
 
+import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.param.Param;
 import se.miun.itm.input.util.Q;
 
@@ -38,10 +39,11 @@ public class ParamEvaluationOrderComparator<Element> implements Comparator<Objec
 	 * 
 	 * @param param1
 	 * @param param2
+	 * @throws InPUTException 
 	 */
-	public static void init(Param<?> param1, Param<?> param2) {
-		if (!initDependencies(param1, param2))
-			initDependencies(param2, param1);
+	public static void init(Param<?> param1, Param<?> param2) throws InPUTException {
+		initDependencies(param1, param2);
+		initDependencies(param2, param1);
 	}
 
 	/**
@@ -50,8 +52,9 @@ public class ParamEvaluationOrderComparator<Element> implements Comparator<Objec
 	 * @param param1
 	 * @param param2
 	 * @return
+	 * @throws InPUTException 
 	 */
-	private static boolean initDependencies(Param<?> param1, Param<?> param2) {
+	private static boolean initDependencies(Param<?> param1, Param<?> param2) throws InPUTException {
 		boolean result = false;
 		if (relativeTo(param1, param2, Q.INCL_MAX) || relativeTo(param1, param2, Q.EXCL_MAX)) {
 			param1.addMaxDependency(param2);

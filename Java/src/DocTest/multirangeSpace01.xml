@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:DesignSpace
+    id="multirangeSpace01"
+    xmlns:i="http://TheInPUT.org/DesignSpace"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://theinput.org/DesignSpace.xsd" >
+
+    <!--
+        A mismatched multi-range declaration is illegal if a min value is
+        missing. *
+        An ArrayIndexOutOfBoundsException will be thrown when trying to
+        create this DesignSpace.
+
+        * A mismatched declaration with missing max values is "legal", but
+        it will lead to problems. See the multirangeSpace02 test.
+    -->
+    <i:NParam type="integer" id="A" inclMin="1,1" inclMax="2,11,5" />
+
+</i:DesignSpace>

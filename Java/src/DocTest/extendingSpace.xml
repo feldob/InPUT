@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:DesignSpace
+    id="extendingSpace"
+    xmlns:i="http://TheInPUT.org/DesignSpace"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://theinput.org/DesignSpace.xsd" >
+
+    <!--
+        This parameter also exists in the testSpace DesignSpace.
+        However, while the ID is the same, the ranges of valid values for
+        both versions of the parameter are non-overlapping.
+    -->
+	<i:NParam type="integer" id="B" exclMax="3" />
+    <!-- C exists but is not fixed in testSpace. -->
+	<i:NParam type="integer" id="C" fixed="86" />
+
+    <!-- These parameters are unique to this DesignSpace. -->
+	<i:NParam type="integer" id="Y" fixed="43" />
+	<i:NParam type="integer" id="Z" />
+
+</i:DesignSpace>

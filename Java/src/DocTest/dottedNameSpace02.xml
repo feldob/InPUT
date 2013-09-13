@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:DesignSpace
+    id="dottedNameSpace02"
+    xmlns:i="http://TheInPUT.org/DesignSpace"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://theinput.org/DesignSpace.xsd" >
+
+    <!--
+        The first element of A has the ID "A.1", which is the same ID
+        used by the integer parameter "A.1".
+        Apparently, the array parameter takes precedence. It seems to be
+        impossible to access the single integer.
+        (The order of the parameter declaration does not matter.)
+    -->
+	<i:NParam type="integer" id="A.1" fixed="43" />
+    <i:NParam type="integer[2]" id="A" fixed="10" />
+
+</i:DesignSpace>

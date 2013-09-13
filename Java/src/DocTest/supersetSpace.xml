@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:DesignSpace
+    id="supersetSpace"
+    xmlns:i="http://TheInPUT.org/DesignSpace"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://theinput.org/DesignSpace.xsd" >
+
+    <!-- Note that A is a different parameter in this design. -->
+	<i:NParam type="integer" id="A" inclMin="0" />
+	<i:NParam type="integer" id="B" />
+    <i:NParam type="integer" id="C" />
+    <i:NParam type="integer[2]" id="Z" />
+
+</i:DesignSpace>

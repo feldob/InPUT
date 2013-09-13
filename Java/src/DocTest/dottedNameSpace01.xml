@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:DesignSpace
+    id="dottedNameSpace01"
+    xmlns:i="http://TheInPUT.org/DesignSpace"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://theinput.org/DesignSpace.xsd" >
+
+    <!--
+        This design space includes a parameter with an ID that contains
+        a dot. Since dot notation is used to access array elements and
+        components of complex types, this seems problematic.
+    -->
+	<i:NParam type="integer" id="A.1.2.3" fixed="43" />
+
+</i:DesignSpace>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:Design
+    xmlns:i="http://TheInPUT.org/Design"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://TheInPUT.org/Design http://TheInPUT.org/Design.xsd"
+    id="extendingDesign"
+    ref="extendingSpace.xml">
+
+    <i:NValue id="B" value="2" />
+    <i:NValue id="C" value="86" />
+
+    <i:NValue id="Y" value="43" />
+    <i:NValue id="Z" value="0" />
+
+</i:Design>

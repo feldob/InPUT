@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:DesignSpace
+    id="duplicateIdSpace01"
+    xmlns:i="http://TheInPUT.org/DesignSpace"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://theinput.org/DesignSpace.xsd" >
+
+    <!--
+        Only the last definition will remain. In other words, "A" will have
+        the value 10, and only one single parameter will exist in the design.
+    -->
+	<i:NParam type="integer" id="A" fixed="1" />
+	<i:NParam type="integer" id="A" fixed="2" />
+	<i:NParam type="integer" id="A" fixed="43" />
+    <i:NParam type="integer" id="A" fixed="10" />
+
+</i:DesignSpace>

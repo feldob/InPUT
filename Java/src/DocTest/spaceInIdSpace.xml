@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:DesignSpace
+    id="space In Id Space"
+    xmlns:i="http://TheInPUT.org/DesignSpace"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://theinput.org/DesignSpace.xsd" >
+
+    <!--
+        The id of this design space contains multiple spaces.
+        In addition, these parameters also contain spaces.
+        This is legal, but of course, these parameter names are unusable
+        in any expression.
+        Adding parentheses ("(An integer) + 1") doesn't help.
+    -->
+	<i:NParam type="integer" id="An integer" fixed="43"/>
+	<i:NParam type="integer" id=" B is another integer " fixed="10" />
+	<i:NParam type="integer" id="C" inclMin="An integer + 1" />
+
+</i:DesignSpace>
