@@ -7,6 +7,7 @@ import java.sql.SQLXML;
 import java.sql.Savepoint;
 import java.sql.Types;
 import java.util.Set;
+import java.util.UUID;
 
 import se.miun.itm.input.IExperiment;
 import se.miun.itm.input.IInPUT;
@@ -120,14 +121,18 @@ public class DatabaseExporter extends AbstractDatabaseConnector implements InPUT
 					
 					for (InPUTDocument m : mappings) {
 						Framework fw = Framework.frameworkOf(m);
+						String version = m.getRootElement().
+							getAttributeValue(Q.VERSION_ATTR);
 						
 						xml = conn.createSQLXML();
 						xml.setString(m.toString());
 					
 						insertMappings.setString(1, m.getId());
+						insertMappings.setString(2, version != null ?
+							version : UUID.randomUUID().toString());
 					
 						if (fw == null)
-							insertMappings.setNull(2, Types.VARCHAR);
+							insertMappings.setNull(3, Types.VARCHAR);
 						else {
 							Savepoint sp2 = conn.setSavepoint();
 							
@@ -142,11 +147,11 @@ public class DatabaseExporter extends AbstractDatabaseConnector implements InPUT
 										DatabaseAdapter.concatSQLMessages(e), e);
 							}
 							
-							insertMappings.setString(2, fw.getId());
+							insertMappings.setString(3, fw.getId());
 						}
 					
-						insertMappings.setString(3, docID);
-						insertMappings.setSQLXML(4, xml);
+						insertMappings.setString(4, docID);
+						insertMappings.setSQLXML(5, xml);
 						insertMappings.executeUpdate();
 					}
 				}
@@ -259,8 +264,7 @@ public class DatabaseExporter extends AbstractDatabaseConnector implements InPUT
 				"VALUES (?, ?)");
 			insertMappings = conn.prepareStatement(
 				"INSERT INTO " + Q.SQL_SCHEMA_NAME + ".mappings " +
-					"(id, programming_language, framework, design_space, content)" +
-				"VALUES (?, 'Java', ?, ?, ?)");
+				"VALUES (?, ?, 'Java', ?, ?, ?)");
 			insertFramework = conn.prepareStatement(
 				"INSERT INTO " + Q.SQL_SCHEMA_NAME + ".framework " +
 				"VALUES (?)");
