@@ -7,11 +7,23 @@ import java.util.Stack;
 import se.miun.itm.input.ExperimentConductor;
 import se.miun.itm.input.IExperiment;
 import se.miun.itm.input.model.design.IDesign;
+import se.miun.itm.input.util.Q;
 
 public class FolderExperimentInitializer implements LazyExperimentInitializer {
 
 	private class ExperimentFileFilter implements FilenameFilter {
-
+//
+//		private final ExperimentalFilterCriterion criterion;
+//		
+//		public ExperimentFileFilter(ExperimentalFilterCriterion criterion) {
+//			this.criterion = criterion;
+//		}
+//		
+//		@Override
+//		public boolean accept(File dir, String name) {
+//			criterion.accept(dir, name);
+//		}
+		
 		private boolean includeAlreadyRun = false;
 
 		@Override
@@ -25,12 +37,13 @@ public class FolderExperimentInitializer implements LazyExperimentInitializer {
 			return accept;
 		}
 
+		//TODO this is problem specific, and has to be added as a criteria from outside
 		private boolean hasAlreadyBeenRun(String name) {
 			return name.contains("_mean");
 		}
 
 		private boolean isExperiment(String name) {
-			return name.endsWith(".exp") && !name.contains("prrReference");
+			return name.endsWith(Q.EXP) && !name.contains("prrReference");
 		}
 
 		public void setIncludeThoseWhoAlkreadyHaveBeenRun(boolean include) {
