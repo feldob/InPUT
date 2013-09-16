@@ -80,21 +80,19 @@ public class SpotRES implements SpotExportable<InputStream> {
 		append(result, currentDES, results);
 	}
 
-	public String toSpot() {
+	public String toSpot(List<SpotResult> results) {
 		StringBuilder spotb = new StringBuilder();
 		String spotHeader = headerToSpot();
 		spotb.append(spotHeader);
 		spotb.append('\n');
-		for (SpotResult result : allResults) {
+		for (SpotResult result : results)
 			spotb.append(result.toSpot());
-			spotb.append('\n');
-		}
 		return spotb.toString();
 	}
 
 	@Override
 	public String toString() {
-		return toSpot();
+		return toSpot(allResults);
 	}
 
 	private String headerToSpot() {
@@ -108,7 +106,18 @@ public class SpotRES implements SpotExportable<InputStream> {
 
 	@Override
 	public InputStream export() {
-		return new ByteArrayInputStream(toSpot().getBytes());
+		return new ByteArrayInputStream(toSpot(allResults).getBytes());
 	}
 
+	public SpotResult getLastResult() {
+		return allResults.get(allResults.size()-1);
+	}
+
+	public boolean isEmpty() {
+		return allResults.isEmpty();
+	}
+
+	public String currentResultstoString() {
+		return toSpot(results);
+	}
 }

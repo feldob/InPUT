@@ -70,6 +70,7 @@ public class SpotResult {
 			b.append(variables.get(var));
 			b.append(' ');
 		}
+		b.append('\n');
 		return b.toString();
 	}
 	
