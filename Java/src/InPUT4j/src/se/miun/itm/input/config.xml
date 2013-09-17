@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <i:Design id="config" xmlns:i="http://TheInPUT.org/Design" xmlns:i1="http://TheInPUT.org/DesignSpace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://TheInPUT.org/Design http://TheInPUT.org/Design.xsd ">
   <i:SValue id="evaluator" value="javascript"/>
-  <i:SValue id="random" value="mersenneTwister">
+  <i:SValue id="random" value="standard">
     <i:NValue id="seed" value="123456789"/>
   </i:SValue>
   <i:NValue id="threadSafe" value="false"/><!-- not supported yet -->
