@@ -18,21 +18,10 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */package se.miun.itm.input.util;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.regex.Pattern;
-
 import org.jdom2.Namespace;
 
 import se.miun.itm.input.InPUTConfig;
 import se.miun.itm.input.model.InPUTException;
-import se.miun.itm.input.util.sql.DatabaseAdapter;
-import se.miun.itm.input.util.sql.Table;
 
 /**
  * A help class that contains all the identifiers of objects and concepts used
@@ -40,7 +29,7 @@ import se.miun.itm.input.util.sql.Table;
  * String should be solely defined in another class.
  * 
  * @author Felix Dobslaw
- * @author Stefan Karlsson
+ * 
  */
 public class Q {
 	public static final Namespace SCHEMA_INSTANCE_NAMESPACE = Namespace
@@ -76,8 +65,6 @@ public class Q {
 	public static final String TYPE_ATTR = "type";
 
 	public static final String ID_ATTR = "id";
-	
-	public static final String VERSION_ATTR = "version";
 
 	public static final String MAPPING_TYPE = "MappingType";
 
@@ -244,89 +231,6 @@ public class Q {
 
 	public static final String OPTIONAL = "optional";
 
-	/**
-	 * The pattern used for delimiting SQL function definitions in SQL files.
-	 */
-	public static final Pattern SQL_FUNCTION_DELIMITER =
-		Pattern.compile("(?i)\\s*--\\s*FUNCTION[ \t]+DELIMITER[ \t-]*\n");
-	
-	/**
-	 * An immutable set of SQL statements that inserts data that InPUT requires.
-	 */
-	public static final Set<String> SQL_DATA;
-	
-	/**
-	 * An immutable set of the definitions of the functions of the InPUT SQL schema.
-	 */
-	public static final Set<String> SQL_FUNCTIONS;
-	
-	/**
-	 * An immutable set of the definitions of the indexes of the InPUT SQL schema.
-	 */
-	public static final Set<String> SQL_INDEXES;
-	
-	/**
-	 * An immutable set of {@link Table}:s that defines
-	 * the SQL tables of the InPUT SQL schema.
-	 */
-	public static final Set<Table> SQL_TABLES;
-	
-	/**
-	 * The name of the InPUT SQL schema.
-	 */
-	public static final String SQL_SCHEMA_NAME = "input";
-	
-	/**
-	 * The SQL State code for violation of a unique constraint.
-	 */
-	public static final String SQL_STATE_UNIQUE_VIOLATION = "23505";
-	
-	static {
-		final String	DATA_FILENAME = "data.sql",
-						FUNCTION_FILENAME = "functions.sql",
-						INDEX_FILENAME = "indexes.sql",
-						TABLE_FILENAME = "tables.sql";
-		Map<String, Set<String>> sqlStatements = new LinkedHashMap<String, Set<String>>();
-		Pattern delimiterPattern = Pattern.compile("\\s*;+\\s*");
-		Scanner sqlScanner = null;
-		Set<Table> tables = new LinkedHashSet<Table>();
-		
-		try {
-			
-			for (String filename : Arrays.asList(
-					TABLE_FILENAME, INDEX_FILENAME, FUNCTION_FILENAME, DATA_FILENAME)) {
-				Set<String> statements = new LinkedHashSet<String>();
-				
-				sqlScanner = new Scanner(DatabaseAdapter.class.
-					getResourceAsStream(filename), "UTF-8");
-				sqlScanner.useDelimiter(filename.equals(FUNCTION_FILENAME) ?
-					SQL_FUNCTION_DELIMITER : delimiterPattern);
-				
-				while (sqlScanner.hasNext())
-					statements.add(sqlScanner.next());
-				
-				sqlScanner.close();
-				sqlStatements.put(filename, statements);
-			}
-			
-			for (String def : sqlStatements.get(TABLE_FILENAME))
-				tables.add(new Table(def));
-			
-		} catch (Exception e) {
-			// This code should be unreachable.
-			e.printStackTrace();
-			System.exit(1);
-		} finally {
-			if (sqlScanner != null)
-				sqlScanner.close();
-		}
-		
-		SQL_TABLES = Collections.unmodifiableSet(tables);
-		SQL_INDEXES = Collections.unmodifiableSet(sqlStatements.get(INDEX_FILENAME));
-		SQL_FUNCTIONS = Collections.unmodifiableSet(sqlStatements.get(FUNCTION_FILENAME));
-		SQL_DATA = Collections.unmodifiableSet(sqlStatements.get(DATA_FILENAME));
-	}
-	
 	public static String getSchemaLocation() throws InPUTException {
 		String result = DESIGN_NAMESPACE_ID + " " + InPUTConfig.getValue(SCHEMA_PATH) + DESIGN_ROOT
 				+ ".xsd";
