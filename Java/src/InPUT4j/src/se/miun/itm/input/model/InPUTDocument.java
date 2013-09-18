@@ -1,11 +1,6 @@
 package se.miun.itm.input.model;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,10 +13,8 @@ import org.jdom2.Element;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
-import se.miun.itm.input.InPUTConfig;
 import se.miun.itm.input.aspects.Identifiable;
 import se.miun.itm.input.export.DocumentExporter;
-import se.miun.itm.input.impOrt.DatabaseImporter;
 import se.miun.itm.input.impOrt.XMLFileImporter;
 import se.miun.itm.input.model.design.DesignSpace;
 import se.miun.itm.input.model.design.IDesignSpace;
@@ -29,8 +22,6 @@ import se.miun.itm.input.model.mapping.Framework;
 import se.miun.itm.input.model.mapping.IMappings;
 import se.miun.itm.input.model.mapping.Mappings;
 import se.miun.itm.input.util.Q;
-import se.miun.itm.input.util.sql.DatabaseAdapter;
-import se.miun.itm.input.util.xml.SAXUtil;
 
 /**
  * An {@code InPUTDocument} wraps an InPUT XML {@link Document}
@@ -175,46 +166,23 @@ public class InPUTDocument extends Document implements Comparable<Document>, Ide
 	 * If this document is a design or code-mapping document, this method searches
 	 * for its design space. Otherwise, an {@link InPUTException} is thrown.
 	 * 
-	 * @param connections	Connections to databases where the design space shall
-	 * 						be searched (among other places), or {@code null} if
-	 * 						the design space shall not be searched in any database.
 	 * @return	The design space document if it's found, otherwise {@code null}.
 	 * @throws InPUTException	If this document isn't a design or code-mapping
 	 * 							document.
 	 * @throws IOInPUTException If an I/O error occurs.
-	 * @throws SQLInPUTException If a database error occurs.
 	 */
-	public InPUTDocument locateDesignSpace(Connection ... connections) throws InPUTException, IOInPUTException, SQLInPUTException {
+	public InPUTDocument locateDesignSpace() throws InPUTException, IOInPUTException {
 		IDesignSpace space;
-		String	frameworkID = null,
-				fullRef = getRootElement().getAttributeValue(Q.REF_ATTR),
+		String	fullRef = getRootElement().getAttributeValue(Q.REF_ATTR),
 				thisID = getId();
-		String[] queries;
 		
-		if (isDesign())
-			queries = new String[] {
-				"SELECT design_space FROM " + Q.SQL_SCHEMA_NAME + ".design " +
-				"WHERE id = '" + thisID + "'"};
-		else if (isMapping()) {
-			Framework fw = Framework.frameworkOf(this);
-			
-			if (fw != null)
-				frameworkID = fw.getId();
-			
-			queries = new String[] {
-				"SELECT design_space FROM " + Q.SQL_SCHEMA_NAME + ".mappings " +
-				"WHERE id = '" + thisID + "' AND " +
-					"programming_language = 'Java' AND " +
-					"framework = " + (frameworkID == null ? "NULL" : frameworkID),
-				"SELECT id FROM " + Q.SQL_SCHEMA_NAME + ".design_space " +
-				"WHERE id = '" + thisID + "'"};
-		} else
+		if (!isDesign() && !isMapping())
 			throw new InPUTException(
 				"The document isn't a design or code-mapping document.");
 		
 		space = DesignSpace.lookup(thisID);
 		
-		if (fullRef != null) {
+		if (space == null && fullRef != null) {
 			String baseRef = fullRef.split("\\.")[0];
 				
 			space = DesignSpace.lookup(baseRef);
@@ -228,29 +196,6 @@ public class InPUTDocument extends Document implements Comparable<Document>, Ide
 			}
 		}
 		
-		for (int i = 0; i < connections.length && space == null; i++) {
-			ResultSet rs;
-			Statement stmt = null;
-			
-			try {
-				stmt = connections[i].createStatement();
-				
-				for (String q : queries) {
-					rs = stmt.executeQuery(q);
-
-					if (rs.next()) {
-						space = new DatabaseImporter<IDesignSpace>(connections[i]).
-							importDesignSpace(rs.getString(1), frameworkID);
-						break;
-					}
-				}
-			} catch (SQLException e) {
-				throw new SQLInPUTException(DatabaseAdapter.concatSQLMessages(e));
-			} finally {
-				DatabaseAdapter.close(stmt);
-			}
-		}
-		
 		return space == null ? null: new InPUTDocument(
 				space.export(new DocumentExporter()));
 	}
@@ -259,16 +204,11 @@ public class InPUTDocument extends Document implements Comparable<Document>, Ide
 	 * If this document is a design space, this method searches for its
 	 * code mappings. Otherwise, an {@link InPUTException} is thrown.
 	 * 
-	 * @param connections	Connections to databases where the code
-	 * 						mappings shall be searched (among other places),
-	 * 						or {@code null} if the code mappings shall not
-	 * 						be searched in any database.
 	 * @return	A set containing the found code-mapping documents.
 	 * @throws InPUTException	If this document isn't a design space.
 	 * @throws IOInPUTException If an I/O error occurs.
-	 * @throws SQLInPUTException If a database error occurs.
 	 */
-	public SortedSet<InPUTDocument> locateMappings(Connection ... connections) throws InPUTException {
+	public SortedSet<InPUTDocument> locateMappings() throws InPUTException {
 		DocumentExporter exporter = new DocumentExporter();
 		List<IMappings> mappings = new ArrayList<IMappings>();
 		NavigableSet<InPUTDocument> mappingDocs = new TreeSet<InPUTDocument>();
@@ -291,29 +231,6 @@ public class InPUTDocument extends Document implements Comparable<Document>, Ide
 				
 				if (doc.isMapping())
 					mappingDocs.add(doc);
-			}
-		}
-		
-		for (int i = 0; i < connections.length && mappings == null; i++) {
-			ResultSet rs;
-			Statement stmt = null;
-				
-			try {
-				stmt = connections[i].createStatement();
-				rs = stmt.executeQuery(
-					"SELECT content FROM " + Q.SQL_SCHEMA_NAME + ".mappings " +
-					"WHERE design_space = '" + id + "' AND " +
-						"programming_language = 'Java'");
-					
-				while (rs.next())
-					mappingDocs.add(new InPUTDocument(SAXUtil.build(
-						new BufferedInputStream(rs.getBinaryStream("content")),
-						InPUTConfig.isValidationActive())));
-
-			} catch (SQLException e) {
-				throw new SQLInPUTException(DatabaseAdapter.concatSQLMessages(e));
-			} finally {
-				DatabaseAdapter.close(stmt);
 			}
 		}
 		
