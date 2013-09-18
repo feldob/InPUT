@@ -83,9 +83,10 @@ public class SpotHelper {
 	static {
 		String[] args = { "--vanilla" };
 		engine = new Rengine(args, false, null);
+//		engine.DEBUG = 1;
 		REXP allRight = engine.eval(SPOTQ.COMMAND_LOAD_SPOT, false);
 		if (allRight == null)
-			System.err.println("SPOT is not appropriately installed.");
+			System.err.println("SPOT is not appropriately installed. Open R and install SPOT by: 'install.packages(\"SPOT\")'.");
 	}
 
 	public SpotHelper(IInPUT input, IDesign config, String studyId)
@@ -101,6 +102,10 @@ public class SpotHelper {
 		outputROI = new SpotROI(input.getOutputSpace());
 		currentRES = new SpotRES(inputROI, outputROI);
 		initExperimentalFolder();
+	}
+
+	private void initResultHeading() {
+		engine.eval("inputConfig$alg.currentResult <- read.table(textConnection(\"" + currentRES.toString() + "\"), header=TRUE)");
 	}
 
 	private void checkSPOTIsInstalled() throws InPUTException {
@@ -296,10 +301,15 @@ public class SpotHelper {
 	}
 
 	public int initSequentialDesign() throws InPUTException {
+		writeResultsToSPOTProjectCache();
 		initSPOTSequentialDesign();
 		saveSPOTWorkspace();
 		currentDES = initializeDesign();
 		return currentDES.size();
+	}
+
+	private void writeResultsToSPOTProjectCache() {
+		engine.eval("inputConfig$alg.currentResult <- read.table(textConnection(\"" + currentRES.toString() + "\"), header=TRUE)");
 	}
 
 	public void retrieveNextDesign() {
@@ -329,16 +339,20 @@ public class SpotHelper {
 	}
 
 	public void feedbackSpot(IDesign result) throws InPUTException {
-		feedbackSpotInMemory();
-		saveSPOTWorkspace();
 		currentRES.append(result, currentDES);
+		
+		if (isFileMode())
+			feedbackResultInRESFile();
+
+		saveSPOTWorkspace();
 	}
 
-	private void feedbackSpotInMemory() throws InPUTException {
-		engine.eval("inputConfig$alg.currentResult <- rbind(inputConfig$alg.currentResult, read.table(textConnection(\""
-				+ currentRES.toString() + "\"), header=TRUE))");
-		if (config.getValue(SPOTQ.CONF_IS_FILE_MODE))
+	private void feedbackResultInRESFile() throws InPUTException {
 			createFile(SPOTQ.FILE_RES_ENDING, currentRES, investigationId);
+	}
+
+	private Boolean isFileMode() throws InPUTException {
+		return config.getValue(SPOTQ.CONF_IS_FILE_MODE);
 	}
 
 	public void reset(String studyId) throws InPUTException {

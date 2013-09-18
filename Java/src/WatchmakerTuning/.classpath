@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/Tuning"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/InPUT4j_Tuning"/>
 	<classpathentry kind="src" path="/InPUT4j">
 		<attributes>
 			<attribute name="org.eclipse.ajdt.inpath" value="org.eclipse.ajdt.inpath"/>

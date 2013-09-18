@@ -4,6 +4,7 @@
 <i:Mapping id="evaluator.jeval" type="se.miun.itm.input.eval.JEvalEvaluator"/>
 <i:Mapping id="evaluator.javascript" type="se.miun.itm.input.eval.JavascriptEvaluator"/>
 <i:Mapping id="random" type="java.util.Random"/>
+<i:Mapping id="random.seed" get="false" set="setSeed"/>
 <i:Mapping id="random.standard" type="java.util.Random"/>
 <i:Mapping id="random.mersenneTwister" type="org.uncommons.maths.random.MersenneTwisterRNG"/>
 </i:CodeMappings>

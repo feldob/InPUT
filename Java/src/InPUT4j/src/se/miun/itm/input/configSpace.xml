@@ -8,8 +8,9 @@
     <i:SChoice id="javascript"/>
   </i:SParam>
   <i:SParam id="random">
-  	<i:SChoice id="standard"/>
-  	<i:SChoice id="mersenneTwister"/>
+	    <i:NParam id="seed" type="long"/>
+	  	<i:SChoice id="standard"/>
+	  	<i:SChoice id="mersenneTwister"/>
   </i:SParam>
   <i:NParam id="runtimeValidation" type="boolean"/>
   <i:SParam id="schemaPath" type="String"/>
