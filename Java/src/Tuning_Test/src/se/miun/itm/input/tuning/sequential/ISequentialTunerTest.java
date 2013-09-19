@@ -18,12 +18,18 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */package se.miun.itm.input.tuning.sequential;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.SingleComplexChoice;
+import model.SomeAbstractComplexStructural;
 import model.SomeStructuralParent;
 import model.YetAnotherThirdChoice;
 
@@ -42,14 +48,16 @@ public class ISequentialTunerTest extends ITunerTest<SequentialTuner> {
 
 	protected static List<IDesign> sequentialResults = new ArrayList<IDesign>();
 
-	protected static IDesignSpace outputSpace = SequentialTuner.getSingleObjectiveSpace();
+	protected static IDesignSpace outputSpace = SequentialTuner
+			.getSingleObjectiveSpace();
 
 	static {
 		try {
 			IDesign output;
 			for (int i = 1; i < 19; i++) {
 				output = outputSpace.nextEmptyDesign("" + i);
-				output.setValue(SequentialTuner.SINGLE_OUTPUT_PARAMETER, new BigDecimal(i));
+				output.setValue(SequentialTuner.SINGLE_OUTPUT_PARAMETER,
+						new BigDecimal(i));
 
 				if (i < 13)
 					initialResults.add(output);
@@ -75,12 +83,16 @@ public class ISequentialTunerTest extends ITunerTest<SequentialTuner> {
 		}
 		assertFalse(experiment.equals(tuner.nextExperiment()));
 
-		TUtil.assertExpectedType(experiment, TUtil.STRUCTURAL_PARENT_PARAM, SomeStructuralParent.class);
+		TUtil.assertExpectedType(experiment, TUtil.STRUCTURAL_PARENT_PARAM,
+				SomeStructuralParent.class);
 
-		if (YetAnotherThirdChoice.class.isInstance(experiment.getValue(TUtil.STRUCTURAL_PARENT_PARAM))) {
-			assertNotNull(experiment.getValue(TUtil.NON_SHARED_PRIMITIVE_SUB_PARAM));
+		if (YetAnotherThirdChoice.class.isInstance(experiment
+				.getValue(TUtil.STRUCTURAL_PARENT_PARAM))) {
+			assertNotNull(experiment
+					.getValue(TUtil.NON_SHARED_PRIMITIVE_SUB_PARAM));
 		} else {
-			assertNull(experiment.getValue(TUtil.NON_SHARED_PRIMITIVE_SUB_PARAM));
+			assertNull(experiment
+					.getValue(TUtil.NON_SHARED_PRIMITIVE_SUB_PARAM));
 		}
 	}
 
@@ -94,12 +106,16 @@ public class ISequentialTunerTest extends ITunerTest<SequentialTuner> {
 
 		assertEquals(18, tuner.currentDesignSize());
 
-		TUtil.assertExpectedType(seqExperiment, TUtil.STRUCTURAL_PARENT_PARAM, SomeStructuralParent.class);
+		TUtil.assertExpectedType(seqExperiment, TUtil.STRUCTURAL_PARENT_PARAM,
+				SomeStructuralParent.class);
 
-		if (YetAnotherThirdChoice.class.isInstance(seqExperiment.getValue(TUtil.STRUCTURAL_PARENT_PARAM))) {
-			assertNotNull(seqExperiment.getValue(TUtil.NON_SHARED_PRIMITIVE_SUB_PARAM));
+		if (YetAnotherThirdChoice.class.isInstance(seqExperiment
+				.getValue(TUtil.STRUCTURAL_PARENT_PARAM))) {
+			assertNotNull(seqExperiment
+					.getValue(TUtil.NON_SHARED_PRIMITIVE_SUB_PARAM));
 		} else {
-			assertNull(seqExperiment.getValue(TUtil.NON_SHARED_PRIMITIVE_SUB_PARAM));
+			assertNull(seqExperiment
+					.getValue(TUtil.NON_SHARED_PRIMITIVE_SUB_PARAM));
 		}
 	}
 
@@ -112,8 +128,10 @@ public class ISequentialTunerTest extends ITunerTest<SequentialTuner> {
 			experiment = tuner.nextExperiment();
 			result = initialResults.get(i);
 			tuner.feedback(result);
-			assertEquals(result.getValue(SequentialTuner.SINGLE_OUTPUT_PARAMETER),
-					experiment.getOutput().get(i%3).getValue(SequentialTuner.SINGLE_OUTPUT_PARAMETER));
+			assertEquals(
+					result.getValue(SequentialTuner.SINGLE_OUTPUT_PARAMETER),
+					experiment.getOutput().get(i % 3)
+							.getValue(SequentialTuner.SINGLE_OUTPUT_PARAMETER));
 		}
 	}
 
@@ -128,7 +146,7 @@ public class ISequentialTunerTest extends ITunerTest<SequentialTuner> {
 
 		assertEquals(4, tuner.getAmountInvestigatedConfigurations());
 		assertEquals(12, tuner.getAmountEvaluatedRuns());
-		
+
 		for (int i = 0; i < sequentialResults.size(); i++) {
 			tuner.nextExperiment();
 			tuner.feedback(sequentialResults.get(i));
@@ -136,13 +154,16 @@ public class ISequentialTunerTest extends ITunerTest<SequentialTuner> {
 		assertEquals(30, tuner.getAmountEvaluatedRuns());
 		assertEquals(10, tuner.getAmountInvestigatedConfigurations());
 	}
-	//
-	// @Test
-	// public void testGetBest() throws InPUTException {
-	// assertNull(tuner.getBest());
-	// tuner.nextIteration();
-	// tuner.feedback(initialResults);
-	// assertEquals(new BigDecimal("12"), tuner.getBest().getOutput().get(2).getValue(SequentialTuner.SINGLE_OUTPUT_PARAMETER));
-	// }
+
+	@Test
+	public void testGetFixedSingleArrayEntry() throws InPUTException {
+		IDesign algorithmDesign = input.getAlgorithmDesignSpace().nextDesign(
+				"test");
+		SomeAbstractComplexStructural[] fixedArray = algorithmDesign
+				.getValue(TUtil.SOME_FIXED_STRUCTURAL_ARRAY);
+		assertNotNull(fixedArray);
+		assertEquals(1, fixedArray.length);
+		assertTrue(fixedArray[0] instanceof SingleComplexChoice);
+	}
 
 }

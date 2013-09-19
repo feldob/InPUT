@@ -18,15 +18,14 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */package se.miun.itm.input.tuning.converter;
 
-import static org.junit.Assert.assertEquals;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import java.io.FileNotFoundException;
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.List;
 
+import model.SomeAbstractComplexStructural;
 import model.SomeFirstChoice;
 import model.SomeSecondChoice;
 import model.SomeThirdChoice;
@@ -126,32 +125,38 @@ public class SpotConverterTest extends
 
 	@Test
 	public void testDesignFromCombined() throws InPUTException {
-		List<IExperiment> designs = testTo(TUtil.DES_COMBINED,
+		List<IExperiment> experiments = testTo(TUtil.DES_COMBINED,
 				TUtil.COMBINED_SPACE_ID);
 
-		for (int i = 0; i < designs.size(); i++)
-			TUtil.assertExpectedParameter(designs.get(i),
+		for (int i = 0; i < experiments.size(); i++)
+			TUtil.assertExpectedParameter(experiments.get(i),
 					TUtil.SHARED_PRIMITIVE_PARAM, 3);
 
-		TUtil.assertExpectedType(designs.get(0), TUtil.STRUCTURAL_PARENT_PARAM,
+		TUtil.assertExpectedType(experiments.get(0), TUtil.STRUCTURAL_PARENT_PARAM,
 				YetAnotherFirstChoice.class);
-		TUtil.assertExpectedType(designs.get(1), TUtil.STRUCTURAL_PARENT_PARAM,
+		TUtil.assertExpectedType(experiments.get(1), TUtil.STRUCTURAL_PARENT_PARAM,
 				YetAnotherSecondChoice.class);
-		TUtil.assertExpectedType(designs.get(2), TUtil.STRUCTURAL_PARENT_PARAM,
+		TUtil.assertExpectedType(experiments.get(2), TUtil.STRUCTURAL_PARENT_PARAM,
 				YetAnotherThirdChoice.class);
-		TUtil.assertExpectedType(designs.get(3), TUtil.STRUCTURAL_PARENT_PARAM,
+		TUtil.assertExpectedType(experiments.get(3), TUtil.STRUCTURAL_PARENT_PARAM,
 				YetAnotherThirdChoice.class);
 
-		assertNull(designs.get(0)
+		assertNull(experiments.get(0)
 				.getValue(TUtil.NON_SHARED_PRIMITIVE_SUB_PARAM));
-		assertNull(designs.get(1)
+		assertNull(experiments.get(1)
 				.getValue(TUtil.NON_SHARED_PRIMITIVE_SUB_PARAM));
 		assertEquals(
-				designs.get(2).getValue(TUtil.NON_SHARED_PRIMITIVE_SUB_PARAM),
+				experiments.get(2).getValue(TUtil.NON_SHARED_PRIMITIVE_SUB_PARAM),
 				0.24f);
 		assertEquals(
-				designs.get(3).getValue(TUtil.NON_SHARED_PRIMITIVE_SUB_PARAM),
+				experiments.get(3).getValue(TUtil.NON_SHARED_PRIMITIVE_SUB_PARAM),
 				0.2f);
+		
+		Object theFixedArray = experiments.get(0).getValue(TUtil.SOME_FIXED_STRUCTURAL_ARRAY);
+		assertNotNull(theFixedArray);
+		assertTrue(theFixedArray.getClass().isArray());
+		assertEquals(1, Array.getLength(theFixedArray));
+		assertTrue(Array.get(theFixedArray, 0) instanceof SomeAbstractComplexStructural);
 	}
 
 	private List<IExperiment> testTo(SpotDES des, String spaceId)

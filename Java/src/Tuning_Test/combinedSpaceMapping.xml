@@ -20,4 +20,8 @@
 	</i:Mapping>
 	<i:Mapping id="SomeComplexStructural.FirstChoice" type="model.SingleComplexChoice" constructor="A" />
 	<i:Mapping id="SomeComplexStructural.SecondChoice" type="model.SingleComplexChoice" />
+	
+	<i:Mapping id="SomeFixedSingleArrayStructural" type="model.SomeAbstractComplexStructural"/>
+	<i:Mapping id="SomeFixedSingleArrayStructural.FirstChoice" type="model.SingleComplexChoice" constructor="A" />
+	<i:Mapping id="SomeFixedSingleArrayStructural.SecondChoice" type="model.SingleComplexChoice" />
 </i:CodeMappings>

@@ -21,4 +21,11 @@
 		</i:SChoice>
 		<i:SChoice id="SecondChoice" />
 	</i:SParam>
+	
+	<i:SParam type="[1]" id="SomeFixedSingleArrayStructural" fixed="SecondChoice">
+		<i:SChoice id="FirstChoice">
+			<i:NParam id="A" type="float"/>
+		</i:SChoice>
+		<i:SChoice id="SecondChoice" />
+	</i:SParam>
 </i:DesignSpace>

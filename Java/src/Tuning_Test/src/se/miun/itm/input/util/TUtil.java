@@ -35,6 +35,7 @@ public class TUtil {
 	public static final String SHARED_PRIMITIVE_PARAM = "SomeStructuralParent.SomeSharedPrimitiveSub";
 	public static final String SOME_STRUCTURAL_PARAM = "SomeStructural";
 	public static final String SIMPLE_INT_PARAM = "SimpleInt";
+	public static final String SOME_FIXED_STRUCTURAL_ARRAY = "SomeFixedSingleArrayStructural";
 	
 	public static final String NUMERIC_SPACE_ID = "numeric";
 	public static final String STRUCTURAL_SPACE_ID = "structural";
