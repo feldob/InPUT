@@ -174,9 +174,8 @@ public class SpotDesignInitializer {
 		// 2) find out the parent it would have in a real setup. -> get id.
 		Element parent = findParent(root, param, pair, store, space);
 		// 3) add the tuple to the parent
-		if (isAppropriateSubParam(parent, param)) {
+		if (isAppropriateSubParam(parent, param))
 			addToParent(pair, param, parent);
-		}
 	}
 
 	public Element addToParent(ParamValuePair pair, Param<?> param, Element parent) throws InPUTException {
@@ -223,7 +222,7 @@ public class SpotDesignInitializer {
 			throws InPUTException {
 
 		Element resultParent = null;
-		if (isComplex(param))
+		if (isStructuralArrayType(param))
 			resultParent = findParentForComplex(root, param, pair, store, space);
 		else if (hasComplexGrandParent(param))
 			addPairToAllSuitableParentsForGrandChildOfComplex(root, param, pair, store, space);
@@ -251,11 +250,11 @@ public class SpotDesignInitializer {
 
 	private boolean hasComplexGrandParent(Param<?> param) throws InPUTException {
 		Element grandParent = param.getParentElement().getParentElement();
-		return grandParent != null && !grandParent.isRootElement() && isComplex((Param<?>) grandParent);
+		return grandParent != null && !grandParent.isRootElement() && isStructuralArrayType((Param<?>) grandParent);
 	}
 
-	public boolean isComplex(Param<?> param) throws InPUTException {
-		return param instanceof SParam && ((SParam) param).isComplex();
+	public static boolean isStructuralArrayType(Element param) throws InPUTException {
+		return param instanceof SParam && ((SParam)param).isArrayType();
 	}
 
 	public Element findParentForComplex(Element root, Param<?> param, ParamValuePair pair, ParamStore store, IDesignSpace space)
@@ -308,10 +307,25 @@ public class SpotDesignInitializer {
 	private Element createValueElement(ParamValuePair pair, Param<?> param, String valueString) throws InPUTException {
 		Element valueElement = new Element(param.getValueTypeString(), Q.DESIGN_NAMESPACE);
 		setAppropriateId(pair, param, valueElement);
-		if (valueString != null && !valueString.equals(""))
+//		if (param.isArrayType()) {
+//			setArrayElementsAndAttributes(pair, param, valueElement, valueString);
+//		}else 
+			if (valueString != null && !valueString.equals(""))
 			valueElement.setAttribute(Q.VALUE_ATTR, valueString);
 		return valueElement;
 	}
+
+	//TODO this only works for one dimension so far
+//	private void setArrayElementsAndAttributes(ParamValuePair pair,
+//			Param<?> param, Element arrayParent, String valueString) {
+//		String[] values = valueString.split(" ");
+//		int[] dimensions = param.getDimensions();
+//		for (int i = 0; i < dimensions[0]; i++) {
+//			if (values > ) {
+//				
+//			}
+//		}
+//	}
 
 	private void setAppropriateId(ParamValuePair pair, Param<?> param, Element valueElement) {
 		boolean isInt = false;
@@ -350,6 +364,7 @@ public class SpotDesignInitializer {
 	private Map<Integer, Set<ParamValuePair>> initValues(List<Param<?>> fixed, SpotDesign spotDesign) throws InPUTException {
 		Map<Integer, Set<ParamValuePair>> paramMap = new HashMap<Integer, Set<ParamValuePair>>();
 
+		System.out.println("");
 		addAllVariableEntries(paramMap, spotDesign);
 		addAllFixedEntries(paramMap, fixed);
 
@@ -367,12 +382,13 @@ public class SpotDesignInitializer {
 		}
 	}
 
+	//TODO if i can for all tuning related tools make sure that complex are equally treated as arrays, then it should work!
 	private void addAllFixedEntries(Map<Integer, Set<ParamValuePair>> paramMap, List<Param<?>> fixed) throws InPUTException {
 		int depth;
 		Set<ParamValuePair> setOfDepth;
 		for (Param<?> param : fixed) {
 			depth = param.getId().split(SpotConverter.ID_CHOP_PATTERN).length;
-			if (param instanceof SParam && ((SParam) param).isComplex()) {
+			if (isStructuralArrayType(param)) {
 				setOfDepth = getSetOfDepth(depth+1, paramMap);
 				addAllFixedEntriesForComplexParam(setOfDepth, param.getId(), param.getFixedValue().split(" "));
 			} else {

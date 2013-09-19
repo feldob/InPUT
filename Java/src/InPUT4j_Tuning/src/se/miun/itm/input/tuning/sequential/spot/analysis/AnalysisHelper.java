@@ -36,6 +36,7 @@ import se.miun.itm.input.model.param.Param;
 import se.miun.itm.input.model.param.ParamStore;
 import se.miun.itm.input.model.param.SChoice;
 import se.miun.itm.input.model.param.SParam;
+import se.miun.itm.input.tuning.converter.SpotDesignInitializer;
 import se.miun.itm.input.tuning.sequential.spot.SPOTQ;
 import se.miun.itm.input.util.Q;
 
@@ -121,7 +122,7 @@ public class AnalysisHelper {
 
 		boolean flag = false;
 		if (parent instanceof SParam || parent instanceof NParam) {
-			if (parent instanceof SParam && ((SParam) parent).isComplex() && p instanceof SChoice) {
+			if (SpotDesignInitializer.isStructuralArrayType(parent) && p instanceof SChoice) {
 				String compl, choiceNumber;
 				for (int j = 1; j <= ((SParam) parent).getDimensions()[0]; j++) {
 					compl = p.getParamId() + "." + j;
