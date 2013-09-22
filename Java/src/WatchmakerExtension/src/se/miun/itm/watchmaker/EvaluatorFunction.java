@@ -22,7 +22,7 @@ public interface EvaluatorFunction<T> {
 
 	boolean isNatural();
 	
-	float evaluate(T candidate);
+	double evaluate(T candidate);
 
 	int getRuns();
 }
