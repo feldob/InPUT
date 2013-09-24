@@ -1,0 +1,3 @@
+[submodule "Java/InPUT4j_SQL"]
+	path = Java/InPUT4j_SQL
+	url = https://github.com/zt3f/InPUTj-SQL.git
