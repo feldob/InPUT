@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<i:DesignSpace id="structuredAdv" mapping="structuredMappingAdvanced.xml"
+	xmlns:i="http://TheInPUT.org/DesignSpace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://TheInPUT.org/DesignSpace http://TheInPUT.org/DesignSpace.xsd ">
+	<i:SParam id="Steak">
+		<i:NParam id="Temperature" type="decimal" inclMin="25" inclMax="80" />
+		<i:NParam type="double" id="ProportionBurned" />
+		<i:SChoice id="Raw">
+			<i:NParam id="HealthRisk" type="boolean" />
+		</i:SChoice>
+		<i:SChoice id="Medium">
+			<i:SParam id="Rather">
+				<i:SChoice id="Raw" />
+				<i:SChoice id="WellDone" />
+			</i:SParam>
+		</i:SChoice>
+		<i:SChoice id="WellDone" />
+	</i:SParam>
+</i:DesignSpace>

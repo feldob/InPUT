@@ -66,6 +66,8 @@ public class Q {
 
 	public static final String ID_ATTR = "id";
 
+	public static final String VERSION_ATTR = "version";
+	
 	public static final String MAPPING_TYPE = "MappingType";
 
 	public static final String MAPPING = "Mapping";
