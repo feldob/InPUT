@@ -56,7 +56,7 @@ public class RandomStructuralGenerator extends StructuralGenerator {
 		} catch (NumberFormatException e) {
 			choice = param.getChoiceById(choiceId);
 		}
-		return choice.newInstance(null, null);
+		return choice.newInstance(null);
 	}
 
 	private SChoice getChoiceAt(int position) throws InPUTException {

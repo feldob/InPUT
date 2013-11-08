@@ -383,7 +383,7 @@ public class InPUTConstructor {
 		return localReferences.contains(localId);
 	}
 
-	public Object newInstance(Object[] actualParams, String[] actualParamIds) throws InPUTException {
+	public Object newInstance(Object[] actualParams) throws InPUTException {
 		if (!init)
 			init();
 		try {
@@ -397,7 +397,7 @@ public class InPUTConstructor {
 			throw new InPUTException(param.getId() + ": The constructor you declared is not visible.", e);
 		} catch (IllegalArgumentException e) {
 			throw new InPUTException(param.getId() + ": There is no constructor of type '" + constructor.getDeclaringClass().getName()
-					+ "' with actual parameter signature '" +Arrays.toString(actualParamIds) + "' and arguments of type " + getClassesForArguments(actualParams), e);
+					+ "' with arguments of type " + getClassesForArguments(actualParams), e);
 		} catch (InvocationTargetException e) {
 			throw new InPUTException(param.getId() + ": Something went wrong with the creation of the constructor.", e);
 		}
