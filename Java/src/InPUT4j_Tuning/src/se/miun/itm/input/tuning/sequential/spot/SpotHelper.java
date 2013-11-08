@@ -72,10 +72,8 @@ public class SpotHelper {
 
 	private final IInPUT input;
 
-	private String studyId; // TODO does not work for more than one SPOT at a
-							// time! Maybe this engine
-	// can simply be shared in a meaningful way, using intrinsic locking among
-	// all SPOT instances.
+	private String studyId;
+	
 	private static Rengine engine;
 
 	private static int repetitionCounter;

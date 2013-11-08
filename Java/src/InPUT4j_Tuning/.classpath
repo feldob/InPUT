@@ -8,15 +8,5 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="/usr/local/lib/R/site-library/rJava/jri"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/usr/local/lib/R/site-library/rJava/jri/JRIEngine.jar">
-		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="/usr/local/lib/R/site-library/rJava/jri"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/usr/local/lib/R/site-library/rJava/jri/REngine.jar">
-		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="/usr/local/lib/R/site-library/rJava/jri"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
