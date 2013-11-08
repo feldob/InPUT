@@ -115,7 +115,7 @@ public class SChoice extends AStruct {
 	
 	@Override
 	public Object getValueForString(String stringValue) throws InPUTException {
-		return newInstance(null);
+		return newInstance(null, null);
 	}
 	
 	@Override

@@ -93,7 +93,7 @@ public class FixedStructuralGenerator extends StructuralGenerator {
 	@Override
 	public Object parse(String valueString) throws InPUTException {
 		if (isComplex())
-			return ((SParam) param).getChoiceById(valueString).newInstance(null);
+			return ((SParam) param).getChoiceById(valueString).newInstance(null, null);
 		return getChoice().getValueForString(valueString);
 	}
 

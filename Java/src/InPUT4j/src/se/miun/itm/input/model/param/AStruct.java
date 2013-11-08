@@ -45,6 +45,36 @@ import se.miun.itm.input.util.Q;
  */
 public abstract class AStruct extends Param<StructuralGenerator> {
 
+	private class ActualParams{
+
+		private String[] ids;
+		
+		private Object[] params;
+		
+		public ActualParams(Object[] actualParams) {
+			this.params = actualParams;
+			if (params != null)
+				ids = new String[params.length];
+		}
+		
+		public String[] getIds() {
+			return ids;
+		}
+
+		public Object[] getParams() {
+			return params;
+		}
+		
+		public void setId(int position, String id){
+			ids[position] = id;
+		}
+		
+		public void resetParams(Object[] params){
+			this.params = params;
+		}
+		
+	}
+	
 	private static final long serialVersionUID = 5891445520352579733L;
 
 	private final List<Param<?>> inputChildrenList = new ArrayList<Param<?>>();
@@ -103,7 +133,7 @@ public abstract class AStruct extends Param<StructuralGenerator> {
 		if (isImplicit() && localChoiceId != null && !localChoiceId.equals(getLocalId()))
 			actualParams = SParam.extendActualParams(actualParams, localChoiceId);
 
-		actualParams = choice.enhanceActualParams(actualParams, subParamValueElements, elementCache);
+		ActualParams paramWrapper = choice.enhanceActualParams(actualParams, subParamValueElements, elementCache); 
 
 		if (isStringType()) {
 			Object valueString = value.getAttributeValue(Q.VALUE_ATTR);
@@ -111,7 +141,7 @@ public abstract class AStruct extends Param<StructuralGenerator> {
 				valueString = actualParams[0];
 			value.setInputValue(valueString);
 		} else
-			reflectObject((SValue) value, actualParams, choice);
+			reflectObject((SValue) value, paramWrapper.getParams(), paramWrapper.getIds(), choice);
 
 		for (Value<?> subValueE : subParamValueElements)
 			// inject the child values into the members
@@ -119,37 +149,41 @@ public abstract class AStruct extends Param<StructuralGenerator> {
 
 	}
 
-	public void reflectObject(SValue sValue, Object[] actualParams, AStruct choice) throws InPUTException {
+	public void reflectObject(SValue sValue, Object[] actualParams, String[] actualParamIds, AStruct choice) throws InPUTException {
 		if (isEnum().booleanValue())
 			sValue.setPlainInputValue(((SChoice) choice).getEnumValue());
 		else
-			sValue.setPlainInputValue(choice.newInstance(actualParams));
+			sValue.setPlainInputValue(choice.newInstance(actualParams, actualParamIds));
 	}
 
 	//TODO extract an enhancer class
-	public Object[] enhanceActualParams(Object[] actualParams,
+	public ActualParams enhanceActualParams(final Object[] actualParams,
 			List<Value<?>> subParamValueElements,
 			ElementCache elementCache) throws InPUTException {
+		
+		ActualParams paramWrapper = new ActualParams(actualParams);
+		
 		InPUTConstructor inputConstructor = generator.getInPUTConstructor();
 
 		String[] formalParamIds = inputConstructor.getFormalParamIds();
 
 		if (isStringType()) {
 			if (actualParams == null) {
-				actualParams = getStringTypeActualParam();
+				paramWrapper.resetParams(getStringTypeActualParam());
 			}
 		} else if (isParameterizable(actualParams, formalParamIds)) {
 			if (actualParams != null && formalParamIds.length > 0)
-				actualParams = Arrays.copyOfRange(actualParams, 0,
-						formalParamIds.length);
+				paramWrapper.resetParams(Arrays.copyOfRange(actualParams, 0,
+						formalParamIds.length));
 			Object[] newParams = new Object[formalParamIds.length];
 			for (int i = 0; i < formalParamIds.length; i++)
 				newParams[i] = enhanceActualParam(actualParams,
 						subParamValueElements, elementCache, inputConstructor,
 						formalParamIds[i], i);
-			actualParams = newParams;
+			paramWrapper.resetParams(getStringTypeActualParam());
 		}
-		return actualParams;
+		
+		return paramWrapper;
 	}
 
 	public abstract Object[] getStringTypeActualParam();
@@ -260,8 +294,8 @@ public abstract class AStruct extends Param<StructuralGenerator> {
 		return value;
 	}
 
-	public Object newInstance(Object[] actualParams) throws InPUTException {
-		return generator.getInPUTConstructor().newInstance(actualParams);
+	public Object newInstance(Object[] actualParams, String[] actualParamIds) throws InPUTException {
+		return generator.getInPUTConstructor().newInstance(actualParams, actualParamIds);
 	}
 
 	@Override
