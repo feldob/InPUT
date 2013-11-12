@@ -221,4 +221,9 @@ public class NParam extends Param<NumericGenerator> {
 	public String getFixedValue() {
 		return getAttributeValue(Q.FIXED_ATTR);
 	}
+
+	@Override
+	public Class<?> getArrayType() {
+		return generator.getArrayType(getDimensions());
+	}
 }

@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import se.miun.itm.input.InPUTConfig;
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.Numeric;
 import se.miun.itm.input.model.param.generator.ValueGenerator;
@@ -278,14 +279,25 @@ public class InPUTConstructor {
 				}
 			}
 		}
+		
+		//TODO this might cause a failure, where the actual instance of the global entry is not of the exact same type as 
+		// the requested type for the constructor. Meaning, it must be a more general type in that case. so far it works.
+		if (cLass == null) {
+			Object value = InPUTConfig.getValue(identifier);
+			if (value != null)
+				cLass = value.getClass();
+		}
+		
 		return cLass;
 	}
 
 	private Class<?> getClassForLocalParam(String identifier, Param<?> param) throws InPUTException {
-		Class<?> cLass = null;
-		if (param != null)
-			cLass = param.getInPUTClass();
-		return cLass;
+		if (param == null)
+			return null;
+		
+		if (param.isArrayType())
+			return param.getArrayType();
+		return param.getInPUTClass();
 	}
 
 	private Class<?> getClassForNumericParam(String identifier) {

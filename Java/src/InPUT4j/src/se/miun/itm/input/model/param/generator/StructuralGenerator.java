@@ -18,6 +18,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */package se.miun.itm.input.model.param.generator;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
@@ -278,5 +279,9 @@ public abstract class StructuralGenerator extends
 	@Override
 	public boolean initByConstructor(String paramId) {
 		return mapping.containsInConstructorSignature(paramId);
+	}
+
+	public Class<?> getArrayType(int[] dimensions) {
+		return Array.newInstance(superClass, dimensions).getClass();
 	}
 }

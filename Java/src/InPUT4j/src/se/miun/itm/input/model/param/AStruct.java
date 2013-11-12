@@ -18,6 +18,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */package se.miun.itm.input.model.param;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -330,4 +331,9 @@ public abstract class AStruct extends Param<StructuralGenerator> {
 	public abstract void initIfNotConstructorInit(SValue sValue, Value<?> subValue, Object value) throws InPUTException;
 
 	public abstract String getLocalChildIdByComponentId(String className) throws InPUTException;
+
+	@Override
+	public Class<?> getArrayType() {
+		return generator.getArrayType(getDimensions());
+	}
 }
