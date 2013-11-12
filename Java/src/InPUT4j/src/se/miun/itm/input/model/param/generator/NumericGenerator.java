@@ -18,6 +18,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */package se.miun.itm.input.model.param.generator;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -228,5 +229,9 @@ public abstract class NumericGenerator extends ValueGenerator<NumericMapping, NP
 
 	public boolean isBoolean() {
 		return ranges.getType() == Numeric.BOOLEAN;
+	}
+
+	public Class<?> getArrayType(int[] dimensions) {
+		return Array.newInstance(ranges.getType().getPrimitiveClass(), dimensions).getClass();
 	}
 }

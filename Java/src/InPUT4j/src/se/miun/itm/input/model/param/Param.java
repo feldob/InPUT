@@ -371,4 +371,6 @@ public abstract class Param<AGenerator extends IValueGenerator> extends
 	public abstract boolean isFixed();
 
 	public abstract String getFixedValue() throws InPUTException;
+
+	public abstract Class<?> getArrayType();
 }
