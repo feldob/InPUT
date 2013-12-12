@@ -118,7 +118,6 @@ public class SPOT extends SequentialTuner {
 		return importer;
 	}
 
-	@SuppressWarnings("resource")
 	private InputStream getCorrectSpotSetup(String spotConfigPath) throws InPUTException {
 		InputStream is;
 		if (spotConfigPath != null)

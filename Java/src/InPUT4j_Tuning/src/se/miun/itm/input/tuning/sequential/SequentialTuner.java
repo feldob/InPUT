@@ -41,8 +41,6 @@ public abstract class SequentialTuner extends Tuner implements ISequentialTuner 
 	protected int currentDesignSize; // gives the total size of the current design under investigation
 
 	private List<IDesign> problems;
-	//
-	// private IDesign bestOutput;
 
 	private final Random rng;
 	//
@@ -77,11 +75,6 @@ public abstract class SequentialTuner extends Tuner implements ISequentialTuner 
 		return problems.get(rng.nextInt(problems.size()));
 	}
 
-	// @Override
-	// public IExperiment getBest() {
-	// return best;
-	// }
-
 	@Override
 	public void resetStudy(List<IDesign> problems, String studyId) throws InPUTException {
 		this.problems = problems;
@@ -90,83 +83,6 @@ public abstract class SequentialTuner extends Tuner implements ISequentialTuner 
 		amountEvaluatedRuns = 0;
 		currentDesignSize = getTotalAmountRunsInitialDesign();
 	}
-
-	// @Override
-	// public final void feedback(List<IDesign> results) throws InPUTException {
-	// if (results.size() != experimentalDesignsUnderTest.size())
-	// throw new InPUTException("The amount of results is expected to be as long as the amonut of designs under investigation.");
-
-	// create the experiments from the input
-	// IExperiment experiment;
-	// for (int i = 0; i < results.size(); i++) {
-	// experiment = experimentalDesignsUnderTest.get(i);
-	// experiment.addOutput(results.get(i));
-	// }
-
-	// give the implementing tuner the chance to analyze the results.
-	// internalFeedback(experimentalDesignsUnderTest);
-
-	// add the experiments to the ones so far
-	// mergeEvaluated();
-	//
-	// // check which one is the best
-	// decideBest();
-	//
-	// // empty the current cache
-	// experimentalDesignsUnderTest.clear();
-	// }
-	//
-	// private void mergeEvaluated() throws InPUTException {
-	// for (IExperiment experiment : experimentalDesignsUnderTest) {
-	// if (configurationHasAlreadyBeenEvaluated(experiment))
-	// mergeExistingExperimentIntoEvaluated(experiment);
-	// else
-	// evaluated.add(experiment);
-	// }
-	// }
-	//
-	// private void mergeExistingExperimentIntoEvaluated(IExperiment experiment) throws InPUTException {
-	// IExperiment eval = getEvaluatedConfigurationWithSameConfiguration(experiment);
-	// for (IDesign output : experiment.getOutput()) {
-	// eval.addOutput(output);
-	// }
-	//
-	// for (String name : experiment.getContentNames()) {
-	// eval.addContent(name, experiment.getContentFor(name));
-	// }
-	// }
-	//
-	// private void decideBest() throws InPUTException {
-	// if (best == null)
-	// initBest(evaluated);
-	//
-	// for (IExperiment experiment : evaluated)
-	// for (IDesign output : experiment.getOutput())
-	// if (isBetter(output))
-	// resetBest(experiment, output);
-	//
-	// }
-	//
-	// public boolean isBetter(IDesign output) throws InPUTException {
-	// int compValue = ((BigDecimal) output.getValue(SINGLE_OUTPUT_PARAMETER)).compareTo((BigDecimal) bestOutput
-	// .getValue(SINGLE_OUTPUT_PARAMETER));
-	//
-	// if (minProblem) {
-	// return compValue < 0;
-	// }else{
-	// return compValue > 0;
-	// }
-	// }
-	//
-	// private void initBest(List<IExperiment> experiments) {
-	// IExperiment experiment = experiments.get(0);
-	// resetBest(experiment, experiment.getOutput().get(0));
-	// }
-	//
-	// private void resetBest(IExperiment experiment, IDesign output) {
-	// best = experiment;
-	// bestOutput = output;
-	// }
 
 	protected abstract void feedback(IExperiment experiment, IDesign newResult) throws InPUTException;
 
@@ -196,6 +112,7 @@ public abstract class SequentialTuner extends Tuner implements ISequentialTuner 
 			currentDesignPointer = 0;
 			currentDesignSize = initNextDesign();
 		}
+		
 		IExperiment nextExperiment = nextExperiment(currentDesignPointer);
 		nextExperiment.setProblemFeatures(randomInstance());
 
