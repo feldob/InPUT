@@ -46,14 +46,15 @@ public class SpotHelper {
 
 	private static SpotConverter converter;
 
-	static{
+	static {
 		try {
 			converter = new SpotConverter();
 		} catch (InPUTException e) {
-			System.out.println("An internal initialization error of class SpotConverter occured. Is the config.xml valid (esp. the validation setup)?");
+			System.out
+					.println("An internal initialization error of class SpotConverter occured. Is the config.xml valid (esp. the validation setup)?");
 		}
 	}
-	
+
 	private final SpotROI inputROI;
 
 	private final SpotROI outputROI;
@@ -73,24 +74,42 @@ public class SpotHelper {
 	private final IInPUT input;
 
 	private String studyId;
-	
+
 	private static Rengine engine;
 
 	private static int repetitionCounter;
 
 	static {
 		String[] args = { "--vanilla" };
-		engine = new Rengine(args, false, null);
+		engine = new Rengine(args, true, null);
 //		engine.DEBUG = 1;
-		REXP allRight = engine.eval(SPOTQ.COMMAND_LOAD_SPOT, false);
+		REXP allRight = runCommand(SPOTQ.COMMAND_LOAD_SPOT, false);
+
 		if (allRight == null)
-			System.err.println("SPOT is not appropriately installed. Open R and install SPOT by: 'install.packages(\"SPOT\")'.");
+			System.err
+					.println("SPOT is not appropriately installed. Open R and install SPOT by: 'install.packages(\"SPOT\")'.");
+	}
+
+	private static REXP runCommand(String command, boolean convert) {
+		boolean obtainedLock = engine.getRsync().safeLock();
+		REXP value;
+
+		try {
+			value = engine.eval(command, convert);
+		} finally {
+			if (obtainedLock)
+				engine.getRsync().unlock();
+		}
+		if (!convert)
+			engine.waitForR();
+		return value;
 	}
 
 	public SpotHelper(IInPUT input, IDesign config, String studyId)
 			throws InPUTException {
-		this.studyId = studyId;
 		experimentalFolder = initExperimentalFolder(studyId, config);
+		this.studyId = experimentalFolder.getName();
+
 		investigationId = initExperimentId(studyId, config, experimentalFolder);
 		this.config = initConfig(investigationId, config);
 		this.input = input;
@@ -103,12 +122,15 @@ public class SpotHelper {
 	}
 
 	private void initResultHeading() {
-		engine.eval("inputConfig$alg.currentResult <- read.table(textConnection(\"" + currentRES.toString() + "\"), header=TRUE)");
+		runCommand(
+				"inputConfig$alg.currentResult <- read.table(textConnection(\""
+						+ currentRES.toString() + "\"), header=TRUE)", false);
 	}
 
 	private void checkSPOTIsInstalled() throws InPUTException {
-		REXP spotInstalled = engine
-				.eval("is.element('SPOT', installed.packages()[,1])");
+
+		REXP spotInstalled = runCommand(
+				"is.element('SPOT', installed.packages()[,1])", true);
 		if (!spotInstalled.asBool().isTRUE())
 			throw new InPUTException(
 					"In order to use InPUT tuning extension, you have to install the SPOT package for R: \"install.packages('SPOT')\" in the R console.");
@@ -152,19 +174,9 @@ public class SpotHelper {
 	}
 
 	private void initInverseFunction() {
-		engine.eval(
+		runCommand(
 				"source(textConnection(\"inverse<-function(x){v<-x\n if(x>0)v<-1/x\n return(v)}\"))",
 				false);
-	}
-
-	public static String initRelativeFileString(String studyId, IDesign config,
-			String fileName) throws InPUTException {
-
-		String folderId = adjustExpFolderId(studyId, config);
-
-		if (folderId == null || folderId.equals(""))
-			return fileName;
-		return folderId + repetitionCounter + File.separator + fileName;
 	}
 
 	private static File initExperimentalFolder(String studyId, IDesign config)
@@ -280,22 +292,14 @@ public class SpotHelper {
 	}
 
 	private void saveSPOTWorkspace() throws InPUTException {
-		// engine.eval("load(paste(getwd(), \"" + rData + "\", sep = \""
-		// + File.separator + "\"))", false);
-		String rData = initRelativeFileString(studyId, config, ".RData");
-		engine.eval("save.image(paste(getwd(), \"" + rData + "\", sep = \""
-				+ File.separator + "\"))", false);
+		runCommand("save.image(paste(getwd(), \"" + studyId
+				+ "\", \".RData\", sep = \"" + File.separator + "\"))", false);
 		saveSPOTHistory();
 	}
 
-	// TODO does not work!
 	private void saveSPOTHistory() throws InPUTException {
-		// engine.eval("loadhistory(file=paste(getwd(), \"" + rHistory +
-		// "\", sep = \""
-		// + File.separator + "\"))", false);
-		String rHistory = initRelativeFileString(studyId, config, ".Rhistory");
-		engine.eval("savehistory(file=paste(getwd(), \"" + rHistory
-				+ "\", sep = \"" + File.separator + "\"))", false);
+		runCommand("savehistory(file=paste(getwd(), \"" + studyId
+				+ "\",\".Rhistory\", sep = \"" + File.separator + "\"))", false);
 	}
 
 	public int initSequentialDesign() throws InPUTException {
@@ -307,38 +311,39 @@ public class SpotHelper {
 	}
 
 	private void writeResultsToSPOTProjectCache() {
-		engine.eval("inputConfig$alg.currentResult <- read.table(textConnection(\"" + currentRES.toString() + "\"), header=TRUE)");
+		runCommand(
+				"inputConfig$alg.currentResult <- read.table(textConnection(\""
+						+ currentRES.toString() + "\"), header=TRUE)", false);
 	}
 
 	public void retrieveNextDesign() {
-		paramIds = engine.eval("colnames(inputConfig$alg.currentDesign)")
-				.asStringArray();
+		REXP expr = runCommand("colnames(inputConfig$alg.currentDesign)", true);
+		paramIds = expr.asStringArray();
 	}
 
 	public void initSPOTinitialDesign() {
 		initInverseFunction();
-		engine.eval("inputConfig<-spot(inputFile,\"init\")", false);
+		runCommand("inputConfig<-spot(inputFile,\"init\")", false);
 	}
 
 	public void initSPOTConfFileName() {
-		engine.eval("inputFile=paste(getwd(), \"" + investigationId
+		runCommand("inputFile=paste(getwd(), \"" + investigationId
 				+ ".conf\", sep = \"" + File.separator + "\")", false);
 	}
 
 	public SpotDES initializeDesign() throws InPUTException {
-		REXP designs = engine.eval("inputConfig$alg.currentDesign");
+		REXP designs = runCommand("inputConfig$alg.currentDesign", true);
 		return new SpotDES(designs.asVector(), paramIds, inputROI);
 	}
 
 	public void initSPOTSequentialDesign() {
-		engine.eval(
-				"inputConfig<-spot(inputFile,\"seq\", spotConfig=inputConfig)",
-				false);
+		String command = "inputConfig<-spot(inputFile,\"seq\", spotConfig=inputConfig)";
+		runCommand(command, false);
 	}
 
 	public void feedbackSpot(IDesign result) throws InPUTException {
 		currentRES.append(result, currentDES);
-		
+
 		if (isFileMode())
 			feedbackResultInRESFile();
 
@@ -346,7 +351,7 @@ public class SpotHelper {
 	}
 
 	private void feedbackResultInRESFile() throws InPUTException {
-			createFile(SPOTQ.FILE_RES_ENDING, currentRES, investigationId);
+		createFile(SPOTQ.FILE_RES_ENDING, currentRES, investigationId);
 	}
 
 	private Boolean isFileMode() throws InPUTException {
@@ -355,7 +360,7 @@ public class SpotHelper {
 
 	public void reset(String studyId) throws InPUTException {
 		this.studyId = studyId;
-		engine.eval("rm(list=ls())", false);
+		runCommand("rm(list=ls())", false);
 	}
 
 	public String getExperimentalFolderPath() {
