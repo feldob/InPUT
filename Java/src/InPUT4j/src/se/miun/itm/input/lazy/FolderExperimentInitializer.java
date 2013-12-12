@@ -12,17 +12,6 @@ import se.miun.itm.input.util.Q;
 public class FolderExperimentInitializer implements LazyExperimentInitializer {
 
 	private class ExperimentFileFilter implements FilenameFilter {
-//
-//		private final ExperimentalFilterCriterion criterion;
-//		
-//		public ExperimentFileFilter(ExperimentalFilterCriterion criterion) {
-//			this.criterion = criterion;
-//		}
-//		
-//		@Override
-//		public boolean accept(File dir, String name) {
-//			criterion.accept(dir, name);
-//		}
 		
 		private boolean includeAlreadyRun = false;
 
@@ -46,7 +35,7 @@ public class FolderExperimentInitializer implements LazyExperimentInitializer {
 			return name.endsWith(Q.EXP) && !name.contains("prrReference");
 		}
 
-		public void setIncludeThoseWhoAlkreadyHaveBeenRun(boolean include) {
+		public void setIncludeThoseWhoAlreadyHaveBeenRun(boolean include) {
 			this.includeAlreadyRun = include;
 		}
 
@@ -72,7 +61,7 @@ public class FolderExperimentInitializer implements LazyExperimentInitializer {
 
 	private Stack<File> initExperiments(String folderPath, boolean includeAlreadyRun) {
 		File parentFolder = initFolder(folderPath);
-		experimentFilter.setIncludeThoseWhoAlkreadyHaveBeenRun(includeAlreadyRun);
+		experimentFilter.setIncludeThoseWhoAlreadyHaveBeenRun(includeAlreadyRun);
 		File[] experimentFiles = parentFolder.listFiles(experimentFilter);
 		return convertExperimentalFilesToStack(experimentFiles);
 	}
