@@ -183,6 +183,8 @@ public class SpotExportHelper {
 	}
 
 	private String getSpotNumericType(NParam param) {
+		if (param.isBoolean())
+			return SPOT_FACTOR;
 		if (param.isCountable())
 			return SPOT_COUNTABLE;
 		return SPOT_NON_COUNTABLE;
