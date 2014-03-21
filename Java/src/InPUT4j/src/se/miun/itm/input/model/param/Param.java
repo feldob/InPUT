@@ -19,17 +19,16 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */package se.miun.itm.input.model.param;
 
 import java.lang.reflect.Array;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.jaxen.function.ContainsFunction;
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 
-import se.miun.itm.input.aspects.Dependable;
 import se.miun.itm.input.model.DimensionHelper;
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.element.ElementCache;
@@ -80,17 +79,17 @@ public abstract class Param<AGenerator extends IValueGenerator> extends
 		initFromOriginal(original);
 		generator = initGenerator(false);
 	}
-
-	private void checkParameterIdValidity(Element original) {
-		if (this instanceof SChoice)
-				return;
-
-		String id = original.getAttributeValue(Q.ID_ATTR);
-		if (id.contains("."))
-			throw new IllegalArgumentException(
-					"Illegal parameter identifier: '" + id
-							+ "'. A parameter id may not contain dots.");
-	}
+//
+//	private void checkParameterIdValidity(Element original) {
+//		if (this instanceof SChoice)
+//				return;
+//
+//		String id = original.getAttributeValue(Q.ID_ATTR);
+//		if (id.contains("."))
+//			throw new IllegalArgumentException(
+//					"Illegal parameter identifier: '" + id
+//							+ "'. A parameter id may not contain dots.");
+//	}
 
 	public int[] getDimensions() {
 		return dimensions;
