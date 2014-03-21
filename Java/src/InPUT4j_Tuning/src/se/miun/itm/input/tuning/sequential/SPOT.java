@@ -19,6 +19,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */package se.miun.itm.input.tuning.sequential;
 
 import java.io.FileInputStream;
+
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
@@ -54,24 +55,13 @@ public class SPOT extends SequentialTuner {
 
 	private final IDesign config;
 
-	/** 
-	 * TODO create a SPOT that is based on a former experimental image. So either have it as a constructor parameter
-	 * or load it by automation and see if an inputConfig is set. If it is set, the state should be adjusted accordingly.
-	 * That way experiments that abruptly ended can be resumed. 
-	 */
-	
-	/**
-	 * In test stadium: the R environment used is a "one in a JVM thing", so
-	 * that only one SPOT at a time can be created in practice.
-	 * 
-	 * @param input
-	 * @throws InPUTException
-	 */
-	public SPOT(IInPUT input, List<IDesign> problems, String spotConfigPath, String studyId, boolean minProblem)
+	public SPOT(IInPUT input, List<IDesign> problems, String spotConfigPath,
+			String studyId, boolean minProblem, boolean resumeExisting)
 			throws InPUTException {
 		super(input, problems, studyId, minProblem);
+
 		config = initConfig(spotConfigPath);
-		helper = new SpotHelper(input, config, studyId);
+		helper = new SpotHelper(input, config, studyId, minProblem, problems, resumeExisting);
 		initSeed();
 		currentDesignSize = getTotalAmountRunsInitialDesign();
 	}
@@ -84,17 +74,6 @@ public class SPOT extends SequentialTuner {
 	private void setSeed(long seed) throws InPUTException {
 		Random rng = InPUTConfig.getValue(Q.RANDOM);
 		rng.setSeed(seed);
-	}
-
-	/**
-	 * In test stadium: the R environment used is a "one in a JVM thing", so
-	 * that only one SPOT at a time can be created in practice.
-	 * 
-	 * @param input
-	 * @throws InPUTException
-	 */
-	public SPOT(IInPUT input, List<IDesign> problems, boolean minProblem) throws InPUTException {
-		this(input, problems, null, null, minProblem);
 	}
 
 	private IDesign initConfig(String spotConfigPath) throws InPUTException {
@@ -111,24 +90,26 @@ public class SPOT extends SequentialTuner {
 		return spotConfig;
 	}
 
-	private InputStreamImporter getCorrectSpotSetupStream(String spotConfigPath) throws InPUTException {
-		InputStream is = getCorrectSpotSetup(spotConfigPath); 
+	private InputStreamImporter getCorrectSpotSetupStream(String spotConfigPath)
+			throws InPUTException {
+		InputStream is = getCorrectSpotSetup(spotConfigPath);
 
 		InputStreamImporter importer = new InputStreamImporter(is);
 		return importer;
 	}
 
-	private InputStream getCorrectSpotSetup(String spotConfigPath) throws InPUTException {
+	private InputStream getCorrectSpotSetup(String spotConfigPath)
+			throws InPUTException {
 		InputStream is;
-		if (spotConfigPath != null)
-		{
+		if (spotConfigPath != null) {
 			try {
 				is = new FileInputStream(spotConfigPath);
 			} catch (FileNotFoundException e) {
-				throw new InPUTException("There is no spot config file to where you point in \""+ spotConfigPath +"\".",e);
+				throw new InPUTException(
+						"There is no spot config file to where you point in \""
+								+ spotConfigPath + "\".", e);
 			}
-		}
-		else
+		} else
 			is = SPOTQ.class.getResourceAsStream(SPOTQ.SPOT_DESIGN_FILE);
 		return is;
 	}
@@ -156,17 +137,19 @@ public class SPOT extends SequentialTuner {
 	}
 
 	@Override
-	public void resetStudy(List<IDesign> problems, String studyId) throws InPUTException {
+	public void resetStudy(List<IDesign> problems, String studyId)
+			throws InPUTException {
 		super.resetStudy(problems, studyId);
 		helper.reset(studyId);
 	}
-	
 
 	/**
-	 * retrieves the folder in which the experimental data is stored. Returns null if no data is stored.
+	 * retrieves the folder in which the experimental data is stored. Returns
+	 * null if no data is stored.
+	 * 
 	 * @return
 	 */
-	public String getExperimentalFolderPath(){
+	public String getExperimentalFolderPath() {
 		return helper.getExperimentalFolderPath();
 	}
 
@@ -180,8 +163,19 @@ public class SPOT extends SequentialTuner {
 
 	@Override
 	public int getTotalAmountRunsInitialDesign() throws InPUTException {
-		int first = (Integer) config.getValue(SPOTQ.CONF_INIT_AMOUNT_INVESTIGATED_DESIGNS);
-		int second = (Integer) config.getValue(SPOTQ.CONF_INIT_REPEATS_PER_DESIGN);
+		int first = (Integer) config
+				.getValue(SPOTQ.CONF_INIT_AMOUNT_INVESTIGATED_DESIGNS);
+		int second = (Integer) config
+				.getValue(SPOTQ.CONF_INIT_REPEATS_PER_DESIGN);
 		return first * second;
+	}
+
+	@Override
+	public int emulateNextDesignAndReturnSize(){
+		try {
+			return helper.emulateNextDesign();
+		} catch (InPUTException e) {
+			throw new IllegalStateException("something went wrong with the emulation of the existing experiment. Maybe something is broken in the experimental structure.",e);
+		}
 	}
 }

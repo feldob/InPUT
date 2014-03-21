@@ -81,4 +81,8 @@ public class SPOTQ {
 	public static final String Y = "Y";
 
 	public static final String NULL = "NULL";
+
+	public static final String INPUT_FOR_INVESTIGATION = "expScope.inp";
+
+	public static final String PROBLEMS_INVESTIGATION_FOLDER = "problems";
 }

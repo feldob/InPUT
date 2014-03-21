@@ -31,11 +31,14 @@ public abstract class Tuner implements ITuner {
 
 	protected String studyId;
 
+	private final boolean minProblem;
+
 	private static IDesignSpace outputSpace;
 
-	public Tuner(IInPUT input, String studyId) throws InPUTException {
+	public Tuner(IInPUT input, String studyId, boolean minProblem) throws InPUTException {
 		this.studyId = studyId;
 		this.input = input;
+		this.minProblem = minProblem;
 		if (input.getAlgorithmDesignSpace() == null)
 			throw new InPUTException(
 					"You have to explicitly set an input context with an algorithm design space.");
@@ -54,5 +57,9 @@ public abstract class Tuner implements ITuner {
 		} catch (InPUTException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public boolean isMinProblem() {
+		return minProblem;
 	}
 }

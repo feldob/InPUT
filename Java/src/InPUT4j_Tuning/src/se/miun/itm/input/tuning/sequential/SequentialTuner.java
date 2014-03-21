@@ -19,64 +19,72 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */package se.miun.itm.input.tuning.sequential;
 
 import java.util.List;
-import java.util.Random;
 
 import se.miun.itm.input.IExperiment;
 import se.miun.itm.input.IInPUT;
-import se.miun.itm.input.InPUTConfig;
 import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.design.IDesign;
 import se.miun.itm.input.tuning.Tuner;
-import se.miun.itm.input.util.Q;
 
 // storing all experiments is too expensive! They are anyways exported each time the algorithm is getting into another round!
 public abstract class SequentialTuner extends Tuner implements ISequentialTuner {
 
 	public static final String SINGLE_OUTPUT_PARAMETER = "Y";
-	//
+
 	private IExperiment currentExperiment;
 
-	private int currentDesignPointer; // points to the position in the current design which is under investigation
+	private int currentDesignPointer; // points to the position in the current
+										// design which is under investigation
 
-	protected int currentDesignSize; // gives the total size of the current design under investigation
+	protected int currentDesignSize; // gives the total size of the current
+										// design under investigation
 
 	private List<IDesign> problems;
 
-	private final Random rng;
-	//
+	// TODO adjust for resumable investigations!
 	private int amountInvestigatedConfigurations = 0;
-
+	// TODO adjust for resumable investigations!
 	private int amountEvaluatedRuns = 0;
 
+	private int instanceCounter;
+
 	/**
-	 * A sequential tuner requires an experimental context to be set, that extends the use of an IInPUT element to a concrete problem
-	 * instance under investigation. To differentiate between different problem instances allows for a differentiated analysis of the
-	 * results with respect to problem features. However, the setting of problem is optional; a <code>problem</code> context might not even
-	 * be reasonable, desired, or available (e.g. when interested in configurations for a single possibly very special instance only). When
-	 * defined, it has to match the problem feature space provided by <code>input</code>.
+	 * A sequential tuner requires an experimental context to be set, that
+	 * extends the use of an IInPUT element to a concrete problem instance under
+	 * investigation. To differentiate between different problem instances
+	 * allows for a differentiated analysis of the results with respect to
+	 * problem features. However, the setting of problem is optional; a
+	 * <code>problem</code> context might not even be reasonable, desired, or
+	 * available (e.g. when interested in configurations for a single possibly
+	 * very special instance only). When defined, it has to match the problem
+	 * feature space provided by <code>input</code>.
 	 * 
 	 * @param input
 	 * @param studyId
 	 * @param problem
 	 * @throws InPUTException
 	 */
-	public SequentialTuner(IInPUT input, List<IDesign> problems, String studyId, boolean minProblem) throws InPUTException {
-		super(input, studyId);
+	public SequentialTuner(IInPUT input, List<IDesign> problems,
+			String studyId, boolean minProblem) throws InPUTException {
+		super(input, studyId, minProblem);
 		this.problems = problems;
-		rng = InPUTConfig.getValue(Q.RANDOM);
 		if (input.getOutputSpace() == null)
 			throw new InPUTException(
 					"You have to explicitly set an output space. The most basic one is available via the constant \"SINGLE_OBJECTIVE_SPACE\".");
 	}
 
+	// TODO this is not random at the moment! It is according to the requirement
+	// of having comparable results!
 	private IDesign randomInstance() {
 		if (problems == null)
 			return null;
-		return problems.get(rng.nextInt(problems.size()));
+		// int next = rng.nextInt(problems.size());
+		return problems.get(instanceCounter++ % problems.size());
 	}
 
 	@Override
-	public void resetStudy(List<IDesign> problems, String studyId) throws InPUTException {
+	public void resetStudy(List<IDesign> problems, String studyId)
+			throws InPUTException {
 		this.problems = problems;
 		currentDesignPointer = 0;
 		amountInvestigatedConfigurations = 0;
@@ -84,7 +92,8 @@ public abstract class SequentialTuner extends Tuner implements ISequentialTuner 
 		currentDesignSize = getTotalAmountRunsInitialDesign();
 	}
 
-	protected abstract void feedback(IExperiment experiment, IDesign newResult) throws InPUTException;
+	protected abstract void feedback(IExperiment experiment, IDesign newResult)
+			throws InPUTException;
 
 	abstract int initNextDesign() throws InPUTException;
 
@@ -99,7 +108,8 @@ public abstract class SequentialTuner extends Tuner implements ISequentialTuner 
 	public void feedback(IDesign result) throws InPUTException {
 		currentDesignPointer++;
 		amountEvaluatedRuns++;
-		// add the result as output to the current experiment and serialize to the result file!
+		// add the result as output to the current experiment and serialize to
+		// the result file!
 		feedback(currentExperiment, result);
 	}
 
@@ -108,11 +118,12 @@ public abstract class SequentialTuner extends Tuner implements ISequentialTuner 
 	 *  either get the next experiment from the current design or if the current design is done, start a new and take the first one.
 	 */
 	public IExperiment nextExperiment() throws InPUTException {
-		if (currentDesignPointer== 0 || currentDesignPointer == currentDesignSize) {
+		if (currentDesignPointer == 0
+				|| currentDesignPointer == currentDesignSize) {
 			currentDesignPointer = 0;
 			currentDesignSize = initNextDesign();
 		}
-		
+
 		IExperiment nextExperiment = nextExperiment(currentDesignPointer);
 		nextExperiment.setProblemFeatures(randomInstance());
 
@@ -120,7 +131,7 @@ public abstract class SequentialTuner extends Tuner implements ISequentialTuner 
 			currentExperiment = nextExperiment;
 			amountInvestigatedConfigurations++;
 		}
-		
+
 		return currentExperiment;
 	}
 
@@ -133,15 +144,28 @@ public abstract class SequentialTuner extends Tuner implements ISequentialTuner 
 	}
 
 	public int getCurrentDesignPointer() {
-		return currentDesignPointer > 0 ? currentDesignPointer-1 : 0;
-	}
-
-	public int getCurrentDesignSize() {
-		return currentDesignSize;
+		return currentDesignPointer > 0 ? currentDesignPointer - 1 : 0;
 	}
 
 	public int getAmountEvaluatedRuns() {
 		return amountEvaluatedRuns;
 	}
+
+	public void emulateNextExperiment(IExperiment experiment) {
+		if (currentDesignPointer == currentDesignSize - 1) {
+			currentDesignPointer = 0;
+			currentDesignSize = emulateNextDesignAndReturnSize();
+		}
+
+		if (!experiment.same(currentExperiment)) {
+			currentExperiment = experiment;
+			amountInvestigatedConfigurations++;
+		}
+
+		currentDesignPointer++;
+		amountEvaluatedRuns++;
+	}
+
+	protected abstract int emulateNextDesignAndReturnSize();
 
 }

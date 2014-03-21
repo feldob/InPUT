@@ -18,12 +18,16 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */package se.miun.itm.input.tuning.sequential.spot;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -39,6 +43,7 @@ import se.miun.itm.input.model.InPUTException;
 import se.miun.itm.input.model.design.IDesign;
 import se.miun.itm.input.tuning.converter.SpotConverter;
 import se.miun.itm.input.util.InputStreamWrapper;
+import se.miun.itm.input.util.Q;
 
 public class SpotHelper {
 
@@ -58,9 +63,9 @@ public class SpotHelper {
 	private final SpotROI inputROI;
 
 	private final SpotROI outputROI;
-
+	// TODO change the current design for resumed projects
 	private SpotDES currentDES;
-
+	// TODO change the current results for resumed projects
 	private final SpotRES currentRES;
 
 	private String[] paramIds;
@@ -75,6 +80,9 @@ public class SpotHelper {
 
 	private String studyId;
 
+	// has ever a result been registered during this run?
+	private boolean noResultsSoFar = true;
+
 	private static Rengine engine;
 
 	private static int repetitionCounter;
@@ -82,7 +90,7 @@ public class SpotHelper {
 	static {
 		String[] args = { "--vanilla" };
 		engine = new Rengine(args, true, null);
-//		engine.DEBUG = 1;
+		// engine.DEBUG = 1;
 		REXP allRight = runCommand(SPOTQ.COMMAND_LOAD_SPOT, false);
 
 		if (allRight == null)
@@ -105,20 +113,46 @@ public class SpotHelper {
 		return value;
 	}
 
-	public SpotHelper(IInPUT input, IDesign config, String studyId)
+	public SpotHelper(IInPUT input, IDesign config, String studyId,
+			boolean minProblem, List<IDesign> problems, boolean resumeExisting)
 			throws InPUTException {
-		experimentalFolder = initExperimentalFolder(studyId, config);
+		experimentalFolder = initExperimentalFolder(studyId, config, problems,
+				resumeExisting);
+
 		this.studyId = experimentalFolder.getName();
 
 		investigationId = initExperimentId(studyId, config, experimentalFolder);
 		this.config = initConfig(investigationId, config);
+
+		printInfo(config, minProblem);
+
 		this.input = input;
 		initInverseFunction();
 		checkSPOTIsInstalled();
 		inputROI = new SpotROI(input);
 		outputROI = new SpotROI(input.getOutputSpace());
 		currentRES = new SpotRES(inputROI, outputROI);
-		initExperimentalFolder();
+
+		if (resumeExisting)
+			loadSPOTWorkspace();
+		else
+			initExperimentalFolder();
+	}
+
+	private void loadSPOTWorkspace() {
+		runCommand("load(paste(getwd(), \"" + studyId
+				+ "\", \".RData\", sep = \"" + File.separator + "\"))", false);
+	}
+
+	private void printInfo(IDesign config, boolean minProblem)
+			throws InPUTException {
+		// Info to be printed so that missunderstandings are avoided.
+		System.out
+				.println("The tuning uses the fitness transformation function \""
+						+ config.getValueToString("seq.transformation.func")
+						+ "\". The problem is defined as a "
+						+ (minProblem ? "minimization" : "maximization")
+						+ " problem.");
 	}
 
 	private void initResultHeading() {
@@ -148,6 +182,7 @@ public class SpotHelper {
 			throw new InPUTException(
 					"Something went wrong, writing to the file: " + filePath);
 		}
+
 		return config;
 	}
 
@@ -179,13 +214,25 @@ public class SpotHelper {
 				false);
 	}
 
-	private static File initExperimentalFolder(String studyId, IDesign config)
+	private static File initExperimentalFolder(String studyId, IDesign config,
+			List<IDesign> problems, boolean resumeExperiment)
 			throws InPUTException {
 
 		File experimentalFolder = null;
 
 		String expFolderId = adjustExpFolderId(studyId, config);
 
+		if (!resumeExperiment) {
+			experimentalFolder = createExperimentalFolder(problems,
+					experimentalFolder, expFolderId);
+		} else
+			experimentalFolder = new File(expFolderId);
+
+		return experimentalFolder;
+	}
+
+	private static File createExperimentalFolder(List<IDesign> problems,
+			File experimentalFolder, String expFolderId) throws InPUTException {
 		if (expFolderId != null) {
 			File expFolder;
 			synchronized (globalExperimentCounter) { // make sure that the
@@ -202,7 +249,22 @@ public class SpotHelper {
 			expFolder.mkdirs();
 			experimentalFolder = expFolder;
 		}
+		addProblems(experimentalFolder, problems);
 		return experimentalFolder;
+	}
+
+	private static void addProblems(File experimentalFolder,
+			List<IDesign> problems) throws InPUTException {
+		File problemsFolder = new File(experimentalFolder + File.separator
+				+ SPOTQ.PROBLEMS_INVESTIGATION_FOLDER);
+		problemsFolder.mkdir();
+
+		XMLFileExporter exporter = new XMLFileExporter();
+		for (IDesign problem : problems) {
+			exporter.resetFileName(problemsFolder.getAbsolutePath()
+					+ File.separator + problem.getId() + Q.XML);
+			problem.export(exporter);
+		}
 	}
 
 	private static String initExperimentId(String studyId, IDesign config,
@@ -273,12 +335,12 @@ public class SpotHelper {
 
 	private void saveInPUTContext() throws InPUTException {
 		input.export(new ZipFileExporter(experimentalFolder.getPath()
-				+ File.separator + "expScope.inp"));
+				+ File.separator + SPOTQ.INPUT_FOR_INVESTIGATION));
 	}
 
 	private void saveSPOTContext() throws InPUTException {
 		config.export(new XMLFileExporter(experimentalFolder.getPath()
-				+ File.separator + "spotConfig.xml"));
+				+ File.separator + SPOTQ.SPOT_DESIGN_ID + Q.XML));
 	}
 
 	public int initInitialDesign() throws InPUTException {
@@ -342,16 +404,40 @@ public class SpotHelper {
 	}
 
 	public void feedbackSpot(IDesign result) throws InPUTException {
-		currentRES.append(result, currentDES);
+		if (noResultsSoFar) {
+			String fileId = fileId(investigationId, SPOTQ.FILE_RES_ENDING);
+			if (!new File(fileId).exists())
+				createFile(SPOTQ.FILE_RES_ENDING, currentRES, investigationId);
+			noResultsSoFar = false;
+		}
+		SpotResult spotResult = currentRES.append(result, currentDES);
 
 		if (isFileMode())
-			feedbackResultInRESFile();
+			feedbackResultInRESFile(spotResult);
 
 		saveSPOTWorkspace();
 	}
 
-	private void feedbackResultInRESFile() throws InPUTException {
-		createFile(SPOTQ.FILE_RES_ENDING, currentRES, investigationId);
+	private void feedbackResultInRESFile(SpotResult result) throws InPUTException {
+		appendToFile(SPOTQ.FILE_RES_ENDING, result, investigationId);
+	}
+
+	private static void appendToFile(String ending, SpotResult result,
+			String investigationId) throws InPUTException {
+		String fileId = fileId(investigationId, ending);
+		
+		try {
+			 PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(fileId, true)));
+			    out.print(result.toString());
+			    out.flush();
+			    out.close();
+		} catch (FileNotFoundException e) {
+			throw new InPUTException("The file " + fileId
+					+ " could not be found.", e);
+		} catch (IOException e) {
+			throw new InPUTException("The file " + fileId
+					+ " could not be written.", e);
+		}
 	}
 
 	private Boolean isFileMode() throws InPUTException {
@@ -369,7 +455,15 @@ public class SpotHelper {
 
 	public IExperiment nextExperiment(int position) throws InPUTException {
 		synchronized (converter) {
+			if (currentDES == null)
+				emulateNextDesign();
 			return converter.toExperiment(input.getId(), currentDES, position);
 		}
+	}
+
+	public int emulateNextDesign() throws InPUTException {
+		retrieveNextDesign();
+		currentDES = initializeDesign();
+		return currentDES.size();
 	}
 }

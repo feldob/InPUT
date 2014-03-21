@@ -28,7 +28,7 @@ import se.miun.itm.input.model.design.IDesign;
 
 public class SpotRES implements SpotExportable<InputStream> {
 
-	private final List<SpotResult> results = new ArrayList<SpotResult>();
+	private final List<SpotResult> currentResults = new ArrayList<SpotResult>();
 
 	private SpotROI input;
 
@@ -64,22 +64,19 @@ public class SpotRES implements SpotExportable<InputStream> {
 		entries.add(SPOTQ.ATTR_ITERATION);
 	}
 
-	private void append(IDesign output, SpotDES currentDES, List<SpotResult> to) throws InPUTException {
+	public SpotResult append(IDesign output, SpotDES currentDES) throws InPUTException {
 		if (this.currentDES == null || !currentDES.equals(this.currentDES)){
-			to.clear();
+			currentResults.clear();
 			this.currentDES = currentDES;
 		}
-			
-		SpotDesign design = currentDES.getDesign(to.size());
+		
+		SpotDesign design = currentDES.getDesign(currentResults.size());
 		SpotResult result = new SpotResult(output, header, design);
 		allResults.add(result);
-		to.add(result);
+		currentResults.add(result);
+		return result;
 	}
-
-	public void append(IDesign result, SpotDES currentDES) throws InPUTException {
-		append(result, currentDES, results);
-	}
-
+	
 	public String toSpot(List<SpotResult> results) {
 		StringBuilder spotb = new StringBuilder();
 		String spotHeader = headerToSpot();
@@ -118,6 +115,10 @@ public class SpotRES implements SpotExportable<InputStream> {
 	}
 
 	public String currentResultstoString() {
-		return toSpot(results);
+		return toSpot(currentResults);
+	}
+
+	public int size() {
+		return currentResults.size();
 	}
 }
