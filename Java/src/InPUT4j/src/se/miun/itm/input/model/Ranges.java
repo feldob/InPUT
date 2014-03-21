@@ -494,6 +494,7 @@ public class Ranges {
 		checkArrayEntriesRespectRange(newValue, elementCache);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void checkArrayEntriesRespectRange(Object newValue, ElementCache cache)
 			throws InPUTException {
 		if (!newValue.getClass().isArray())
