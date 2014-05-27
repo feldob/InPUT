@@ -55,7 +55,7 @@ public class ResultExample {
 				System.out.println(results[i][j]);
 			}
 		}
-
+		//FICTIVE ERROR HERE!!!
 		IDesignSpace resultSpace = new DesignSpace("resultSpace.xml");
 		IDesign resultDesign = resultSpace.nextEmptyDesign("someResult");
 		resultDesign.setValue("y", results);
