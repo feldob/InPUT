@@ -114,7 +114,7 @@ public abstract class ExperimentConductor<T> {
 	}
 
 	/**
-	 * A simple handle to export or write-back an experiment (with or without output) to the filePath.
+	 * A simple handle to export or write-back an experiment (with or without output) to the <code>filePath</code>.
 	 * @param filePath
 	 * @param experiment
 	 * @throws InPUTException
