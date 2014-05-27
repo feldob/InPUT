@@ -32,7 +32,7 @@ import se.miun.itm.input.model.InPUTException;
 /**
  * The performance analyzer using properties files. It requires the parsing of
  * the array entries and task property, so it requires problem specific code.
- * There is further no value validity ensurance. Explicit conversion is
+ * There is further no value validity insurance. Explicit conversion is
  * required. The introduction of new task alternatives to SomeJob requires a
  * recompile. In principle, the same challenges have to be faced when using the
  * command line to read parameters. Sub parameters have to be entirely unfolded and
