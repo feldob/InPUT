@@ -21,8 +21,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package se.miun.itm.input.example.random;
 
 import se.miun.itm.input.model.InPUTException;
+
 import se.miun.itm.input.model.design.DesignSpace;
 import se.miun.itm.input.model.design.IDesignSpace;
+
+/** This example shows how random values with range constraints can be created **/
 
 public class RandomValueCreation {
 
