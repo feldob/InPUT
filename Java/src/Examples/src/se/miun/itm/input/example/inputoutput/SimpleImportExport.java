@@ -27,7 +27,7 @@ import se.miun.itm.input.model.design.IDesignSpace;
 
 /**
  * The example imports a design space from an xml file, creates a random 
- * instance of that space, and exports it to both, xml, and LaTeX.
+ * instance of that space, and exports it to both xml and LaTeX.
  * @author Felix Dobslaw
  *
  */
