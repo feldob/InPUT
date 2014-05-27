@@ -239,7 +239,7 @@ public abstract class MyAbstractEvolutionEngine<T> implements
 	 * <p>
 	 * Returns a list of all {@link TerminationCondition}s that are satisfied by
 	 * the current state of the evolution engine. Usually this list will contain
-	 * only one item, but it is possible that mutliple termination conditions
+	 * only one item, but it is possible that multiple termination conditions
 	 * will become satisfied at the same time. In this case the condition
 	 * objects in the list will be in the same order that they were specified
 	 * when passed to the engine.
