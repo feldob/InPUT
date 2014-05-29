@@ -107,7 +107,7 @@ public class AbstractPerformanceAnalyzer {
 	}
 
 	/**
-	 * calculate sample mean and standard deviation for each thread pool size
+	 * Calculate sample mean and standard deviation for each thread pool size
 	 * and print it to the standard output.
 	 * 
 	 * @param runtime

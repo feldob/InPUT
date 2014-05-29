@@ -53,7 +53,7 @@ public class ByteArrayExporter implements InPUTExporter<ByteArrayOutputStream> {
 			outputter.output(xml, out);
 		} catch (IOException e) {
 			throw new InPUTException(
-					"The xml could not be exported succesfully. The output stream could not be closed.",
+					"The xml could not be exported successfully. The output stream could not be closed.",
 					e);
 		}
 		return out;
