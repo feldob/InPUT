@@ -27,22 +27,20 @@ public interface IValueGenerator {
 
 	Object parse(String valueString) throws InPUTException;
 
-	Object next(int[] dimensions, Map<String, Object> vars)
-			throws InPUTException;
+	Object next(int[] dimensions, Map<String, Object> vars) throws InPUTException;
 
 	Object next(Map<String, Object> vars) throws InPUTException;
 
 	Object invokeGetter(Object value) throws InPUTException;
 
-	void invokeSetter(Object parentValue, Object value)
-			throws InPUTException;
+	void invokeSetter(Object parentValue, Object value) throws InPUTException;
 
 	Boolean hasGetHandle();
 
 	Boolean hasSetHandle();
 
 	void validateInPUT(String paramId, Object value, ElementCache elementCache) throws InPUTException;
-	
-	boolean initByConstructor(String paramId);
-	
+
+	boolean initByConstructor(String paramId) throws InPUTException;
+
 }

@@ -19,7 +19,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */package se.miun.itm.input.model.param;
 
 import java.lang.reflect.Array;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -51,8 +50,7 @@ import se.miun.itm.input.util.Q;
  * 
  * @NotThreadSafe
  */
-public abstract class Param<AGenerator extends IValueGenerator> extends
-		InPUTElement {
+public abstract class Param<AGenerator extends IValueGenerator> extends InPUTElement {
 
 	private static final long serialVersionUID = -8571051627245903785L;
 
@@ -70,26 +68,26 @@ public abstract class Param<AGenerator extends IValueGenerator> extends
 
 	protected AGenerator generator;
 
-	public Param(Element original, String designId, ParamStore ps)
-			throws InPUTException {
+	public Param(Element original, String designId, ParamStore ps) throws InPUTException {
 		super(original);
-//		checkParameterIdValidity(original);
+		// checkParameterIdValidity(original);
 		this.ps = ps;
 		dimensions = DimensionHelper.derive(original);
 		initFromOriginal(original);
 		generator = initGenerator(false);
 	}
-//
-//	private void checkParameterIdValidity(Element original) {
-//		if (this instanceof SChoice)
-//				return;
-//
-//		String id = original.getAttributeValue(Q.ID_ATTR);
-//		if (id.contains("."))
-//			throw new IllegalArgumentException(
-//					"Illegal parameter identifier: '" + id
-//							+ "'. A parameter id may not contain dots.");
-//	}
+
+	//
+	// private void checkParameterIdValidity(Element original) {
+	// if (this instanceof SChoice)
+	// return;
+	//
+	// String id = original.getAttributeValue(Q.ID_ATTR);
+	// if (id.contains("."))
+	// throw new IllegalArgumentException(
+	// "Illegal parameter identifier: '" + id
+	// + "'. A parameter id may not contain dots.");
+	// }
 
 	public int[] getDimensions() {
 		return dimensions;
@@ -120,22 +118,18 @@ public abstract class Param<AGenerator extends IValueGenerator> extends
 		parent.addContent(this);
 	}
 
-	public void init(Value<?> valueElement, Object[] actualParams,
-			ElementCache elementCache) throws InPUTException {
+	public void init(Value<?> valueElement, Object[] actualParams, ElementCache elementCache) throws InPUTException {
 		if (isPlainValueElement(valueElement))
 			initValue(valueElement, actualParams, elementCache);
 		else if (valueElement.getParam().isArrayType())
 			initArray(valueElement, actualParams);
 	}
 
-	protected abstract boolean isPlainValueElement(Value<?> valueElement)
-			throws InPUTException;
+	protected abstract boolean isPlainValueElement(Value<?> valueElement) throws InPUTException;
 
-	public abstract void initValue(Value<?> value, Object[] actualParams,
-			ElementCache elementCache) throws InPUTException;
+	public abstract void initValue(Value<?> value, Object[] actualParams, ElementCache elementCache) throws InPUTException;
 
-	protected static void initArray(Value<?> element, Object[] actualParams)
-			throws InPUTException {
+	protected static void initArray(Value<?> element, Object[] actualParams) throws InPUTException {
 		// make the return value an array of appropriate size
 		List<Element> children = element.getChildren();
 
@@ -172,26 +166,32 @@ public abstract class Param<AGenerator extends IValueGenerator> extends
 	}
 
 	public void addMaxDependency(Param<?> param) throws InPUTException {
-//		checkCircularDependency(param);
+		// checkCircularDependency(param);
 		maxDependencies.add(param);
 		dependencies.add(param);
 	}
 
 	public void addMinDependency(Param<?> param) throws InPUTException {
-//		checkCircularDependency(param);
+		// checkCircularDependency(param);
 		minDependencies.add(param);
 		dependencies.add(param);
 	}
-//	
-//	private void checkCircularDependency(Param<?> param) throws InPUTException {
-//		if (dependees.contains(param))
-//			throw new InPUTException("There is a circular dependency between parameter '" + getId() + "' and '"+ param.getId()+ "'. It has to be resolved.");
-//	}
+
+	//
+	// private void checkCircularDependency(Param<?> param) throws
+	// InPUTException {
+	// if (dependees.contains(param))
+	// throw new
+	// InPUTException("There is a circular dependency between parameter '" +
+	// getId() + "' and '"+ param.getId()+ "'. It has to be resolved.");
+	// }
 
 	public void addDependee(Param<?> param) throws InPUTException {
-//		if (dependencies.contains(param))
-//			throw new InPUTException("There is a circular dependency between parameter '" + getId() + "' and '"+ param.getId()+ "'. It has to be resolved.");
-			
+		// if (dependencies.contains(param))
+		// throw new
+		// InPUTException("There is a circular dependency between parameter '" +
+		// getId() + "' and '"+ param.getId()+ "'. It has to be resolved.");
+
 		dependees.add(param);
 	}
 
@@ -259,105 +259,83 @@ public abstract class Param<AGenerator extends IValueGenerator> extends
 	protected abstract Class<?> getInPUTClass() throws InPUTException;
 
 	public static boolean isArrayType(int[] dimensions) {
-		return dimensions != null && dimensions.length > 0
-				&& (dimensions[0] != 0);
+		return dimensions != null && dimensions.length > 0 && (dimensions[0] != 0);
 	}
 
 	public boolean isArrayType() {
 		return isArrayType(dimensions);
 	}
 
-	public void validateInPUT(String paramId, Object value,
-			ElementCache elementCache) throws InPUTException {
+	public void validateInPUT(String paramId, Object value, ElementCache elementCache) throws InPUTException {
 		if (!isOptional()) {
 			if (value == null)
-				throw new InPUTException(getId()
-						+ ": Null value setting is not supported.");
+				throw new InPUTException(getId() + ": Null value setting is not supported.");
 			generator.validateInPUT(paramId, value, elementCache);
 		}
 	}
 
-	protected abstract AGenerator initGenerator(boolean initRanges)
-			throws InPUTException;
+	protected abstract AGenerator initGenerator(boolean initRanges) throws InPUTException;
 
-	public void invokeSetter(Object parentValue, Object value)
-			throws InPUTException {
+	public void invokeSetter(Object parentValue, Object value) throws InPUTException {
 		generator.invokeSetter(parentValue, value);
 	}
 
-	public Object next(int[] dimensions, Map<String, Object> vars)
-			throws InPUTException {
+	public Object next(int[] dimensions, Map<String, Object> vars) throws InPUTException {
 		return generator.next(dimensions, vars);
 	}
 
 	// TODO move stuff to the generator!
-	public Object next(int[] sizeArray, Map<String, Object> vars,
-			Object[] actualParams) throws InPUTException {
+	public Object next(int[] sizeArray, Map<String, Object> vars, Object[] actualParams) throws InPUTException {
 		Object value = nextNext(sizeArray, vars, actualParams);
-		return ParamUtil.packArrayForExport(getInPUTClass(), value,
-				sizeArray.length);
+		return ParamUtil.packArrayForExport(getInPUTClass(), value, sizeArray.length);
 	}
 
-	private Object nextNext(int[] sizeArray, Map<String, Object> vars,
-			Object[] actualParams) throws InPUTException {
+	private Object nextNext(int[] sizeArray, Map<String, Object> vars, Object[] actualParams) throws InPUTException {
 		Object value;
 		if (ParamUtil.isDimensionalArray(sizeArray)) {
 			value = nextArray(this, sizeArray, vars, actualParams);
 		} else {
-			value = nextElement(getId(), DimensionHelper.DEFAULT_DIM, vars,
-					actualParams).getInputValue(actualParams);
+			value = nextElement(getId(), DimensionHelper.DEFAULT_DIM, vars, actualParams).getInputValue(actualParams);
 		}
 		return value;
 	}
 
-	public Value<? extends Param<?>> nextElement(String paramId,
-			int[] sizeArray, Map<String, Object> vars, Object[] actualParents)
-			throws InPUTException {
-		return ValueFactory.constructRandomElement(ps.getParam(paramId),
-				sizeArray, vars, actualParents, null);
+	public Value<? extends Param<?>> nextElement(String paramId, int[] sizeArray, Map<String, Object> vars, Object[] actualParents) throws InPUTException {
+		return ValueFactory.constructRandomElement(ps.getParam(paramId), sizeArray, vars, actualParents, null);
 	}
 
-	protected Object nextArray(Param<?> param, int[] dimensions,
-			Map<String, Object> vars, Object[] actualParams)
-			throws InPUTException {
+	protected Object nextArray(Param<?> param, int[] dimensions, Map<String, Object> vars, Object[] actualParams) throws InPUTException {
 		if (dimensions[0] < 0)
 			dimensions[0] = 1;
 
 		Object[] array = new Object[dimensions[0]];
 
 		for (int i = 0; i < array.length; i++)
-			array[i] = nextNext(
-					Arrays.copyOfRange(dimensions, 1, dimensions.length), vars,
-					actualParams);
+			array[i] = nextNext(Arrays.copyOfRange(dimensions, 1, dimensions.length), vars, actualParams);
 		return array;
 	}
 
-	public void injectOnParent(Value<?> childElement, Object parentValue)
-			throws InPUTException {
+	public void injectOnParent(Value<?> childElement, Object parentValue) throws InPUTException {
 		Object value = childElement.getInputValue(null);
 		invokeSetter(parentValue, value);
 	}
 
-	public abstract Object getValueForString(String stringValue)
-			throws InPUTException;
+	public abstract Object getValueForString(String stringValue) throws InPUTException;
 
-	public abstract void checkIfParameterSettable(String paramId)
-			throws InPUTException;
+	public abstract void checkIfParameterSettable(String paramId) throws InPUTException;
 
-	public Object packArrayForExport(Value<?> element, Object value)
-			throws InPUTException {
-		return ParamUtil.packArrayForExport(getInPUTClass(), value,
-				element.getDimensions());
+	public Object packArrayForExport(Value<?> element, Object value) throws InPUTException {
+		return ParamUtil.packArrayForExport(getInPUTClass(), value, element.getDimensions());
 	}
 
 	public Object invokeGetter(Object thisNewValue) throws InPUTException {
 		return generator.invokeGetter(thisNewValue);
 	}
 
-	public boolean initByConstructor(String paramId) {
+	public boolean initByConstructor(String paramId) throws InPUTException {
 		return generator.initByConstructor(paramId);
 	}
-	
+
 	public boolean isOptional() {
 		Attribute optionalAttribute = getAttribute(Q.OPTIONAL);
 		return optionalAttribute == null ? false : Boolean.parseBoolean(optionalAttribute.getValue());

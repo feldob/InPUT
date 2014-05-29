@@ -40,11 +40,10 @@ import se.miun.itm.input.model.param.SParam;
 /**
  * 
  * @author Felix Dobslaw
- *
+ * 
  * @NotThreadSafe
  */
-public abstract class StructuralGenerator extends
-		ValueGenerator<StructuralMapping, AStruct> {
+public abstract class StructuralGenerator extends ValueGenerator<StructuralMapping, AStruct> {
 
 	// @lazy
 	private InPUTConstructor inputConstructor;
@@ -66,8 +65,7 @@ public abstract class StructuralGenerator extends
 	 * @throws InPUTException
 	 */
 	protected void initInPUTConstructor() throws InPUTException {
-		inputConstructor = new InPUTConstructor(param, getMapping()
-				.getComponentType(), getMapping().getConstructorSignature());
+		inputConstructor = new InPUTConstructor(param, getMapping().getComponentType(), getMapping().getConstructorSignature());
 	}
 
 	public boolean isInitByConstructor(String localId) throws InPUTException {
@@ -87,19 +85,15 @@ public abstract class StructuralGenerator extends
 	}
 
 	@SuppressWarnings("unchecked")
-	public Object initComplex(Value<?> valueElement, Object[] actualParams)
-			throws InPUTException {
+	public Object initComplex(Value<?> valueElement, Object[] actualParams) throws InPUTException {
 		Complex complex = getMapping().getComplex();
 		Object complexValue = complex.newInstance();
-		List<SValue> children = (List<SValue>) (List<?>) valueElement
-				.getChildren();
+		List<SValue> children = (List<SValue>) (List<?>) valueElement.getChildren();
 		for (SValue sValue : children) {
 			complex.invokeAdd(complexValue, sValue.getInputValue(actualParams));
 		}
 		return complexValue;
 	}
-
-
 
 	public String getComponentType() throws InPUTException {
 		return getMapping().getComponentType();
@@ -121,15 +115,10 @@ public abstract class StructuralGenerator extends
 				try {
 					isEnum = Class.forName(getComponentType()).isEnum();
 				} catch (ClassNotFoundException e) {
-					throw new InPUTException(param.getId()
-							+ ": There is no such class '" + getComponentType()
-							+ "'.", e);
+					throw new InPUTException(param.getId() + ": There is no such class '" + getComponentType() + "'.", e);
 				} catch (ClassCastException e) {
-					throw new InPUTException(
-							"error for design space '"
-									+ param.getSpaceId()
-									+ "': You have not specified a code mapping for the component of id '"
-									+ param.getId() + "'.", e);
+					throw new InPUTException("error for design space '" + param.getSpaceId()
+							+ "': You have not specified a code mapping for the component of id '" + param.getId() + "'.", e);
 				}
 			} else
 				isEnum = Boolean.FALSE;
@@ -142,8 +131,7 @@ public abstract class StructuralGenerator extends
 		return isEnum;
 	}
 
-	public Object handleComplex(Map<String, Object> vars,
-			Object[] actualParams, Object[] array) throws InPUTException {
+	public Object handleComplex(Map<String, Object> vars, Object[] actualParams, Object[] array) throws InPUTException {
 		Object value;
 		if (isComplex())
 			value = makeComplex(array, vars, actualParams);
@@ -152,8 +140,7 @@ public abstract class StructuralGenerator extends
 		return value;
 	}
 
-	protected Object makeComplex(Object[] array, Map<String, Object> vars,
-			Object[] actualParams) throws InPUTException {
+	protected Object makeComplex(Object[] array, Map<String, Object> vars, Object[] actualParams) throws InPUTException {
 		// 1) reflect the right object from the param.
 		Complex mapping = getComplex();
 		Object complex = mapping.newInstance();
@@ -168,25 +155,20 @@ public abstract class StructuralGenerator extends
 		return mapping != null;
 	}
 
-	@SuppressWarnings({"rawtypes", "unchecked"})
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Enum<?> getEnumValue() throws InPUTException {
 		if (isEnum())
 			if (enumValue == null)
-				enumValue = Enum.valueOf(
-						(Class<? extends Enum>) getSuperClass(),
-						getComponentType());
+				enumValue = Enum.valueOf((Class<? extends Enum>) getSuperClass(), getComponentType());
 		return enumValue;
 	}
 
 	protected StructuralMapping getMapping() throws InPUTException {
 		if (mapping == null)
-			throw new InPUTException("design space \"" + param.getSpaceId()
-					+ "\": No mapping can be found for parameter \""
-					+ param.getId() + "\".");
+			throw new InPUTException("design space \"" + param.getSpaceId() + "\": No mapping can be found for parameter \"" + param.getId() + "\".");
 		if (!StructuralMapping.class.isInstance(mapping)) {
-			throw new InPUTException("design space \"" + param.getSpaceId()
-					+ "\": Your mapping for parameter \""
-					+ param.getId() + "\" is incorrect. Have you set the 'type' attribute in the mapping element?");
+			throw new InPUTException("design space \"" + param.getSpaceId() + "\": Your mapping for parameter \"" + param.getId()
+					+ "\" is incorrect. Have you set the 'type' attribute in the mapping element?");
 		}
 		return mapping;
 	}
@@ -195,18 +177,12 @@ public abstract class StructuralGenerator extends
 	protected Method initSetMethod(Object parentValue) throws InPUTException {
 		Method handle;
 		try {
-			handle = parentValue.getClass().getMethod(getSetter(),
-					getSuperClass());
+			handle = parentValue.getClass().getMethod(getSetter(), getSuperClass());
 		} catch (NoSuchMethodException e) {
-			throw new InPUTException(param.getId()
-					+ ": There is no such setter method by name '"
-					+ getSetter() + "' and type '" + getSuperClass()
+			throw new InPUTException(param.getId() + ": There is no such setter method by name '" + getSetter() + "' and type '" + getSuperClass()
 					+ "'. Look over your code mapping file.", e);
 		} catch (SecurityException e) {
-			throw new InPUTException(
-					param.getId()
-							+ ": You do not have the right to call the setter method by name '"
-							+ getSetter() + "'.", e);
+			throw new InPUTException(param.getId() + ": You do not have the right to call the setter method by name '" + getSetter() + "'.", e);
 		}
 		return handle;
 	}
@@ -215,18 +191,11 @@ public abstract class StructuralGenerator extends
 	protected Method initGetMethod(Object parentValue) throws InPUTException {
 		Method handle;
 		try {
-			handle = parentValue.getClass().getMethod(getGetter(),
-					ValueGenerator.EMPTY_CLASS_ARRAY);
+			handle = parentValue.getClass().getMethod(getGetter(), ValueGenerator.EMPTY_CLASS_ARRAY);
 		} catch (NoSuchMethodException e) {
-			throw new InPUTException(
-					param.getId()
-							+ ": There is no such getter method. Look over your code mapping file.",
-					e);
+			throw new InPUTException(param.getId() + ": There is no such getter method. Look over your code mapping file.", e);
 		} catch (SecurityException e) {
-			throw new InPUTException(
-					param.getId()
-							+ ": You do not have the right to call getter method by name '"
-							+ getGetter() + "'.", e);
+			throw new InPUTException(param.getId() + ": You do not have the right to call getter method by name '" + getGetter() + "'.", e);
 		}
 		return handle;
 	}
@@ -246,10 +215,8 @@ public abstract class StructuralGenerator extends
 			}
 			return Class.forName(mappingId);
 		} catch (ClassNotFoundException e) {
-			throw new InPUTException(param.getSpaceId()
-					+ ": There is no such class '" + getComponentType()
-					+ "' that has been defined for structural parameter '"
-					+ param.getId() + "'.", e);
+			throw new InPUTException(param.getSpaceId() + ": There is no such class '" + getComponentType()
+					+ "' that has been defined for structural parameter '" + param.getId() + "'.", e);
 		}
 	}
 
@@ -265,9 +232,7 @@ public abstract class StructuralGenerator extends
 		Class<?> cLass = getSuperClass();
 		// param.isArrayType() && cLass.isAssignableFrom(value.getClass())
 		if ((param.isArrayType() && !value.getClass().isArray()) || (!param.isArrayType() && !cLass.isInstance(value)))
-			throw new InPUTException("The object \"" + value
-					+ "\" is of the wrong type. \""
-					+ cLass.getName() + "\" was expected, but was \""
+			throw new InPUTException("The object \"" + value + "\" is of the wrong type. \"" + cLass.getName() + "\" was expected, but was \""
 					+ value.getClass().getName() + "\".");
 	}
 
@@ -277,7 +242,9 @@ public abstract class StructuralGenerator extends
 	}
 
 	@Override
-	public boolean initByConstructor(String paramId) {
+	public boolean initByConstructor(String paramId) throws InPUTException {
+		if (mapping == null)
+			throw new InPUTException("The parameter '" + paramId + "' or one of it's parent parameters has no declared code mapping.");
 		return mapping.containsInConstructorSignature(paramId);
 	}
 
