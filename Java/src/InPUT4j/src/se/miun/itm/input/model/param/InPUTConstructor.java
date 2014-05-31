@@ -18,7 +18,6 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */package se.miun.itm.input.model.param;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -440,17 +439,6 @@ public class InPUTConstructor {
 		if (otherParam == null)
 			otherParam = ps.getParamForAnyStore(paramId);
 		return otherParam;
-	}
-
-
-	private int getDepth(Object[] obj) {
-		int depth = 0;
-		Object o = obj;
-		while (o.getClass().isArray()) {
-			depth++;
-			o = Array.get(o, 0);
-		}
-		return depth;
 	}
 
 	private String getClassesForArguments(Object[] actualParams) {
