@@ -51,8 +51,7 @@ public abstract class AStruct extends Param<StructuralGenerator> {
 
 	private final Map<String, Param<?>> inputChildrenMap = new HashMap<String, Param<?>>();
 
-	public AStruct(Element original, String designId, ParamStore ps)
-			throws InPUTException {
+	public AStruct(Element original, String designId, ParamStore ps) throws InPUTException {
 		super(original, designId, ps);
 		initParamChildren();
 	}
@@ -60,8 +59,7 @@ public abstract class AStruct extends Param<StructuralGenerator> {
 	private void initParamChildren() {
 		Param<?> elem;
 		for (Object childElement : getChildren())
-			if (childElement instanceof NParam
-					|| childElement instanceof SParam) {
+			if (childElement instanceof NParam || childElement instanceof SParam) {
 				elem = (Param<?>) childElement;
 				inputChildrenList.add(elem);
 				inputChildrenMap.put(elem.getLocalId(), elem);
@@ -95,8 +93,7 @@ public abstract class AStruct extends Param<StructuralGenerator> {
 		String localChoiceId = value.getAttributeValue(Q.VALUE_ATTR);
 		AStruct choice = getChoiceById(localChoiceId);
 		if (choice == null) {
-			throw new InPUTException(value.getId() + ": There is no choice element '" + localChoiceId + "' for parameter '" + getId()
-					+ "'.");
+			throw new InPUTException(value.getId() + ": There is no choice element '" + localChoiceId + "' for parameter '" + getId() + "'.");
 		}
 
 		// making available possible customizable input
@@ -126,10 +123,8 @@ public abstract class AStruct extends Param<StructuralGenerator> {
 			sValue.setPlainInputValue(choice.newInstance(actualParams));
 	}
 
-	//TODO extract an enhancer class
-	public Object[] enhanceActualParams(Object[] actualParams,
-			List<Value<?>> subParamValueElements,
-			ElementCache elementCache) throws InPUTException {
+	// TODO extract an enhancer class
+	public Object[] enhanceActualParams(Object[] actualParams, List<Value<?>> subParamValueElements, ElementCache elementCache) throws InPUTException {
 		InPUTConstructor inputConstructor = generator.getInPUTConstructor();
 
 		String[] formalParamIds = inputConstructor.getFormalParamIds();
@@ -140,13 +135,10 @@ public abstract class AStruct extends Param<StructuralGenerator> {
 			}
 		} else if (isParameterizable(actualParams, formalParamIds)) {
 			if (actualParams != null && formalParamIds.length > 0)
-				actualParams = Arrays.copyOfRange(actualParams, 0,
-						formalParamIds.length);
+				actualParams = Arrays.copyOfRange(actualParams, 0, formalParamIds.length);
 			Object[] newParams = new Object[formalParamIds.length];
 			for (int i = 0; i < formalParamIds.length; i++)
-				newParams[i] = enhanceActualParam(actualParams,
-						subParamValueElements, elementCache, inputConstructor,
-						formalParamIds[i], i);
+				newParams[i] = enhanceActualParam(actualParams, subParamValueElements, elementCache, inputConstructor, formalParamIds[i], i);
 			actualParams = newParams;
 		}
 		return actualParams;
@@ -156,29 +148,23 @@ public abstract class AStruct extends Param<StructuralGenerator> {
 
 	public abstract boolean isStringType();
 
-	private boolean isParameterizable(Object[] actualParams,
-			String[] formalParamIds) {
+	private boolean isParameterizable(Object[] actualParams, String[] formalParamIds) {
 		return actualParams != null || formalParamIds.length > 0;
 	}
 
-	private Object enhanceActualParam(Object[] actualParams,
-			List<Value<? extends Param<?>>> subParamValueElements,
-			ElementCache elementCache, InPUTConstructor inputConstructor,
-			String paramId, int index) throws InPUTException {
+	private Object enhanceActualParam(Object[] actualParams, List<Value<? extends Param<?>>> subParamValueElements, ElementCache elementCache,
+			InPUTConstructor inputConstructor, String paramId, int index) throws InPUTException {
 		Object enhancedValue = null;
 		try {
 			if (parameterIsDefined(actualParams, index))
 				enhancedValue = actualParams[index];
 			else {
 				if (inputConstructor.isLocalInitByConstructor(paramId))
-					enhancedValue = getValueForLocalId(subParamValueElements,
-							paramId);
+					enhancedValue = getValueForLocalId(subParamValueElements, paramId);
 				else if (inputConstructor.isGlobalIdUsedInConstructor(paramId))
-					enhancedValue = getValueForGlobalParamId(
-							subParamValueElements, paramId, elementCache);
+					enhancedValue = getValueForGlobalParamId(subParamValueElements, paramId, elementCache);
 				else if (elementCache != null)
-					enhancedValue = getValueForContext(actualParams,
-							elementCache, index, paramId);
+					enhancedValue = getValueForContext(actualParams, elementCache, index, paramId);
 			}
 		} catch (Exception e) {
 			throw new InPUTException(
@@ -197,26 +183,22 @@ public abstract class AStruct extends Param<StructuralGenerator> {
 		return actualParams != null && actualParams[index] != Q.BLANK;
 	}
 
-	private Object getValueForContext(Object[] actualParams,
-			ElementCache elementCache, int i, String paramId)
-			throws InPUTException {
+	private Object getValueForContext(Object[] actualParams, ElementCache elementCache, int i, String paramId) throws InPUTException {
 		Value<?> elem = elementCache.get(paramId);
 		Object result;
 		if (elem != null)
 			result = elem.getInputValue(actualParams);
 		else {
 			if (ParamUtil.isMethodContext(paramId))
-				result = ParamUtil.getMethodContextValue(paramId, getId(),
-						getParamId(), ps, elementCache);
+				result = ParamUtil.getMethodContextValue(paramId, getId(), getParamId(), ps, elementCache);
 			else
 				result = actualParams[i];
 		}
 		return result;
 	}
 
-	private Object getValueForGlobalParamId(
-			List<Value<? extends Param<?>>> subParamValueElements, String paramId,
-			ElementCache elementCache) throws InPUTException {
+	private Object getValueForGlobalParamId(List<Value<? extends Param<?>>> subParamValueElements, String paramId, ElementCache elementCache)
+			throws InPUTException {
 		Value<? extends Param<?>> valueE = elementCache.get(paramId);
 		if (valueE != null) {
 			Object value = valueE.getInputValue(null);
@@ -224,15 +206,11 @@ public abstract class AStruct extends Param<StructuralGenerator> {
 			value = processForExport(param, value);
 			return value;
 		}
-		throw new InPUTException("The formal parameter '" + getParamId()
-				+ "' that has been defined for choice '" + getLocalId()
-				+ "' of parameter '" + getParamId()
-				+ "' cannot be found to be of global type.");
+		throw new InPUTException("The formal parameter '" + getParamId() + "' that has been defined for choice '" + getLocalId() + "' of parameter '"
+				+ getParamId() + "' cannot be found to be of global type.");
 	}
 
-	private Object getValueForLocalId(
-			List<Value<? extends Param<?>>> potentialActualParamsE, String localId)
-			throws InPUTException {
+	private Object getValueForLocalId(List<Value<? extends Param<?>>> potentialActualParamsE, String localId) throws InPUTException {
 		Param<?> param;
 		for (Value<? extends Param<?>> valueE : potentialActualParamsE) {
 			param = valueE.getParam();
@@ -242,21 +220,13 @@ public abstract class AStruct extends Param<StructuralGenerator> {
 				return result;
 			}
 		}
-		throw new InPUTException(
-				"The formal parameter '"
-						+ localId
-						+ "' that has been defined for choice '"
-						+ getLocalId()
-						+ "' of parameter '"
-						+ getParamId()
-						+ "' cannot be found to be among the children. Is the value really set in the descriptor?");
+		throw new InPUTException("The formal parameter '" + localId + "' that has been defined for choice '" + getLocalId() + "' of parameter '" + getParamId()
+				+ "' cannot be found to be among the children. Is the value really set in the descriptor?");
 	}
 
-	private Object processForExport(Param<?> param, Object value)
-			throws InPUTException {
+	private Object processForExport(Param<?> param, Object value) throws InPUTException {
 		if (param.isArrayType())
-			value = ParamUtil.packArrayForExport(param.getInPUTClass(), value,
-					param.getDimensions().length);
+			value = ParamUtil.packArrayForExport(param.getInPUTClass(), value, param.getDimensions().length);
 		return value;
 	}
 
@@ -270,16 +240,12 @@ public abstract class AStruct extends Param<StructuralGenerator> {
 	}
 
 	@Override
-	protected Object nextArray(Param<?> param, int[] dimensions,
-			Map<String, Object> vars, Object[] actualParams)
-			throws InPUTException {
-		Object[] array = (Object[]) super.nextArray(param, dimensions, vars,
-				actualParams);
+	protected Object nextArray(Param<?> param, int[] dimensions, Map<String, Object> vars, Object[] actualParams) throws InPUTException {
+		Object[] array = (Object[]) super.nextArray(param, dimensions, vars, actualParams);
 		return generator.handleComplex(vars, actualParams, array);
 	}
 
-	public Object initComplex(Value<?> valueElement, Object[] actualParams)
-			throws InPUTException {
+	public Object initComplex(Value<?> valueElement, Object[] actualParams) throws InPUTException {
 		return generator.initComplex(valueElement, actualParams);
 	}
 
@@ -304,18 +270,18 @@ public abstract class AStruct extends Param<StructuralGenerator> {
 			throw new InPUTException(
 					"The parameter you try to set cannot be set that way, as it is instantiated via constructor of its parent parameter. You will have to reset the parent parameter in order to change it.");
 	}
-	
+
 	@Override
 	protected boolean isPlainValueElement(Value<?> valueElement) throws InPUTException {
 		return valueElement.isPlainType();
-		}
+	}
 
 	public String getComponentType() throws InPUTException {
 		return generator.getComponentType();
 	}
 
 	public abstract String getValueForIndex(int index) throws InPUTException;
-	
+
 	@Override
 	public String getValueTypeString() {
 		return Q.SVALUE;
