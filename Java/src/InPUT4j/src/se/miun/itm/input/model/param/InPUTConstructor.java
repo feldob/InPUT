@@ -35,9 +35,10 @@ import se.miun.itm.input.model.param.generator.ValueGenerator;
 import se.miun.itm.input.util.ParamUtil;
 
 /**
- * An internal representation of a constructor, which is a wrapper of the reflect.constructor class, including the information from the
- * InPUT mapping descriptors. It keeps track of its dependencies, and how to get hold of the values that it requires for correct
- * instantiation.
+ * An internal representation of a constructor, which is a wrapper of the
+ * reflect.constructor class, including the information from the InPUT mapping
+ * descriptors. It keeps track of its dependencies, and how to get hold of the
+ * values that it requires for correct instantiation.
  * 
  * @author Felix Dobslaw
  * 
@@ -259,8 +260,7 @@ public class InPUTConstructor {
 			} else
 				cLass = getClassForLocalContext(identifier);
 		} catch (Exception e) {
-			throw new InPUTException(param.getId() + ": There is no class, subparam or parameter '" + param.getId() + "' with identifier '"
-					+ identifier + "'.");
+			throw new InPUTException(param.getId() + ": There is no class, subparam or parameter '" + param.getId() + "' with identifier '" + identifier + "'.");
 		}
 
 		return cLass;
@@ -279,22 +279,24 @@ public class InPUTConstructor {
 				}
 			}
 		}
-		
-		//TODO this might cause a failure, where the actual instance of the global entry is not of the exact same type as 
-		// the requested type for the constructor. Meaning, it must be a more general type in that case. so far it works.
+
+		// TODO this might cause a failure, where the actual instance of the
+		// global entry is not of the exact same type as
+		// the requested type for the constructor. Meaning, it must be a more
+		// general type in that case. so far it works.
 		if (cLass == null) {
 			Object value = InPUTConfig.getValue(identifier);
 			if (value != null)
 				cLass = value.getClass();
 		}
-		
+
 		return cLass;
 	}
 
 	private Class<?> getClassForLocalParam(String identifier, Param<?> param) throws InPUTException {
 		if (param == null)
 			return null;
-		
+
 		if (param.isArrayType())
 			return param.getArrayType();
 		return param.getInPUTClass();
@@ -319,7 +321,8 @@ public class InPUTConstructor {
 	}
 
 	/**
-	 * Retrieves the return type class for a given a method identifier and a param element.
+	 * Retrieves the return type class for a given a method identifier and a
+	 * param element.
 	 * 
 	 * @param identifier
 	 * @param parentParam
@@ -330,11 +333,12 @@ public class InPUTConstructor {
 	public static Class<?> getClassFromMethodReturnType(String identifier, Param<?> parentParam, ParamStore ps) throws InPUTException {
 		String[] chops = identifier.split(Pattern.quote("."));
 		String methodId = chops[chops.length - 1];
-		methodId = methodId.substring(0, methodId.length()-2);
+		methodId = methodId.substring(0, methodId.length() - 2);
 
 		String paramId = identifier.substring(0, identifier.length() - (methodId.length() + 3));
 
-		//TODO get param from the global context, including refered design spaces, which are obviously not included in the ps
+		// TODO get param from the global context, including refered design
+		// spaces, which are obviously not included in the ps
 		Param<?> param = ParamUtil.getParamForId(paramId, parentParam, ps);
 
 		Class<?> cLass = param.getInPUTClass();
@@ -399,12 +403,11 @@ public class InPUTConstructor {
 		if (!init)
 			init();
 		try {
+			ensureRightArrayTypes(actualParams);
 			return constructor.newInstance(actualParams);
 		} catch (InstantiationException e) {
-			throw new InPUTException(
-					param.getId()
-							+ ": The object could not be instantiated due to some reason. Is the class abstract? Then you cannot instantiate the constructor.",
-					e);
+			throw new InPUTException(param.getId()
+					+ ": The object could not be instantiated due to some reason. Is the class abstract? Then you cannot instantiate the constructor.", e);
 		} catch (IllegalAccessException e) {
 			throw new InPUTException(param.getId() + ": The constructor you declared is not visible.", e);
 		} catch (IllegalArgumentException e) {
@@ -413,6 +416,29 @@ public class InPUTConstructor {
 		} catch (InvocationTargetException e) {
 			throw new InPUTException(param.getId() + ": Something went wrong with the creation of the constructor.", e);
 		}
+	}
+
+	private void ensureRightArrayTypes(Object[] actualParams) throws InPUTException {
+		if (actualParams == null)
+			return;
+
+		Class<?>[] paramTypes = constructor.getParameterTypes();
+		for (int i = 0; i < actualParams.length; i++) {
+			Object obj = actualParams[i];
+			Class<?> type = paramTypes[i];
+			if (type.isArray() && !type.isInstance(obj)) {
+				Param<?> childParam = getCorrectParam(formalParamIds[i]);
+				actualParams[i] = ParamUtil.packArrayForExport(childParam.getInPUTClass(), obj, childParam.getDimensions().length);
+			}
+		}
+
+	}
+
+	private Param<?> getCorrectParam(String paramId) {
+		Param<?> otherParam = this.param.getChildParamElement(paramId);
+		if (otherParam == null)
+			otherParam = ps.getParamForAnyStore(paramId);
+		return otherParam;
 	}
 
 	private String getClassesForArguments(Object[] actualParams) {
@@ -432,7 +458,7 @@ public class InPUTConstructor {
 
 	public void validateInPUT(Object value) throws InPUTException {
 		if (!constructor.getDeclaringClass().isInstance(value))
-			throw new InPUTException("The object \"" + value.toString() + "\" is of the wrong type. \""
-					+ constructor.getDeclaringClass().getName() + "\" was expected, but was " + value.getClass().getName() + ".");
+			throw new InPUTException("The object \"" + value.toString() + "\" is of the wrong type. \"" + constructor.getDeclaringClass().getName()
+					+ "\" was expected, but was " + value.getClass().getName() + ".");
 	}
 }
