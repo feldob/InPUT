@@ -32,26 +32,25 @@ import se.miun.itm.input.util.InputStreamWrapper;
 
 /**
  * An experiment summarizes a computer experiment, and is always defined with
- * respect to a InPUT investigation object. It contains optional designs for
- * a choice of algorithm, problem, and preferences that depend on both,
- * algorithm and problems. In addition, it allows for the adding and removal of
- * outputs that are defined with respect to the output space of the InPUT
- * instance.
+ * respect to a InPUT investigation object. It contains optional designs for a
+ * choice of algorithm, problem, and preferences that depend on both, algorithm
+ * and problems. In addition, it allows for the adding and removal of outputs
+ * that are defined with respect to the output space of the InPUT instance.
  * 
  * Experiments serve for the purpose of documentation, and automatic
  * instantiation of whole series of computer experiments. They can be exported
  * to zip files or database structures, serving for documentation and an easy
  * exchange between different users, on different systems.
  * 
- * Each experiment allows for the getting and setting of values for each input design
- * that it contains (contains them all in its scope). Therefore, it requires that all designs,
- * used in its scope, have non-overlapping parameter ids.
+ * Each experiment allows for the getting and setting of values for each input
+ * design that it contains (contains them all in its scope). Therefore, it
+ * requires that all designs, used in its scope, have non-overlapping parameter
+ * ids.
  * 
  * @author Felix Dobslaw
  * 
  */
-public interface IExperiment extends Identifiable, Exportable, Extendable,
-		Valuable, Outable, Importable<Void, Map<String, InputStreamWrapper>> {
+public interface IExperiment extends Identifiable, Exportable, Extendable, Valuable, Outable, Importable<Void, Map<String, InputStreamWrapper>> {
 
 	/**
 	 * Returns the preferences design of this experiment.
@@ -126,16 +125,29 @@ public interface IExperiment extends Identifiable, Exportable, Extendable,
 	IInPUT getInPUT();
 
 	/**
-	 * Does the given experiment investigate the same combination of algorithm and properties.
+	 * Does the given experiment investigate the same combination of algorithm
+	 * and properties.
+	 * 
 	 * @param experiment
 	 * @return
 	 */
 	boolean investigatesSameConfiguration(IExperiment experiment);
 
 	/**
-	 * Is the given experiment investigating the same combination of algorithm, problem and properties?
+	 * Is the given experiment investigating the same combination of algorithm,
+	 * problem and properties?
+	 * 
 	 * @param experiment
 	 * @return
 	 */
 	boolean same(IExperiment experiment);
+
+	/**
+	 * Creates an empty output to be initialized with experimental results.
+	 * 
+	 * @param id
+	 * @return
+	 * @throws InPUTException
+	 */
+	IDesign newEmptyOutput(String string) throws InPUTException;
 }
