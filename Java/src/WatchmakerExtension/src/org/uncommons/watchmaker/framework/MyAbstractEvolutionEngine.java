@@ -348,4 +348,9 @@ public abstract class MyAbstractEvolutionEngine<T> implements EvolutionEngine<T>
 	public T evolve() {
 		return evolve(popSize, eliteCount, termination);
 	}
+
+	public void unRegisterAllObservers() {
+		for (MyEvolutionObserver<T> observer : myObservers)
+			removeMyEvolutionObserver(observer);
+	}
 }
