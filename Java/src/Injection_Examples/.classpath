@@ -4,6 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.ajdt.core.ASPECTJRT_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/InPUT4j"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/InPUT4j_Injection"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Injection"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
