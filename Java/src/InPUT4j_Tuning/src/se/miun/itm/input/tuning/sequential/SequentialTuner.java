@@ -19,6 +19,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */package se.miun.itm.input.tuning.sequential;
 
 import java.util.List;
+import java.util.Random;
 
 import se.miun.itm.input.IExperiment;
 import se.miun.itm.input.IInPUT;
@@ -46,7 +47,7 @@ public abstract class SequentialTuner extends Tuner implements ISequentialTuner 
 	// TODO adjust for resumable investigations!
 	private int amountEvaluatedRuns = 0;
 
-	private int instanceCounter;
+	private Random rng = new Random();
 
 	/**
 	 * A sequential tuner requires an experimental context to be set, that
@@ -64,27 +65,22 @@ public abstract class SequentialTuner extends Tuner implements ISequentialTuner 
 	 * @param problem
 	 * @throws InPUTException
 	 */
-	public SequentialTuner(IInPUT input, List<IDesign> problems,
-			String studyId, boolean minProblem) throws InPUTException {
+	public SequentialTuner(IInPUT input, List<IDesign> problems, String studyId, boolean minProblem) throws InPUTException {
 		super(input, studyId, minProblem);
 		this.problems = problems;
 		if (input.getOutputSpace() == null)
-			throw new InPUTException(
-					"You have to explicitly set an output space. The most basic one is available via the constant \"SINGLE_OBJECTIVE_SPACE\".");
+			throw new InPUTException("You have to explicitly set an output space. The most basic one is available via the constant \"SINGLE_OBJECTIVE_SPACE\".");
 	}
 
-	// TODO this is not random at the moment! It is according to the requirement
-	// of having comparable results!
 	private IDesign randomInstance() {
-		if (problems == null)
+		if (problems == null || problems.size() == 0)
 			return null;
-		// int next = rng.nextInt(problems.size());
-		return problems.get(instanceCounter++ % problems.size());
+		int next = rng.nextInt(problems.size());
+		return problems.get(next);
 	}
 
 	@Override
-	public void resetStudy(List<IDesign> problems, String studyId)
-			throws InPUTException {
+	public void resetStudy(List<IDesign> problems, String studyId) throws InPUTException {
 		this.problems = problems;
 		currentDesignPointer = 0;
 		amountInvestigatedConfigurations = 0;
@@ -92,8 +88,7 @@ public abstract class SequentialTuner extends Tuner implements ISequentialTuner 
 		currentDesignSize = getTotalAmountRunsInitialDesign();
 	}
 
-	protected abstract void feedback(IExperiment experiment, IDesign newResult)
-			throws InPUTException;
+	protected abstract void feedback(IExperiment experiment, IDesign newResult) throws InPUTException;
 
 	abstract int initNextDesign() throws InPUTException;
 
@@ -118,8 +113,7 @@ public abstract class SequentialTuner extends Tuner implements ISequentialTuner 
 	 *  either get the next experiment from the current design or if the current design is done, start a new and take the first one.
 	 */
 	public IExperiment nextExperiment() throws InPUTException {
-		if (currentDesignPointer == 0
-				|| currentDesignPointer == currentDesignSize) {
+		if (currentDesignPointer == 0 || currentDesignPointer == currentDesignSize) {
 			currentDesignPointer = 0;
 			currentDesignSize = initNextDesign();
 		}
