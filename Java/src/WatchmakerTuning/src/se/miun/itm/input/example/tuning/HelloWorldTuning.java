@@ -67,7 +67,7 @@ public class HelloWorldTuning {
 
 	public HelloWorldTuning() throws InPUTException {
 		stringIdentification = InPUT.getInPUT(IMPORTER);
-		tuner = new SPOT(stringIdentification, readProblem(), "spotConfig.xml", "HelloWorldFinder", true);
+		tuner = new SPOT(stringIdentification, readProblem(), "spotConfig.xml", "HelloWorldFinder", true, false);
 	}
 	
 	private List<IDesign> readProblem() throws InPUTException {
