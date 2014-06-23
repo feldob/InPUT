@@ -1,4 +1,4 @@
 name low high type
-SimpleBoolean 0 1 INT
+SimpleBoolean 0 1 FACTOR
 SimpleFloat 1 50 FLOAT
 SimpleInt 1 50 INT
