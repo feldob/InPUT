@@ -74,7 +74,6 @@ public class ISequentialTunerTest extends ITunerTest<SequentialTuner> {
 		IExperiment experiment = tuner.nextExperiment();
 		tuner.feedback(initialResults.get(0));
 
-		assertEquals(12, tuner.getCurrentDesignSize());
 		assertEquals(0, tuner.getCurrentDesignPointer());
 
 		for (int i = 0; i < 2; i++) {
