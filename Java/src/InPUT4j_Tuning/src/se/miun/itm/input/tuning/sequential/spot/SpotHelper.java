@@ -249,7 +249,8 @@ public class SpotHelper {
 			expFolder.mkdirs();
 			experimentalFolder = expFolder;
 		}
-		addProblems(experimentalFolder, problems);
+		if (problems != null)
+			addProblems(experimentalFolder, problems);
 		return experimentalFolder;
 	}
 
