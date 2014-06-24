@@ -17,9 +17,9 @@ import se.miun.itm.input.util.ProblemTopologyUtil;
 import se.miun.itm.input.util.Q;
 
 /**
- * A simple standard interface for the conduct of tuning series.
- * It has to be inherited by a specific tuner and requires the
- * definition of a ExperimentConductor for the investigation call.
+ * A simple standard interface for the conduct of tuning series. It has to be
+ * inherited by a specific tuner and requires the definition of a
+ * ExperimentConductor for the investigation call.
  * 
  * @author feldob
  * 
@@ -60,17 +60,18 @@ public abstract class TuningManager<T> {
 	 * only for existing investigations that should be proceeded. uses the
 	 * existing config file.
 	 */
-	public void resumeInvestigation(ExperimentConductor<T> conductor) throws InPUTException, IOException {
+	public void resumeInvestigation(ExperimentConductor<T> conductor, boolean isMinProblem) throws InPUTException, IOException {
 		if (investigationPath == null)
 			throw new IllegalStateException("There is no existing investigation path, which means that it cannot be proceeded.");
 
 		String spotConfigPath = investigationPath + File.separator + SPOTQ.SPOT_DESIGN_ID + Q.XML;
 
-		investigate(spotConfigPath, true, conductor);
+		investigate(spotConfigPath, true, true, conductor);
 	}
 
-	private void investigate(String spotConfigPath, boolean resumeExisting, ExperimentConductor<T> conductor) throws InPUTException, IOException {
-		SPOT tuner = new SPOT(roi, problems, spotConfigPath, roi.getId(), true, resumeExisting);
+	private void investigate(String spotConfigPath, boolean isMinProblem, boolean resumeExisting, ExperimentConductor<T> conductor) throws InPUTException,
+			IOException {
+		SPOT tuner = new SPOT(roi, problems, spotConfigPath, roi.getId(), isMinProblem, resumeExisting);
 		System.out.println("Investigation started ...");
 
 		String experimentFolder = tuner.getExperimentalFolderPath() + File.separator;
@@ -125,8 +126,8 @@ public abstract class TuningManager<T> {
 
 	protected abstract IDesign extractResultsFrom(T resStats);
 
-	public void investigate(String spotConfigPath, ExperimentConductor<T> conductor) throws InPUTException, IOException {
-		investigate(spotConfigPath, false, conductor);
+	public void investigate(String spotConfigPath, boolean isMinProblem, ExperimentConductor<T> conductor) throws InPUTException, IOException {
+		investigate(spotConfigPath, isMinProblem, false, conductor);
 	}
 
 	public IInPUT getROI() {
