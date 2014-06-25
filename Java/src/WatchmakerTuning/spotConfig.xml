@@ -5,8 +5,8 @@
 	<i:NValue id="spot.seed" value="125" />
 	<i:NValue id="alg.seed" value="4321" />
 	<i:SValue id="init.design.func" value="spotCreateDesignLhd" />
-	<i:NValue id="init.design.size" value="20"/> <!-- amount of points for initial design -->
-	<i:NValue id="init.design.repeats" value="10"/> <!-- repeated runs for one setting -->
+	<i:NValue id="init.design.size" value="10"/> <!-- amount of points for initial design -->
+	<i:NValue id="init.design.repeats" value="5"/> <!-- repeated runs for one setting -->
 	<i:NValue id="init.design.retries" value="1"/> <!-- how many times should the initial design be executed? -->
 	<i:NValue id="seq.design.size" value="100"/> 
 	<i:NValue id="seq.design.retries" value="1"/>
