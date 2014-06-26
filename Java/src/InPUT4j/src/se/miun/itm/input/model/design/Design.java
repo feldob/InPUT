@@ -60,8 +60,7 @@ public class Design implements IDesign {
 
 	private final ParamStore ps;
 
-	protected Design(final String expId, final ParamStore ps)
-			throws InPUTException {
+	protected Design(final String expId, final ParamStore ps) throws InPUTException {
 		this.ps = ps;
 		addOptionalParamsToCache();
 		design = initEmptyDesign(expId);
@@ -71,8 +70,7 @@ public class Design implements IDesign {
 		InPUTConfig.extendToConfigScope(this);
 	}
 
-	protected Design(final ParamStore ps, Document design)
-			throws InPUTException {
+	protected Design(final ParamStore ps, Document design) throws InPUTException {
 		this.ps = ps;
 		addOptionalParamsToCache();
 		this.design = design;
@@ -101,15 +99,10 @@ public class Design implements IDesign {
 		}
 	}
 
-	private DesignSpace initDesignSpace(String filePath, String ref)
-			throws InPUTException {
+	private DesignSpace initDesignSpace(String filePath, String ref) throws InPUTException {
 		if (ref == null) {
-			throw new InPUTException(
-					"The 'ref' argument of the design by id '"
-							+ getId()
-							+ "' from file '"
-							+ filePath
-							+ "' has to be set to the id of the respective design space.");
+			throw new InPUTException("The 'ref' argument of the design by id '" + getId() + "' from file '" + filePath
+					+ "' has to be set to the id of the respective design space.");
 		}
 		DesignSpace designSpace = DesignSpace.lookup(ref);
 		if (designSpace != null)
@@ -141,8 +134,7 @@ public class Design implements IDesign {
 		validateInitialValues(paramIds);
 	}
 
-	private void validateInitialValues(List<String> paramIds)
-			throws InPUTException {
+	private void validateInitialValues(List<String> paramIds) throws InPUTException {
 		Param<?> param;
 		Object value;
 		Value<?> valueElement;
@@ -158,8 +150,7 @@ public class Design implements IDesign {
 		}
 	}
 
-	private Value<?> createElement(Element obsoleteE, Element root)
-			throws InPUTException {
+	private Value<?> createElement(Element obsoleteE, Element root) throws InPUTException {
 		Param<?> param;
 		String id;
 		// retrieve param id
@@ -168,11 +159,9 @@ public class Design implements IDesign {
 		param = ps.getParam(id);
 		// create the new entry
 		if (param == null) {
-			throw new InPUTException("There is no parameter with id '" + id
-					+ "' in design space '" + ps.getId() + "'.");
+			throw new InPUTException("There is no parameter with id '" + id + "' in design space '" + ps.getId() + "'.");
 		}
-		Value<?> newE = ValueFactory.constructElementByElement(obsoleteE,
-				param, param.getDimensions(), elementCache);
+		Value<?> newE = ValueFactory.constructElementByElement(obsoleteE, param, param.getDimensions(), elementCache);
 		// reset the obsolete entry
 		{
 			root.removeContent(obsoleteE);
@@ -190,8 +179,7 @@ public class Design implements IDesign {
 	private Element initEmptyRoot(String expId) throws InPUTException {
 		Element root = new Element(Q.DESIGN_ROOT, Q.DESIGN_NAMESPACE);
 		root.addNamespaceDeclaration(Q.SCHEMA_INSTANCE_NAMESPACE);
-		root.setAttribute(Q.SCHEMA_LOCATION_ATTR, Q.getSchemaLocation(),
-				Q.SCHEMA_INSTANCE_NAMESPACE);
+		root.setAttribute(Q.SCHEMA_LOCATION_ATTR, Q.getSchemaLocation(), Q.SCHEMA_INSTANCE_NAMESPACE);
 		root.setAttribute(Q.ID_ATTR, expId);
 
 		if (ps.getDesignSpace().isFile()) {
@@ -206,14 +194,18 @@ public class Design implements IDesign {
 	}
 
 	@Override
+	public void resetId(String id) {
+		design.getRootElement().setAttribute(Q.ID_ATTR, id);
+	}
+
+	@Override
 	public <T> T getValue(final String paramId) throws InPUTException {
 		return getValue(paramId, null);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T getValue(String paramId, Object[] actualParams)
-			throws InPUTException {
+	public <T> T getValue(String paramId, Object[] actualParams) throws InPUTException {
 		Value<?> element = elementCache.get(paramId);
 		Object value = null;
 		if (element != null) {
@@ -225,8 +217,7 @@ public class Design implements IDesign {
 	}
 
 	@Override
-	public void setValue(final String paramId, Object value)
-			throws InPUTException {
+	public void setValue(final String paramId, Object value) throws InPUTException {
 		if (isReadOnly())
 			throw new InPUTException("The design is read only.");
 
@@ -242,8 +233,7 @@ public class Design implements IDesign {
 		return elementCache.isReadOnly();
 	}
 
-	private void setValueForExplicitParam(final String paramId, Object value,
-			Param<?> param) throws InPUTException {
+	private void setValueForExplicitParam(final String paramId, Object value, Param<?> param) throws InPUTException {
 		param.validateInPUT(paramId, value, elementCache);
 		if (param.isArrayType())
 			value = ParamUtil.repackArrayForImport(value);
@@ -251,14 +241,12 @@ public class Design implements IDesign {
 		Value<?> valueE = null;
 		if (!(param.isOptional() && value == null)) {
 			// create new element
-			valueE = ValueFactory.constructElementByValue(value, param,
-					param.getDimensions(), elementCache);
+			valueE = ValueFactory.constructElementByValue(value, param, param.getDimensions(), elementCache);
 		}
 		setElement(paramId, valueE);
 	}
 
-	private void setValueForNoneExplicitParam(final String paramId, Object value)
-			throws InPUTException {
+	private void setValueForNoneExplicitParam(final String paramId, Object value) throws InPUTException {
 		Value<?> valueE;
 		valueE = elementCache.get(paramId);
 		if (valueE != null) {
@@ -272,8 +260,7 @@ public class Design implements IDesign {
 			// remove those parents that are effected from the cache.
 			updateCacheForIndexedValue(valueE);
 		} else
-			throw new InPUTException("A parameter by name \"" + paramId
-					+ "\" does not exist.");
+			throw new InPUTException("A parameter by name \"" + paramId + "\" does not exist.");
 	}
 
 	private void emptyCacheForChildren(Value<?> valueE) throws InPUTException {
@@ -284,8 +271,7 @@ public class Design implements IDesign {
 
 	}
 
-	private void updateCacheForIndexedValue(Value<?> parentValue)
-			throws InPUTException {
+	private void updateCacheForIndexedValue(Value<?> parentValue) throws InPUTException {
 		Element parent = parentValue.getParentElement();
 		if (parent instanceof Value<?>) {
 			updateElementCache(parentValue);
@@ -299,23 +285,16 @@ public class Design implements IDesign {
 		Value<?> oldValueE = elementCache.get(paramId);
 
 		if (isValid() && oldValueE == null)
-			throw new InPUTException(
-					"The parameter \""
-							+ paramId
-							+ "\" which you try to set is not part of design \""
-							+ getId()
-							+ "\". Is it a sub-parameter of an unset parameter choice or does it contain a spelling error?");
+			throw new InPUTException("The parameter \"" + paramId + "\" which you try to set is not part of design \"" + getId()
+					+ "\". Is it a sub-parameter of an unset parameter choice or does it contain a spelling error?");
 
 		addElement(paramId, newValueE);
 	}
 
 	private boolean isValid() {
-		List<Element> highLevelParams = ps.getDesignSpaceTree()
-				.getRootElement().getChildren();
+		List<Element> highLevelParams = ps.getDesignSpaceTree().getRootElement().getChildren();
 		for (Element param : highLevelParams) {
-			if (param instanceof Param
-					&& !elementCache.containsKey(param
-							.getAttributeValue(Q.ID_ATTR)))
+			if (param instanceof Param && !elementCache.containsKey(param.getAttributeValue(Q.ID_ATTR)))
 				return false;
 		}
 
@@ -354,8 +333,7 @@ public class Design implements IDesign {
 	}
 
 	// thread safety has to be wrapped when calling
-	private void updateElementCache(String paramId, final Value<?> valueE)
-			throws InPUTException {
+	private void updateElementCache(String paramId, final Value<?> valueE) throws InPUTException {
 		// remove old entries
 		emptyCache(paramId, valueE);
 
@@ -369,8 +347,7 @@ public class Design implements IDesign {
 			}
 	}
 
-	private void emptyCache(String paramId, final Value<?> valueE)
-			throws InPUTException {
+	private void emptyCache(String paramId, final Value<?> valueE) throws InPUTException {
 		Value<?> obsoleteValue = elementCache.get(paramId);
 		if (obsoleteValue != null && valueE != null) {
 			emptyCacheForChildren(valueE);
@@ -382,10 +359,7 @@ public class Design implements IDesign {
 	private Element retrieveParent(String paramId) throws InPUTException {
 
 		if (!ps.containsParam(paramId))
-			throw new InPUTException(
-					"A parameter with id '"
-							+ paramId
-							+ "' is not specified in the InPUT file of this document type.");
+			throw new InPUTException("A parameter with id '" + paramId + "' is not specified in the InPUT file of this document type.");
 
 		Value<?> valueE = elementCache.get(paramId);
 
