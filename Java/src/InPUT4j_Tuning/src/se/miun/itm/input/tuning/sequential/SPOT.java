@@ -19,7 +19,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */package se.miun.itm.input.tuning.sequential;
 
 import java.io.FileInputStream;
-
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
@@ -55,10 +54,9 @@ public class SPOT extends SequentialTuner {
 
 	private final IDesign config;
 
-	public SPOT(IInPUT input, List<IDesign> problems, String spotConfigPath,
-			String studyId, boolean minProblem, boolean resumeExisting)
-			throws InPUTException {
-		super(input, problems, studyId, minProblem);
+	public SPOT(IInPUT input, List<IDesign> problems, String spotConfigPath, String studyId, boolean minProblem, boolean resumeExisting,
+			boolean randomProblemChoice) throws InPUTException {
+		super(input, problems, studyId, minProblem, randomProblemChoice);
 
 		config = initConfig(spotConfigPath);
 		helper = new SpotHelper(input, config, studyId, minProblem, problems, resumeExisting);
@@ -79,35 +77,28 @@ public class SPOT extends SequentialTuner {
 	private IDesign initConfig(String spotConfigPath) throws InPUTException {
 		InputStreamImporter importer = getCorrectSpotSetupStream(spotConfigPath);
 
-		IDesignSpace configSpace = DesignSpace
-				.lookup(SPOTQ.SPOT_DESIGN_SPACE_ID);
+		IDesignSpace configSpace = DesignSpace.lookup(SPOTQ.SPOT_DESIGN_SPACE_ID);
 		if (configSpace == null)
-			configSpace = new DesignSpace(
-					SPOTQ.class
-							.getResourceAsStream(SPOTQ.SPOT_DESIGN_SPACE_FILE));
+			configSpace = new DesignSpace(SPOTQ.class.getResourceAsStream(SPOTQ.SPOT_DESIGN_SPACE_FILE));
 		IDesign spotConfig = configSpace.impOrt(importer);
 
 		return spotConfig;
 	}
 
-	private InputStreamImporter getCorrectSpotSetupStream(String spotConfigPath)
-			throws InPUTException {
+	private InputStreamImporter getCorrectSpotSetupStream(String spotConfigPath) throws InPUTException {
 		InputStream is = getCorrectSpotSetup(spotConfigPath);
 
 		InputStreamImporter importer = new InputStreamImporter(is);
 		return importer;
 	}
 
-	private InputStream getCorrectSpotSetup(String spotConfigPath)
-			throws InPUTException {
+	private InputStream getCorrectSpotSetup(String spotConfigPath) throws InPUTException {
 		InputStream is;
 		if (spotConfigPath != null) {
 			try {
 				is = new FileInputStream(spotConfigPath);
 			} catch (FileNotFoundException e) {
-				throw new InPUTException(
-						"There is no spot config file to where you point in \""
-								+ spotConfigPath + "\".", e);
+				throw new InPUTException("There is no spot config file to where you point in \"" + spotConfigPath + "\".", e);
 			}
 		} else
 			is = SPOTQ.class.getResourceAsStream(SPOTQ.SPOT_DESIGN_FILE);
@@ -125,8 +116,7 @@ public class SPOT extends SequentialTuner {
 	}
 
 	@Override
-	protected void feedback(IExperiment experiment, IDesign newResult)
-			throws InPUTException {
+	protected void feedback(IExperiment experiment, IDesign newResult) throws InPUTException {
 		experiment.addOutput(newResult);
 		helper.feedbackSpot(newResult);
 	}
@@ -137,8 +127,7 @@ public class SPOT extends SequentialTuner {
 	}
 
 	@Override
-	public void resetStudy(List<IDesign> problems, String studyId)
-			throws InPUTException {
+	public void resetStudy(List<IDesign> problems, String studyId) throws InPUTException {
 		super.resetStudy(problems, studyId);
 		helper.reset(studyId);
 	}
@@ -163,19 +152,18 @@ public class SPOT extends SequentialTuner {
 
 	@Override
 	public int getTotalAmountRunsInitialDesign() throws InPUTException {
-		int first = (Integer) config
-				.getValue(SPOTQ.CONF_INIT_AMOUNT_INVESTIGATED_DESIGNS);
-		int second = (Integer) config
-				.getValue(SPOTQ.CONF_INIT_REPEATS_PER_DESIGN);
+		int first = (Integer) config.getValue(SPOTQ.CONF_INIT_AMOUNT_INVESTIGATED_DESIGNS);
+		int second = (Integer) config.getValue(SPOTQ.CONF_INIT_REPEATS_PER_DESIGN);
 		return first * second;
 	}
 
 	@Override
-	public int emulateNextDesignAndReturnSize(){
+	public int emulateNextDesignAndReturnSize() {
 		try {
 			return helper.emulateNextDesign();
 		} catch (InPUTException e) {
-			throw new IllegalStateException("something went wrong with the emulation of the existing experiment. Maybe something is broken in the experimental structure.",e);
+			throw new IllegalStateException(
+					"something went wrong with the emulation of the existing experiment. Maybe something is broken in the experimental structure.", e);
 		}
 	}
 }

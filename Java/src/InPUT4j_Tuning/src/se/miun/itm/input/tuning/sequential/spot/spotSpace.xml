@@ -52,6 +52,7 @@
 	<i:SParam id="seq.merge.func" type="String">
 		<i:SChoice id="mean" />
 		<i:SChoice id="median" />
+		<i:SChoice id="meanPlusSd" />
 	</i:SParam>
 	<i:SParam id="seq.transformation.func" type="String">
 		<i:SChoice id="identity" />

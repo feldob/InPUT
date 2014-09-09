@@ -191,6 +191,7 @@ public class SpotHelper {
 
 	private void initInverseFunction() {
 		runCommand("source(textConnection(\"inverse<-function(x){v<-x\n if(x>0)v<-1/x\n return(v)}\"))", false);
+		runCommand("source(textConnection(\"meanPlusSd<-function(x){return(mean(x)+sd(x))}\"))", false);
 	}
 
 	private static File initExperimentalFolder(String studyId, IDesign config, List<IDesign> problems, boolean resumeExperiment) throws InPUTException {

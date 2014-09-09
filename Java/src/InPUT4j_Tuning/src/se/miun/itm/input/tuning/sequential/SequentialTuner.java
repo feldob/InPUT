@@ -49,6 +49,10 @@ public abstract class SequentialTuner extends Tuner implements ISequentialTuner 
 
 	private Random rng = new Random();
 
+	private final boolean randomProblemChoice;
+
+	private int problemPositionCounter = 0;
+
 	/**
 	 * A sequential tuner requires an experimental context to be set, that
 	 * extends the use of an IInPUT element to a concrete problem instance under
@@ -65,16 +69,15 @@ public abstract class SequentialTuner extends Tuner implements ISequentialTuner 
 	 * @param problem
 	 * @throws InPUTException
 	 */
-	public SequentialTuner(IInPUT input, List<IDesign> problems, String studyId, boolean minProblem) throws InPUTException {
+	public SequentialTuner(IInPUT input, List<IDesign> problems, String studyId, boolean minProblem, boolean randomProblemChoice) throws InPUTException {
 		super(input, studyId, minProblem);
 		this.problems = problems;
+		this.randomProblemChoice = randomProblemChoice;
 		if (input.getOutputSpace() == null)
 			throw new InPUTException("You have to explicitly set an output space. The most basic one is available via the constant \"SINGLE_OBJECTIVE_SPACE\".");
 	}
 
 	private IDesign randomInstance() {
-		if (problems == null || problems.size() == 0)
-			return null;
 		int next = rng.nextInt(problems.size());
 		return problems.get(next);
 	}
@@ -119,7 +122,9 @@ public abstract class SequentialTuner extends Tuner implements ISequentialTuner 
 		}
 
 		IExperiment nextExperiment = nextExperiment(currentDesignPointer);
-		nextExperiment.setProblemFeatures(randomInstance());
+
+		IDesign nextProblem = getNextProblem();
+		nextExperiment.setProblemFeatures(nextProblem);
 
 		if (!nextExperiment.same(currentExperiment)) {
 			currentExperiment = nextExperiment;
@@ -127,6 +132,20 @@ public abstract class SequentialTuner extends Tuner implements ISequentialTuner 
 		}
 
 		return currentExperiment;
+	}
+
+	private IDesign getNextProblem() {
+		if (problems == null || problems.size() == 0)
+			return null;
+
+		IDesign problem;
+		if (randomProblemChoice) {
+			problem = randomInstance();
+		} else {
+			problem = problems.get(problemPositionCounter);
+			problemPositionCounter = (problemPositionCounter + 1) % problems.size();
+		}
+		return problem;
 	}
 
 	public IExperiment getExperimentUnderInvestigation() {
