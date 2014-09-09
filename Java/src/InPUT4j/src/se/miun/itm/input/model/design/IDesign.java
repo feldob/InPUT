@@ -35,19 +35,20 @@ import se.miun.itm.input.model.InPUTException;
  * parameter scope of a design can be extended by other designs. All designs
  * always have full read/write access to the InPUT configuration parameters.
  * 
- * In general, designs should be seen as instances, or implementations of design spaces. They 
- * contain concrete values that are valid with respect to the design space they relate to.
- * Given the design space of a search algorithm, which consists of all degrees of freedom (parameters)
- * for a full instantiation of the algorithm, a design is a set of choices for each of the degrees.
+ * In general, designs should be seen as instances, or implementations of design
+ * spaces. They contain concrete values that are valid with respect to the
+ * design space they relate to. Given the design space of a search algorithm,
+ * which consists of all degrees of freedom (parameters) for a full
+ * instantiation of the algorithm, a design is a set of choices for each of the
+ * degrees.
  * 
- * Because a design space allows for hierarchical parameters of any depth, does a design contain choices 
- * of the within the design space defined depth.
+ * Because a design space allows for hierarchical parameters of any depth, does
+ * a design contain choices of the within the design space defined depth.
  * 
  * @author Felix Dobslaw
  * 
  */
-public interface IDesign extends Identifiable, Exportable, Valuable,
-		Importable<Void, Document>, ParamSupportable {
+public interface IDesign extends Identifiable, Exportable, Valuable, Importable<Void, Document>, ParamSupportable {
 
 	/**
 	 * Imports an algorithm design file. This will load a design tree into
@@ -61,13 +62,14 @@ public interface IDesign extends Identifiable, Exportable, Valuable,
 	Void impOrt(InPUTImporter<Document> importer) throws InPUTException;
 
 	/**
-	 * Subsequent calls to {@link #setValue(String, Object) setValue} will
-	 * throw an InPUTExceptions.
+	 * Subsequent calls to {@link #setValue(String, Object) setValue} will throw
+	 * an InPUTExceptions.
 	 */
 	void setReadOnly();
 
 	/**
 	 * returns the design space which this design is an instance of.
+	 * 
 	 * @return
 	 */
 	IDesignSpace getSpace();
@@ -79,19 +81,25 @@ public interface IDesign extends Identifiable, Exportable, Valuable,
 	void attachEnvironmentInfo();
 
 	/**
-	 * Extends the scope for parameter access to all parameters of the neighbor design.
-	 * Addressing is done absolute with respect to the parameter names, which has as a consequence that 
-	 * parameters in neighboring designs may not share the same id.
+	 * Extends the scope for parameter access to all parameters of the neighbor
+	 * design. Addressing is done absolute with respect to the parameter names,
+	 * which has as a consequence that parameters in neighboring designs may not
+	 * share the same id.
+	 * 
 	 * @param neighbor
 	 */
 	void extendScope(IDesign neighbor);
 
 	/**
-	 * compares if two designs are defining the same configuration; not necessarily having the same id, and are not necessarily equal.
+	 * compares if two designs are defining the same configuration; not
+	 * necessarily having the same id, and are not necessarily equal.
+	 * 
 	 * @param obj
 	 * @return
 	 */
 	boolean same(Object obj);
-	
+
 	IDesign toClone() throws InPUTException;
+
+	void resetId(String id);
 }

@@ -166,6 +166,7 @@ public class Experiment implements IExperiment {
 
 	@Override
 	public void setPreferences(IDesign preferences) {
+		preferences.resetId(id);
 		if (preferences != null && input.getPropertySpace() == null)
 			throw new IllegalArgumentException("No propertySpace is defined, you cannot set preferences.");
 		this.preferences = preferences;
@@ -174,6 +175,7 @@ public class Experiment implements IExperiment {
 
 	@Override
 	public void setAlgorithmDesign(IDesign algorithmDesign) {
+		algorithmDesign.resetId(id);
 		if (algorithmDesign != null && input.getAlgorithmDesignSpace() == null)
 			throw new IllegalArgumentException("No algorithm design space is defined, you cannot set an algorithm design.");
 		this.algorithmDesign = algorithmDesign;
@@ -182,6 +184,7 @@ public class Experiment implements IExperiment {
 
 	@Override
 	public void setProblemFeatures(IDesign features) {
+		features.resetId(id);
 		if (features != null && input.getProblemFeatureSpace() == null)
 			throw new IllegalArgumentException("No problem feature space is defined, you cannot set problem features.");
 		this.features = features;
