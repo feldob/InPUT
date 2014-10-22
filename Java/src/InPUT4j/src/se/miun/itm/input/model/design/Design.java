@@ -284,7 +284,7 @@ public class Design implements IDesign {
 		// check validity
 		Value<?> oldValueE = elementCache.get(paramId);
 
-		if (isValid() && oldValueE == null)
+		if (!newValueE.getParam().isOptional() && isValid() && oldValueE == null)
 			throw new InPUTException("The parameter \"" + paramId + "\" which you try to set is not part of design \"" + getId()
 					+ "\". Is it a sub-parameter of an unset parameter choice or does it contain a spelling error?");
 
