@@ -47,7 +47,7 @@ public abstract class MyAbstractEvolutionEngine<T> implements EvolutionEngine<T>
 
 	private int eliteCount;
 
-	private TerminationCondition termination;
+	private TerminationCondition[] termination;
 
 	private int popSize;
 
@@ -58,13 +58,18 @@ public abstract class MyAbstractEvolutionEngine<T> implements EvolutionEngine<T>
 	}
 
 	protected MyAbstractEvolutionEngine(CandidateFactory<T> candidateFactory, FitnessEvaluator<? super T> fitnessEvaluator, int popSize, int eliteCount,
-			TerminationCondition terminiation, Random rng) {
+			TerminationCondition[] terminiation, Random rng) {
 		this.candidateFactory = candidateFactory;
 		this.fitnessEvaluator = fitnessEvaluator;
 		this.popSize = popSize;
 		this.eliteCount = eliteCount;
 		this.termination = terminiation;
 		this.rng = rng;
+	}
+
+	protected MyAbstractEvolutionEngine(CandidateFactory<T> candidateFactory, FitnessEvaluator<? super T> fitnessEvaluator, int popSize, int eliteCount,
+			TerminationCondition terminiation, Random rng) {
+		this(candidateFactory, fitnessEvaluator, popSize, eliteCount, new TerminationCondition[] { terminiation }, rng);
 	}
 
 	/**

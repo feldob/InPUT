@@ -49,9 +49,21 @@ public class MyGenerationalEvolutionEngine<T> extends MyAbstractEvolutionEngine<
 	 *            The source of randomness used by all stochastic processes
 	 *            (including evolutionary operators and selection strategies).
 	 */
+	// public MyGenerationalEvolutionEngine(CandidateFactory<T>
+	// candidateFactory, EvolutionaryOperator<T> evolutionScheme,
+	// FitnessEvaluator<? super T> fitnessEvaluator, SelectionStrategy<? super
+	// T> selectionStrategy, int popSize, int eliteCount,
+	// TerminationCondition termination, Random rng) {
+	// super(candidateFactory, fitnessEvaluator, popSize, eliteCount,
+	// termination, rng);
+	// this.evolutionScheme = evolutionScheme;
+	// this.fitnessEvaluator = fitnessEvaluator;
+	// this.selectionStrategy = selectionStrategy;
+	// }
+
 	public MyGenerationalEvolutionEngine(CandidateFactory<T> candidateFactory, EvolutionaryOperator<T> evolutionScheme,
 			FitnessEvaluator<? super T> fitnessEvaluator, SelectionStrategy<? super T> selectionStrategy, int popSize, int eliteCount,
-			TerminationCondition termination, Random rng) {
+			TerminationCondition[] termination, Random rng) {
 		super(candidateFactory, fitnessEvaluator, popSize, eliteCount, termination, rng);
 		this.evolutionScheme = evolutionScheme;
 		this.fitnessEvaluator = fitnessEvaluator;
