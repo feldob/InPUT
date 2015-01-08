@@ -41,11 +41,10 @@ import se.miun.itm.input.util.Q;
 /**
  * 
  * @author Felix Dobslaw
- *
+ * 
  * @NotThreadSafe
  */
-public abstract class ValueGenerator<AMapping extends IMapping, AParam extends Param<?>> implements
-		IValueGenerator {
+public abstract class ValueGenerator<AMapping extends IMapping, AParam extends Param<?>> implements IValueGenerator {
 
 	public static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
@@ -65,16 +64,14 @@ public abstract class ValueGenerator<AMapping extends IMapping, AParam extends P
 	private Method setHandle;
 	private Boolean hasSetHandle;
 
-	public ValueGenerator(AParam param, Random rng)
-			throws InPUTException {
+	public ValueGenerator(AParam param, Random rng) throws InPUTException {
 		this.rng = rng;
 		this.param = param;
 		this.mapping = initMappings();
 	}
 
 	@Override
-	public Object next(int[] dimensions, Map<String, Object> vars)
-			throws InPUTException {
+	public Object next(int[] dimensions, Map<String, Object> vars) throws InPUTException {
 		Object value;
 		if (dimensions.length > 1)
 			value = nextArray(dimensions, vars);
@@ -82,9 +79,8 @@ public abstract class ValueGenerator<AMapping extends IMapping, AParam extends P
 			value = nextValue(dimensions[0], vars);
 		return value;
 	}
-	
-	private Object nextValue(int type, Map<String, Object> vars)
-			throws InPUTException {
+
+	private Object nextValue(int type, Map<String, Object> vars) throws InPUTException {
 		Object value;
 		// either only a single value of the type
 		if (type == 0) {
@@ -107,8 +103,7 @@ public abstract class ValueGenerator<AMapping extends IMapping, AParam extends P
 		return next(vars);
 	}
 
-	private Object nextArray(int[] dimensions, Map<String, Object> vars)
-			throws InPUTException {
+	private Object nextArray(int[] dimensions, Map<String, Object> vars) throws InPUTException {
 		Object[] valueArray;
 		if (dimensions[0] > 0)
 			// create a container for the array of the first dimension
@@ -120,8 +115,7 @@ public abstract class ValueGenerator<AMapping extends IMapping, AParam extends P
 		// for all dimensions
 		for (int i = 0; i < valueArray.length; i++) {
 			// call the method again without the first dimension.
-			valueArray[i] = next(
-					Arrays.copyOfRange(dimensions, 1, dimensions.length), vars);
+			valueArray[i] = next(Arrays.copyOfRange(dimensions, 1, dimensions.length), vars);
 		}
 		return valueArray;
 	}
@@ -135,27 +129,18 @@ public abstract class ValueGenerator<AMapping extends IMapping, AParam extends P
 	}
 
 	@Override
-	public void invokeSetter(Object parentValue, Object value)
-			throws InPUTException {
+	public void invokeSetter(Object parentValue, Object value) throws InPUTException {
 		if (setHandle == null)
 			setHandle = initSetMethod(parentValue);
 		try {
 			setHandle.invoke(parentValue, value);
 		} catch (IllegalAccessException e) {
-			throw new InPUTException(param.getId()
-					+ ": You do not have access to the method '"
-					+ setHandle.getName() + "'.", e);
+			throw new InPUTException(param.getId() + ": You do not have access to the method '" + setHandle.getName() + "'.", e);
 		} catch (IllegalArgumentException e) {
-			throw new InPUTException(
-					param.getId()
-							+ ": A method '"
-							+ setHandle.getName()
-							+ "' with the given arguments does not exist. look over your code mapping file.",
-					e);
+			throw new InPUTException(param.getId() + ": A method '" + setHandle.getName()
+					+ "' with the given arguments does not exist. look over your code mapping file.", e);
 		} catch (InvocationTargetException e) {
-			throw new InPUTException(param.getId()
-					+ ": An exception in the method '" + setHandle.getName()
-					+ "' has been thrown.", e);
+			throw new InPUTException(param.getId() + ": An exception in the method '" + setHandle.getName() + "' has been thrown.", e);
 		}
 	}
 
@@ -167,23 +152,14 @@ public abstract class ValueGenerator<AMapping extends IMapping, AParam extends P
 
 		Object fieldValue;
 		try {
-			fieldValue = getHandle.invoke(value,
-					ValueGenerator.EMPTY_OBJECT_ARRAY);
+			fieldValue = getHandle.invoke(value, ValueGenerator.EMPTY_OBJECT_ARRAY);
 		} catch (IllegalAccessException e) {
-			throw new InPUTException(param.getId()
-					+ ": You do not have access to the method '"
-					+ getHandle.getName() + "'.", e);
+			throw new InPUTException(param.getId() + ": You do not have access to the method '" + getHandle.getName() + "'.", e);
 		} catch (IllegalArgumentException e) {
-			throw new InPUTException(
-					param.getId()
-							+ ": A method '"
-							+ getHandle.getName()
-							+ "' with the given arguments does not exist. look over your code mapping file.",
-					e);
+			throw new InPUTException(param.getId() + ": A method '" + getHandle.getName()
+					+ "' with the given arguments does not exist. look over your code mapping file.", e);
 		} catch (InvocationTargetException e) {
-			throw new InPUTException(param.getId()
-					+ ": An exception in the method '" + getHandle.getName()
-					+ "' has been thrown.", e);
+			throw new InPUTException(param.getId() + ": An exception in the method '" + getHandle.getName() + "' has been thrown.", e);
 		}
 		return fieldValue;
 	}
@@ -219,22 +195,20 @@ public abstract class ValueGenerator<AMapping extends IMapping, AParam extends P
 		mapping.setAttribute(Q.ID_ATTR, param.getId());
 		mapping.setAttribute(Q.CONSTR_ATTR, Q.STRING_TYPE);
 		mapping.setAttribute(Q.TYPE_ATTR, Q.STRING_TYPE);
-		
+
 		if (param.getParent() instanceof AStruct) {
 			mapping.setAttribute(Q.SET_ATTR, Q.SETTER_PREFIX + param.getId());
 			mapping.setAttribute(Q.GET_ATTR, Q.GETTER_PREFIX + param.getId());
 		}
-		
+
 		return init(mapping);
 	}
 
 	protected abstract AMapping init(Element mapping) throws InPUTException;
 
-	protected abstract Method initSetMethod(Object parentValue)
-			throws InPUTException;
+	protected abstract Method initSetMethod(Object parentValue) throws InPUTException;
 
-	protected abstract Method initGetMethod(Object parentValue)
-			throws InPUTException;
+	protected abstract Method initGetMethod(Object parentValue) throws InPUTException;
 
 	@Override
 	public Boolean hasGetHandle() {
@@ -254,19 +228,19 @@ public abstract class ValueGenerator<AMapping extends IMapping, AParam extends P
 			initHandles();
 		return hasSetHandle;
 	}
-	
+
 	@Override
-	public void validateInPUT(String paramId, Object value, ElementCache elementCache)
-			throws InPUTException {
+	public void validateInPUT(String paramId, Object value, ElementCache elementCache) throws InPUTException {
 		checkConstructorInit();
 	}
-	
+
 	private void checkConstructorInit() throws InPUTException {
 		Element parent = param.getParentElement();
 		if (parent.isRootElement())
 			return;
-		
-		if(((Param<?>)parent).initByConstructor(param.getLocalId()))
-			throw new InPUTException("The parameter \"" + param.getId() + "\" cannot be set via setter injection because it is instantiated by a constructor.");
+
+		// if (((Param<?>) parent).initByConstructor(param.getLocalId()))
+		// throw new InPUTException("The parameter \"" + param.getId() +
+		// "\" cannot be set via setter injection because it is instantiated by a constructor.");
 	}
 }
