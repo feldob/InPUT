@@ -25,7 +25,7 @@ import se.miun.itm.input.model.design.IDesign;
 import se.miun.itm.input.model.design.IDesignSpace;
 
 /**
- * This class extends the relative param definition example, by illustrating how a
+ * This class extends the relative parameter definition example, by illustrating how a
  * constant decision can be externalized as a parameter, using an existing InPUT descriptor.
  * This can be valuable, if you right now want to keep a parameter fixed, but might want to
  * play with it in a later stage.
