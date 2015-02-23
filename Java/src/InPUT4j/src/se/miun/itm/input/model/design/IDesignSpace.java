@@ -42,7 +42,7 @@ import se.miun.itm.input.model.InPUTException;
  * creation, and documentation improvement, amongst others.
  * 
  * Design spaces can be imported and exported to different formats (e.g. xml,
- * zip, LaTeX). They allow for the creation of valud random or empty designs.
+ * zip, LaTeX). They allow for the creation of valid random or empty designs.
  * 
  * @author Felix Dobslaw
  * 
